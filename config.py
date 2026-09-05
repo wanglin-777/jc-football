@@ -43,8 +43,11 @@ LEAGUE_FEED = {
     "ERE": ("eredivisie-2026", "荷甲"),
     "ISA": ("serie-a-2026", "意甲"),
     "FR1": ("ligue-1-2026", "法甲"),
+    "LLA": ("la-liga-2026", "西甲"),
+    "POR": ("primeira-liga-2026", "葡超"),
+    "FR2": ("ligue-2-2026", "法乙"),
     "USA": ("mls-2026", "美职"),
-    # fixturedownload 暂缺(探测404)的联赛: 西甲/葡超/挪超/沙职/巴甲/日职/韩职/瑞超
+    # fixturedownload 暂缺的联赛(探测不到slug): 挪超/巴甲/日职/韩职/瑞超/沙职等
     # 若日后有可用源, 按 "联赛码": (slug, 中文名) 追加即可。
 }
 # sporttery 联赛 abb 名 -> league_code(有些接口只给 abb 中文名, 这里统一口径)

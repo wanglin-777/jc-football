@@ -46,6 +46,21 @@ CH_TO_EN = {
     "巴黎圣曼": "Paris Saint-Germain", "里昂": "Olympique Lyonnais",
     "雷恩": "Stade Rennais FC", "尼斯": "OGC Nice", "图卢兹": "Toulouse FC",
     "圣埃蒂安": "", "南特": "", "兰斯": "",
+    # ---------- 西甲 LLA ----------
+    "毕尔巴鄂": "Athletic Club", "马竞": "Atlético de Madrid",
+    "巴列卡诺": "Rayo Vallecano", "桑坦德": "R. Racing Club",
+    "比利亚雷": "Villarreal CF", "拉科": "RC Deportivo",
+    "巴伦西亚": "Valencia CF", "巴萨": "FC Barcelona",
+    "阿拉维斯": "Deportivo Alavés", "奥萨苏纳": "CA Osasuna",
+    "马拉加": "Málaga CF", "莱万特": "Levante UD",
+    "西班牙人": "RCD Espanyol de Barcelona", "塞维利亚": "Sevilla FC",
+    "赫塔费": "Getafe CF", "塞尔塔": "Celta", "埃尔切": "Elche CF",
+    "皇家社会": "Real Sociedad", "皇马": "Real Madrid", "贝蒂斯": "Real Betis",
+    # ---------- 葡超 POR ----------
+    "马里迪莫": "Marítimo M.", "本菲卡": "SL Benfica", "波尔图": "FC Porto",
+    "里斯本竞技": "Sporting CP", "布拉加": "SC Braga", "阿罗卡": "FC Arouca",
+    "埃斯托里": "Estoril Praia", "圣克拉拉": "Santa Clara", "里奥阿维": "Rio Ave FC",
+    "吉维森特": "Gil Vicente FC", "法马利康": "FC Famalicão",
     # ---------- 美职 USA(如需再加) ----------
 }
 
