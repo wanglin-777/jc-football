@@ -48,6 +48,13 @@ def main():
     except Exception as e:
         _log(f"⚠ 抓取失败: {e}")
 
+    # 1.5) 重建静态网站到 docs/(GitHub Pages 直接发布该目录)
+    try:
+        import build_site
+        build_site.main()
+    except Exception as e:
+        _log(f"⚠ 重建网站失败: {e}")
+
     # 2) 提交并推送变化(没有变化就跳过, 不产生噪音提交)
     st = _git("status", "--porcelain")
     if st.returncode != 0:

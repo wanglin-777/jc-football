@@ -33,7 +33,7 @@ import scout   # noqa: E402
 from config import BASE_DIR, DATA_DIR, N_RECOMMEND  # noqa: E402
 from source import fetch_today  # noqa: E402
 
-SITE_DIR = os.path.join(BASE_DIR, "site")
+SITE_DIR = os.path.join(BASE_DIR, "docs")   # 生成到 docs/, 由 GitHub Pages 直接发布该目录
 INDEX = os.path.join(SITE_DIR, "index.html")
 NEXT_HOURS = 4          # 更新周期(小时), 与 Actions cron 一致
 

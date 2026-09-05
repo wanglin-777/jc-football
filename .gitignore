@@ -9,5 +9,6 @@ data/cache/
 data/server.log
 data/server.pid
 
-# 生成的静态网站由 CI 构建, 本地不入库
+# 生成的静态网页目录 docs/ 需要提交(由 GitHub Pages 发布), 故不忽略
+# 旧的 site/ 目录不再使用
 site/
