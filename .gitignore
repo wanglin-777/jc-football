@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.venv-1/
+
+# 运行时数据(不进仓库; GitHub Actions 每次会联网重建)
+data/cache/
+data/server.log
+data/server.pid
+
+# 生成的静态网站由 CI 构建, 本地不入库
+site/

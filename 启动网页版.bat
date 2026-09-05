@@ -1,0 +1,5 @@
+@echo off
+chcp 65001 >nul
+cd /d %~dp0
+"d:\python\.venv-1\Scripts\python.exe" serve.py --open
+
