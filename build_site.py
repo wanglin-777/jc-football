@@ -22,6 +22,7 @@ import os
 import subprocess
 import sys
 import time
+import traceback
 import webbrowser
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -220,36 +221,64 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
 </div></body></html>"""
 
 
-def main():
-    args = sys.argv[1:]
-    offline = "--offline" in args
-    do_open = "--open" in args
+def minimal_error_page(exc, tb):
+    body = esc(tb or repr(exc)).replace("\n", "<br>")
+    return f"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<title>生成失败</title></head><body style="font-family:monospace;padding:20px">
+<h3>⚠ 网页生成失败(已保留此诊断页)</h3><div style="white-space:pre-wrap">{body}</div>
+</body></html>"""
 
-    today, ordered, preds, rec, msgs = _collect(offline=offline)
+
+def main():
+    os.makedirs(SITE_DIR, exist_ok=True)
+    err_path = os.path.join(SITE_DIR, "_err.txt")
+    if os.path.exists(err_path):
+        try:
+            os.remove(err_path)
+        except Exception:
+            pass
+    try:
+        offline = "--offline" in sys.argv
+        today, ordered, preds, rec, msgs = _collect(offline=offline)
+    except Exception as e:
+        tb = traceback.format_exc()
+        try:
+            with open(err_path, "w", encoding="utf-8") as f:
+                f.write(tb)
+            with open(INDEX, "w", encoding="utf-8") as f:
+                f.write(minimal_error_page(e, tb))
+        except Exception:
+            pass
+        print("❌ 生成异常:\n", tb)
+        return 0                       # 仍成功结束, 便于读取诊断
     if today is None:
-        if os.path.exists(INDEX):
-            print("⚠ 无法获取数据, 保留上一次生成的网站。")
-        else:
-            print("❌ 无法获取数据且无历史缓存, 无法生成。")
-        return 1
+        try:
+            with open(err_path, "w", encoding="utf-8") as f:
+                f.write("无数据且无可用缓存")
+            with open(INDEX, "w", encoding="utf-8") as f:
+                f.write(minimal_error_page(RuntimeError("无数据且无可用缓存"), ""))
+        except Exception:
+            pass
+        print("❌ 无数据且无可用缓存")
+        return 0
 
     gen_time = time.strftime("%Y-%m-%d %H:%M")
-    os.makedirs(SITE_DIR, exist_ok=True)
     with open(INDEX, "w", encoding="utf-8") as f:
         f.write(build_html(today, ordered, preds, rec, msgs, gen_time))
 
     # 同时存一份结构化快照, 便于调试/其它展示
     snapshot = {"gen_time": gen_time, "date": today["date"],
+                "source": today.get("source", ""),
                 "total": len(today["matches"]), "predictable": len(ordered),
                 "warns": msgs}
     with open(os.path.join(SITE_DIR, "snapshot.json"), "w", encoding="utf-8") as f:
         json.dump(snapshot, f, ensure_ascii=False, indent=1)
 
-    print(f"✅ 网站已生成: {INDEX}  (销售日期 {today['date']}, "
+    print(f"✅ 网站已生成: {INDEX}  (销售日期 {today['date']}, 数据源 {today.get('source','')}, "
           f"{len(ordered)} 场可预测, 更新于 {gen_time})")
     for m in msgs:
         print(m)
-    if do_open:
+    if "--open" in sys.argv:
         webbrowser.open("file:///" + INDEX.replace("\\", "/"))
     return 0
 
