@@ -172,7 +172,7 @@ def upset_analysis(feat, probs):
     fav = 0 if m[0] >= m[2] else 2
     other = 2 if fav == 0 else 0
     fav_odds = [feat.get("had_h"), feat.get("had_d"), feat.get("had_a")][fav]
-    hot = bool(fav_odds and fav_odds <= 2.30)   # 赔率≤2.3 才算"明显大热"
+    hot = bool(fav_odds and fav_odds <= 2.20)   # 赔率≤2.2 才算"大热"(优势较明显)
 
     p_nowin = 1.0 - probs[fav]            # 大热不胜(平或输)
     p_draw = probs[1]
@@ -240,7 +240,10 @@ def upset_analysis(feat, probs):
     if feat.get("intel_note"):
         reasons.append(f"人工情报提示: {feat['intel_note']}")
     if hot and not reasons:
-        reasons.append("无明显爆冷信号(状态/盘口正常), 风险主要来自足球本身的随机性")
+        if risk in ("中", "高"):
+            reasons.append(f"大热方赔率仅@{fav_odds}, 优势不悬殊, 翻车属正常波动")
+        else:
+            reasons.append("无明显爆冷信号(大热状态/盘口正常)")
 
     return {
         "fav": labels[fav], "fav_team": fav_team, "fav_odds": fav_odds,
