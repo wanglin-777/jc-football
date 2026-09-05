@@ -22,7 +22,7 @@ import streamlit as st  # noqa: E402
 import model   # noqa: E402
 import parlay  # noqa: E402
 import scout   # noqa: E402
-from sporttery import fetch_today  # noqa: E402
+from source import fetch_today  # noqa: E402
 
 st.set_page_config(page_title="竞彩串关预测", page_icon="⚽", layout="wide",
                    initial_sidebar_state="expanded")

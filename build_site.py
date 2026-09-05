@@ -30,7 +30,7 @@ import model   # noqa: E402
 import parlay  # noqa: E402
 import scout   # noqa: E402
 from config import BASE_DIR, DATA_DIR, N_RECOMMEND  # noqa: E402
-from sporttery import fetch_today  # noqa: E402
+from source import fetch_today  # noqa: E402
 
 SITE_DIR = os.path.join(BASE_DIR, "site")
 INDEX = os.path.join(SITE_DIR, "index.html")

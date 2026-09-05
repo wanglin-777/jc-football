@@ -17,7 +17,8 @@ CH_TO_EN = {
     "利兹": "Leeds", "伊普斯": "Ipswich",
     # ---------- 英冠 CHA ----------
     "林肯城": "Lincoln City", "南安普敦": "Southampton", "伯明翰": "Birmingham City",
-    "伍尔弗": "Wolverhampton Wanderers", "西汉姆": "West Ham United", "斯托克城": "Stoke City",
+    "伍尔弗": "Wolverhampton Wanderers", "伍尔弗汉普顿": "Wolverhampton Wanderers",
+    "西汉姆": "West Ham United", "斯托克城": "Stoke City",
     "诺维奇": "Norwich City", "谢菲联": "Sheffield United", "伯恩利": "Burnley",
     # ---------- 德甲 BUN ----------
     "门兴": "Borussia Mönchengladbach", "埃沃斯堡": "SV Elversberg",

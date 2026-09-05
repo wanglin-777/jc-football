@@ -21,7 +21,7 @@ import model  # noqa: E402
 import parlay  # noqa: E402
 import scout  # noqa: E402
 from config import DATA_DIR  # noqa: E402
-from sporttery import fetch_today  # noqa: E402
+from source import fetch_today  # noqa: E402
 
 
 def run(force=False, with_json=False):
