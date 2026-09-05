@@ -180,12 +180,12 @@ def upset_analysis(feat, probs):
     m_nowin = 1.0 - m[fav] if mkt else p_nowin
     edge = p_nowin - m_nowin              # 模型比盘口更担心爆冷的幅度
 
-    # 风险分级
+    # 风险分级(以大热不胜概率为尺, 高≈接近半数翻车可能, 中≈需要留神)
     if not hot:
         risk = "低"
-    elif p_nowin >= 0.36:
+    elif p_nowin >= 0.46:
         risk = "高"
-    elif p_nowin >= 0.26:
+    elif p_nowin >= 0.34:
         risk = "中"
     else:
         risk = "低"
