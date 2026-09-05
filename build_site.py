@@ -31,6 +31,7 @@ import model   # noqa: E402
 import parlay  # noqa: E402
 import scout   # noqa: E402
 import verify  # noqa: E402
+import deepseek_client  # noqa: E402
 from config import BASE_DIR, DATA_DIR, N_RECOMMEND  # noqa: E402
 from source import fetch_today  # noqa: E402
 
@@ -131,7 +132,7 @@ def fmt_p(x):
 
 JS = r"""
 function showTab(id){
-  var ids=['combo','probs','upset','verify','info'];
+  var ids=['combo','probs','upset','verify','self','info'];
   for(var i=0;i<ids.length;i++){var p=document.getElementById('tab-'+ids[i]); if(p){p.style.display=(ids[i]===id)?'block':'none';}}
   var bs=document.querySelectorAll('.tabbtn');
   for(var j=0;j<bs.length;j++){bs[j].classList.toggle('on', bs[j].getAttribute('data-tab')===id);}
@@ -249,6 +250,7 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
                f'<div class="metric"><b>{parts}</b><span>部分情报</span></div>')
 
     verify_html = build_verify_html(vdata)
+    self_html = build_self_html(vdata)
 
     return f"""<!DOCTYPE html>
 <html lang="zh-CN"><head><meta charset="utf-8">
@@ -269,6 +271,7 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
 <button class="tabbtn" data-tab="probs" onclick="showTab('probs')">📊 全部概率</button>
 <button class="tabbtn" data-tab="upset" onclick="showTab('upset')">⚠️ 爆冷雷达</button>
 <button class="tabbtn" data-tab="verify" onclick="showTab('verify')">✅ 预测验证</button>
+<button class="tabbtn" data-tab="self" onclick="showTab('self')">🧠 自我复盘</button>
 <button class="tabbtn" data-tab="info" onclick="showTab('info')">ℹ️ 说明</button>
 </div>
 
@@ -296,6 +299,10 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
 
 <section class="panel" id="tab-verify">
 {verify_html}
+</section>
+
+<section class="panel" id="tab-self">
+{self_html}
 </section>
 
 <section class="panel" id="tab-info">
@@ -376,6 +383,131 @@ def build_verify_html(vdata):
     return ('<h2>✅ 预测验证 / 复盘</h2>'
             '<p class="mut">当天比赛全部结束后, 自动把「预测选项」和「实际胜平负」比对, 统计命中率与回报</p>'
             + "".join(blocks))
+
+
+def _fmt_row_pick(r):
+    pp = r.get("probs") or []
+    return (f"{fmt_p(pp[0])}/{fmt_p(pp[1])}/{fmt_p(pp[2])}" if len(pp) == 3 else "-")
+
+
+def _card_rows(items):
+    if not items:
+        return ""
+    html = ""
+    for r in items[:4]:
+        html += (f'<div class="card"><b>{esc(r["num"])} [{esc(r["league"])}] '
+                 f'{esc(r["home"])} vs {esc(r["away"])}</b>　预测 <b>【{esc(r["pick"])}】</b>'
+                 f'({_fmt_row_pick(r)}) · 实际 {esc(r.get("actual") or "-")} · '
+                 f'赔率 {esc(r.get("odds") or "-")}</div>')
+    return html
+
+
+def _ai_self_block(agg):
+    cache_path = os.path.join(DATA_DIR, "ai_cache.json")
+    key_data = f'{len(agg.get("days") or [])}:{agg["total"]}:{agg["hits"]}'
+    cache = {}
+    try:
+        with open(cache_path, encoding="utf-8") as f:
+            cache = json.load(f)
+    except Exception:
+        pass
+    if key_data in cache:
+        return ('<h2>🤖 DeepSeek AI 复盘</h2>'
+                f'<div class="card"><div style="white-space:pre-wrap">{esc(cache[key_data])}</div></div>')
+    if not deepseek_client.available():
+        return ('<h2>🤖 AI 复盘(可选)</h2><div class="note">要生成 AI 复盘: 在 '
+                '<code>jc_football/data/deepseek_key.txt</code> 粘贴 DeepSeek API Key 后保存并重新更新即可'
+                '(Key 只在本机使用, 不会上传)。</div>')
+    parts = [f"多日累计已核验 {agg['total']} 场, 命中 {agg['hits']} 场, 单场命中率 {agg['rate']:.1%}。"]
+    bp = agg.get("by_pick", {})
+    if bp:
+        parts.append("按选项: " + ", ".join(f"{k} {v[1]}/{v[0]}" for k, v in bp.items()))
+    bs = []
+    for b in agg.get("buckets", []):
+        flag = "正常" if not b["over"] else "低于区间下沿(略虚高)"
+        bs.append(f"{b['lab']}: {b['hit']}/{b['n']} 实际{b['rate']:.0%}({flag})")
+    if bs:
+        parts.append("概率分桶: " + "; ".join(bs))
+    if agg.get("combo_known"):
+        parts.append(f"串关: 可判定{agg['combo_known']}组, 命中{agg['combo_win']}组, 净回报{agg['combo_net']:.2f}")
+    if agg.get("miss_high"):
+        m = []
+        for r in agg["miss_high"][:3]:
+            m.append(f"{r['league']}{r['home']}vs{r['away']}预测{r['pick']}(实际{r.get('actual')})")
+        parts.append("高胜率翻车样例: " + "; ".join(m))
+    if agg.get("coups"):
+        c = []
+        for r in agg["coups"][:3]:
+            c.append(f"{r['league']}{r['home']}vs{r['away']}预测{r['pick']}命中(赔率{r.get('odds')})")
+        parts.append("以小博大命中样例: " + "; ".join(c))
+    prompt = ("请依据以下统计做中文自我复盘(不要编造数字, 不确定就直说):\n" + "\n".join(parts)
+              + "\n请给出: 1)总体评价 2)主要问题(是否对大热过度乐观/平局难抓/样本不足等) "
+              "3)2-3 条可执行改进建议(如提高做胆门槛、串关规避高爆冷风险场等)。300字内。")
+    txt = deepseek_client.chat(prompt)
+    if not txt:
+        return ('<h2>🤖 AI 复盘(可选)</h2><div class="note">已配置 Key 但本次调用失败'
+                '(网络/额度等)，已自动用规则版复盘代替。</div>')
+    try:
+        cache[key_data] = txt
+        with open(cache_path, "w", encoding="utf-8") as f:
+            json.dump(cache, f, ensure_ascii=False)
+    except Exception:
+        pass
+    return ('<h2>🤖 DeepSeek AI 复盘</h2>'
+            f'<div class="card"><div style="white-space:pre-wrap">{esc(txt)}</div></div>')
+
+
+def build_self_html(vdata):
+    """🧠 模型自我复盘: 多日汇总 + 概率校准 + 翻车检讨 + (可选)DeepSeek AI"""
+    agg = verify.aggregate(vdata) if vdata else {"total": 0}
+    if not agg.get("total"):
+        return ('<h2>🧠 模型自我复盘</h2>'
+                '<div class="note">还没有可复盘数据。等出现已开奖场次后，这里会多日汇总：'
+                '命中率 / 概率校准(预测 60% 是否真的约 60%) / 高胜率翻车检讨 / 以小博大 / 串关回报，'
+                '并(可选)用 DeepSeek 生成 AI 复盘建议。</div>')
+    days_n = len(set(agg.get("days") or []))
+    total, hits = agg["total"], agg["hits"]
+    rate = agg.get("rate") or 0.0
+    ck, cw = agg.get("combo_known", 0), agg.get("combo_win", 0)
+    cnet = agg.get("combo_net", 0.0)
+    cnet_txt = f"+{cnet:.2f}" if cnet >= 0 else f"{cnet:.2f}"
+    c_hit = f"{cw}/{ck}" if ck else "—"
+    metrics = (
+        f'<div class="metrics" style="grid-template-columns:repeat(auto-fit,minmax(120px,1fr))">'
+        f'<div class="metric"><b>{days_n}</b><span>复盘天数</span></div>'
+        f'<div class="metric"><b>{total}</b><span>已核验场次</span></div>'
+        f'<div class="metric"><b>{hits}</b><span>命中</span></div>'
+        f'<div class="metric"><b>{rate:.1%}</b><span>单场命中率</span></div>'
+        f'<div class="metric"><b>{c_hit}</b><span>串关中</span></div>'
+        f'<div class="metric"><b>{cnet_txt}</b><span>串关净回报</span></div></div>')
+    by_txt = ""
+    if agg.get("by_pick"):
+        chips = "".join(f'<span class="pill" style="margin-right:6px">{esc(k)} {v[1]}/{v[0]}</span>'
+                        for k, v in agg["by_pick"].items())
+        by_txt = f'<p class="mut">按选项命中: {chips}</p>'
+    brow = ""
+    for b in agg.get("buckets", []):
+        tag = "⚠ 略虚高" if b["over"] else "正常"
+        col = "#c0392b" if b["over"] else "var(--green)"
+        brow += (f'<tr><td>{b["lab"]}</td><td>{b["n"]}</td><td>{b["hit"]}</td>'
+                 f'<td>{b["rate"]:.0%}</td><td style="color:{col}">{tag}</td></tr>')
+    bucket_html = (""
+                   if not brow else
+                   '<h2>🎯 概率校准(预测概率 vs 实际命中)</h2>'
+                   '<p class="mut">预测 60-70% 的场次若实际也接近 60-70%, 说明概率可信; '
+                   '明显偏低表示对高概率有些“乐观”。</p>'
+                   '<div class="tbl"><table><tr><th>预测区间</th><th>场次</th><th>命中</th>'
+                   f'<th>实际命中率</th><th>判断</th></tr>{brow}</table></div>')
+    miss_html = ""
+    if agg.get("miss_high"):
+        miss_html = ('<h2>📉 高胜率翻车检讨(预测≥60% 却打脸)</h2>' + _card_rows(agg["miss_high"]))
+    coup_html = ""
+    if agg.get("coups"):
+        coup_html = ('<h2>💰 以小博大成功(≥2.0 赔率命中)</h2>' + _card_rows(agg["coups"]))
+    ai_html = _ai_self_block(agg)
+    return (f"<h2>🧠 模型自我复盘(多日汇总)</h2>"
+            f'<p class="mut">基于最近 {days_n} 个销售日已开奖场次的自动复盘</p>'
+            f"{metrics}{by_txt}{bucket_html}{miss_html}{coup_html}{ai_html}")
 
 
 def minimal_error_page(exc, tb):

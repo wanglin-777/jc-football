@@ -169,3 +169,63 @@ def verify_all(now=None):
         res.append({"date": snap["date"], "rows": rows, "stats": stats,
                     "combos": combos, "n_pred": len(rows)})
     return res
+
+
+# ---------------- 自我复盘(多日汇总) ----------------
+def _pick_p(probs, pick):
+    try:
+        idx = {"主胜": 0, "平": 1, "客胜": 2}.get(pick, 0)
+        return probs[idx] if probs and len(probs) == 3 else None
+    except Exception:
+        return None
+
+
+BUCKETS = [(0.30, 0.40, "30-40%"), (0.40, 0.50, "40-50%"), (0.50, 0.60, "50-60%"),
+           (0.60, 0.70, "60-70%"), (0.70, 0.80, "70-80%"), (0.80, 1.01, "80%以上")]
+
+
+def aggregate(vdata):
+    """对多日验证结果做模型自我复盘汇总(校准/翻车/以小博大/串关)"""
+    all_rows, all_combos, dates = [], [], []
+    for d in vdata:
+        dates.append(d["date"])
+        all_rows += [r for r in d["rows"] if r.get("hit") is not None]
+        all_combos += d.get("combos", [])
+
+    hits = sum(1 for r in all_rows if r["hit"])
+    total = len(all_rows)
+    by_pick = {}
+    for r in all_rows:
+        k = r.get("pick", "?")
+        b = by_pick.setdefault(k, [0, 0])
+        b[0] += 1
+        if r["hit"]:
+            b[1] += 1
+
+    buckets = []
+    for lo, hi, lab in BUCKETS:
+        rows_in = []
+        for r in all_rows:
+            p = _pick_p(r.get("probs"), r.get("pick"))
+            if p is not None and lo <= p < hi:
+                rows_in.append(r)
+        if rows_in:
+            n = len(rows_in)
+            h = sum(1 for r in rows_in if r["hit"])
+            buckets.append({"lab": lab, "n": n, "hit": h, "rate": h / n,
+                            "over": (h / n) < (lo + 0.02)})
+    miss_high = [r for r in all_rows
+                 if not r["hit"] and (p := _pick_p(r.get("probs"), r.get("pick"))) is not None
+                 and p >= 0.60]
+    miss_high.sort(key=lambda r: -(_pick_p(r.get("probs"), r.get("pick")) or 0))
+    coups = [r for r in all_rows if r["hit"] and r.get("odds") and r["odds"] >= 2.0]
+    coups.sort(key=lambda r: -(r.get("odds") or 0))
+
+    ck = [c for c in all_combos if c.get("known")]
+    cwin = sum(1 for c in ck if c.get("win"))
+    cnet = sum((c.get("odds", 1) - 1) if c.get("win") else -1 for c in ck)
+    return {"days": dates, "total": total, "hits": hits,
+            "rate": (hits / total) if total else None,
+            "by_pick": by_pick, "buckets": buckets,
+            "miss_high": miss_high[:5], "coups": coups[:5],
+            "combo_known": len(ck), "combo_win": cwin, "combo_net": cnet}

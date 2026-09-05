@@ -9,6 +9,8 @@ data/cache/
 data/server.log
 data/server.pid
 data/refresh.log
+data/deepseek_key.txt
+data/ai_cache.json
 
 # 生成的静态网页目录 docs/ 需要提交(由 GitHub Pages 发布), 故不忽略
 # 旧的 site/ 目录不再使用
