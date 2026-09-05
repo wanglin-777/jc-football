@@ -33,7 +33,22 @@
 
 ---
 
-## 📂 项目结构
+## � 数据存哪（约定）
+
+**GitHub = 唯一权威数据源；本机只保留“重要”的：程序代码 + DeepSeek Key + 定时任务。**
+
+- 所有比赛数据（当天快照 / 每赛季赛果 / 每日预测账本 / CSV / 网页）都存/推送到 GitHub：
+  - `data/today_matches.*` 当天快照 · `data/history/` 每日账本 · `data/history_csv/` 可读表
+  - `data/cache/` 整季赛果备份 · `docs/` 网页
+- 本机 `data/` 只是 Git 仓库的**本地镜像**，并非重要数据：几 MB、删了也不怕，
+  随时用 `从GitHub同步数据到本机.bat` 从 GitHub 拉回（`git reset --hard origin/main`）。
+- 真正留本机不传的只有：`data/deepseek_key.txt`（机密）等本地私有文件。
+
+> 结论：本机坏/重装/换机器都不影响——代码与历史都在 GitHub；这台电脑随时可“退居只浏览”。
+
+---
+
+## �📂 项目结构
 
 ```
 jc_football/
