@@ -135,6 +135,15 @@ with tab2:
     for col, (lab, p, emo) in zip(c, labels):
         col.metric(f"{emo} {lab}", f"{p:.1%}")
     st.markdown(f"**推荐**: {pr['pick']} (胜率 {pr['pick_p']:.1%}) · 来源: {pr['source']}")
+    u = pr.get("upset") or {}
+    if u.get("hot"):
+        st.markdown(f"💣 **爆冷**: 大热 {u.get('fav_team')}({u.get('fav')}, @{u.get('fav_odds')}) "
+                    f"不胜概率 **{u.get('no_win_p',0):.1%}**(直接输 {u.get('upset_win_p',0):.1%}) · "
+                    f"风险[{u.get('risk')}]")
+        if u.get("reasons"):
+            st.caption("原因: " + "；".join(u["reasons"][:3]))
+    else:
+        st.markdown("💣 本场无明显大热(双方接近)")
     st.markdown(f"- 主队: {f.get('home_summary')}")
     st.markdown(f"- 客队: {f.get('away_summary')}")
     st.markdown(f"- 交锋: {f.get('h2h_summary') or '近10场内无直接交锋记录'}")

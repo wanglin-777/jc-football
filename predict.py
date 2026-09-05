@@ -47,6 +47,7 @@ def run(force=False, with_json=False):
         "matches": [],
         "candidates": [],
         "combos": [],
+        "radar": [],
     }
     lines = []
     lines.append("=" * 70)
@@ -99,6 +100,29 @@ def run(force=False, with_json=False):
 
     if not rec["combos"]:
         lines.append("  (没有足够的满足条件组合: 请检查数据覆盖或调低门槛)")
+
+    lines.append("\n【四】爆冷雷达(防冷提醒: 大热不胜风险中/高) ----------")
+    radar = []
+    for f, pr in zip(ordered, preds):
+        u = pr.get("upset") or {}
+        if u.get("hot") and u.get("risk") in ("中", "高"):
+            fav_team = u.get("fav_team", "")
+            lines.append(
+                f"  {f['num_str']} [{f['league_abb']}] {f['home']}vs{f['away']} "
+                f"大热{fav_team}({u.get('fav')},@{u.get('fav_odds')}) "
+                f"防冷概率{u.get('no_win_p',0):.0%} 直接输{u.get('upset_win_p',0):.0%} "
+                f"风险[{u.get('risk')}]")
+            for r in u.get("reasons", [])[:2]:
+                lines.append(f"      - {r}")
+            radar.append({
+                "num": f["num_str"], "home": f["home"], "away": f["away"],
+                "fav_team": fav_team, "fav_odds": u.get("fav_odds"),
+                "no_win_p": u.get("no_win_p"), "upset_win_p": u.get("upset_win_p"),
+                "risk": u.get("risk"), "reasons": u.get("reasons", [])[:3],
+            })
+    report["radar"] = radar
+    if not radar:
+        lines.append("  (今日暂无高风险爆冷场次)")
 
     lines.append("\n免责声明: 以上为基于历史数据与赔率的统计估计, 仅供研究参考, 不构成投注建议;")
     lines.append("足球比赛充满偶然性, 请理性购彩、量力而行。")

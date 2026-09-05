@@ -71,11 +71,28 @@ def recommend(feats, preds, min_prob=0.45):
     return {"candidates": pool, "combos": combos}
 
 
+def _upset_digest(x):
+    """把爆冷分析压成一行短提示(供串关/网页显示)"""
+    u = (x.get("pred") or {}).get("upset") or {}
+    if not u.get("hot"):
+        return "无明显大热, 双方较接近", "低"
+    risk = u.get("risk", "低")
+    txt = (f"大热{u.get('fav_team','')}不胜(防冷)概率 {u.get('no_win_p',0):.0%} "
+           f"· 直接输 {u.get('upset_win_p',0):.0%} · 风险[{risk}]")
+    return txt, risk
+
+
 def _format_combo(c):
     legs = []
+    combo_risk = "低"
     for x in (c["a"], c["b"]):
         f = x["feat"]
         side = "主" if x["pick"] == "主胜" else ("平" if x["pick"] == "平" else "客")
+        u_txt, u_risk = _upset_digest(x)
+        if u_risk == "高":
+            combo_risk = "高"
+        elif u_risk == "中" and combo_risk != "高":
+            combo_risk = "中"
         legs.append({
             "num": f["num_str"], "league": f["league_abb"], "time": f["time"],
             "home": f["home"], "away": f["away"],
@@ -83,6 +100,7 @@ def _format_combo(c):
             "prob": x["prob"], "odds": x["odds"], "source": x["source"],
             "home_rank": f.get("home_rank"), "away_rank": f.get("away_rank"),
             "home_summary": f.get("home_summary"), "away_summary": f.get("away_summary"),
+            "upset_text": u_txt, "upset_risk": u_risk,
         })
     return {"legs": legs, "odds": round(c["odds"], 2),
-            "joint": round(c["joint"], 4)}
+            "joint": round(c["joint"], 4), "risk": combo_risk}

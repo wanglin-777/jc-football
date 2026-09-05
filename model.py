@@ -147,6 +147,115 @@ def history_weight(feat):
     return max(0.0, min(1.0, w)) * HIST_WEIGHT_MAX
 
 
+def _rank_num(s):
+    """把 "[英超7]" / "[7]" / "英超7" 解析成排名数字 7; 解析不了返回 None"""
+    import re as _re
+    if not s:
+        return None
+    m = _re.search(r"(\d+)", str(s))
+    return int(m.group(1)) if m else None
+
+
+def upset_analysis(feat, probs):
+    """
+    爆冷分析: 对已算好的胜平负概率 probs=[P主胜,P平,P客胜] 判断:
+      - 大热方(主胜/客胜里盘口隐含概率高者; 无明显大热时提示)
+      - 大热不胜概率(防冷=平+负), 直接输(被爆冷)概率
+      - 与盘口隐含对比的"爆冷风险"等级 + 大概原因(状态/主客/交锋/体能/排名/情报等)
+    返回 dict, 字段见代码。
+    """
+    labels = ["主胜", "平", "客胜"]
+    sides = ["home", "away"]
+    mkt = implied_from_odds(feat.get("had_h"), feat.get("had_d"), feat.get("had_a"))
+    m = mkt if mkt else probs
+    # 大热 = 主胜/客胜 中市场概率更高的一方(平局不算热门方向)
+    fav = 0 if m[0] >= m[2] else 2
+    other = 2 if fav == 0 else 0
+    fav_odds = [feat.get("had_h"), feat.get("had_d"), feat.get("had_a")][fav]
+    hot = bool(fav_odds and fav_odds <= 2.30)   # 赔率≤2.3 才算"明显大热"
+
+    p_nowin = 1.0 - probs[fav]            # 大热不胜(平或输)
+    p_draw = probs[1]
+    p_uw = probs[other]                   # 直接输(被爆冷胜)
+    m_nowin = 1.0 - m[fav] if mkt else p_nowin
+    edge = p_nowin - m_nowin              # 模型比盘口更担心爆冷的幅度
+
+    # 风险分级
+    if not hot:
+        risk = "低"
+    elif p_nowin >= 0.36:
+        risk = "高"
+    elif p_nowin >= 0.26:
+        risk = "中"
+    else:
+        risk = "低"
+    if hot and edge >= 0.05 and risk != "高":
+        risk = {"低": "中", "中": "高"}.get(risk, risk)
+
+    fav_team = feat.get("home") if fav == 0 else feat.get("away")
+    opp_team = feat.get("away") if fav == 0 else feat.get("home")
+
+    # ---------- 收集爆冷的大概原因 ----------
+    reasons = []
+    def gv(key):
+        return feat.get(key)
+
+    if not hot:
+        reasons.append(f"无明显大热(大热方赔率{fav_odds}较高), 双方接近, 爆冷概念弱")
+    else:
+        if edge >= 0.05:
+            reasons.append(f"模型判断比盘口更担心翻车({p_nowin:.0%} vs 盘口{m_nowin:.0%})")
+        # 大热方自己的状态/属性
+        fw = gv("home_win_w") if fav == 0 else gv("away_win_w")
+        fga = gv("home_ga") if fav == 0 else gv("away_ga")
+        frest = gv("home_rest") if fav == 0 else gv("away_rest")
+        frk = _rank_num(gv("home_rank")) if fav == 0 else _rank_num(gv("away_rank"))
+        ow = gv("away_win_w") if fav == 0 else gv("home_win_w")
+        ogf = gv("away_gf") if fav == 0 else gv("home_gf")
+        ork = _rank_num(gv("away_rank")) if fav == 0 else _rank_num(gv("home_rank"))
+        if fw is not None and fw < 0.40:
+            reasons.append(f"{fav_team}近期胜率仅{fw:.0%}, 状态不稳")
+        if ow is not None and ow >= 0.50:
+            reasons.append(f"对手{opp_team}近期状态好(胜率{ow:.0%})")
+        if fga is not None and fga >= 1.50:
+            reasons.append(f"{fav_team}近期防守一般(场均失{fga:.1f})")
+        if ogf is not None and ogf >= 1.60:
+            reasons.append(f"{opp_team}攻击不错(场均进{ogf:.1f})")
+        if frk is not None and ork is not None and abs(frk - ork) <= 3:
+            reasons.append(f"双方排名接近(差≤3), 实力差距不大")
+        if frest is not None and frest <= 3:
+            reasons.append(f"{fav_team}仅休息{frest}天(赛程紧)")
+        # 交锋(记录为"主队角度")
+        import re as _re
+        hm = _re.search(r"(\d+)胜(\d+)平(\d+)负", feat.get("h2h_summary") or "")
+        if hm:
+            w, d, l = int(hm.group(1)), int(hm.group(2)), int(hm.group(3))
+            tot = w + d + l
+            if tot >= 2:
+                fav_ok = (w >= l) if fav == 0 else (l >= w)
+                if not fav_ok:
+                    reasons.append(f"近{tot}次交锋{fav_team}不占优({w}胜{d}平{l}负, 主队视角)")
+        if feat.get("data_quality") in ("odds_only", "partial") and risk != "低":
+            reasons.append("两队历史情报不足(仅盘口/部分), 结果不确定性高")
+    if feat.get("intel_note"):
+        reasons.append(f"人工情报提示: {feat['intel_note']}")
+    if hot and not reasons:
+        reasons.append("无明显爆冷信号(状态/盘口正常), 风险主要来自足球本身的随机性")
+
+    return {
+        "fav": labels[fav], "fav_team": fav_team, "fav_odds": fav_odds,
+        "hot": hot,
+        "no_win_p": round(p_nowin, 4),      # 防冷: 大热不胜
+        "draw_p": round(p_draw, 4),         # 其中: 平
+        "upset_win_p": round(p_uw, 4),      # 直接输(被爆冷胜)
+        "mkt_no_win_p": round(m_nowin, 4),
+        "edge": round(edge, 4),
+        "risk": risk,
+        "reasons": reasons,
+    }
+
+
+
 def predict(feat):
     """
     输入特征 dict(见 scout.build_feature), 输出:
@@ -195,4 +304,5 @@ def predict(feat):
         "home": round(probs[0], 4), "draw": round(probs[1], 4), "away": round(probs[2], 4),
         "pick": pick, "pick_p": round(pick_p, 4), "pick_odds": pick_odds,
         "source": source,
+        "upset": upset_analysis(feat, probs),
     }

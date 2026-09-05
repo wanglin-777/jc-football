@@ -91,6 +91,10 @@ h2{font-size:18px;margin:22px 0 10px;border-left:4px solid var(--green);padding-
 .combo{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin:10px 0}
 .combo .top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
 .pill{background:#eaf6ef;color:var(--green);border-radius:8px;padding:4px 10px;font-size:13px;font-weight:600}
+.pill-r{background:#fdecea;color:#c0392b;border-radius:8px;padding:4px 10px;font-size:13px;font-weight:600}
+.warn{color:#c0392b;font-size:12px;margin-top:3px;font-weight:600}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin:8px 0;font-size:13px}
+.card .k{color:var(--mut);font-size:12px}
 .leg{margin:8px 0;padding:10px;background:#f8fbf9;border-radius:8px;border-left:3px solid var(--green)}
 .leg b{font-size:14px}
 .leg .sub{color:var(--mut);font-size:12px;margin-top:4px;line-height:1.6}
@@ -133,20 +137,58 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
             legs = ""
             for l in cb["legs"]:
                 sub = f"{esc(l['home_summary'])}<br>{esc(l['away_summary'])}"
+                risk = l.get("upset_risk", "低")
+                utxt = l.get("upset_text", "")
+                if risk == "高" and utxt:
+                    sub += f'<div class="warn">⚠ {esc(utxt)}</div>'
+                elif risk == "中" and utxt:
+                    sub += f'<div style="color:#b7950b;font-size:12px;margin-top:3px">⚠ {esc(utxt)}</div>'
                 legs += (f'<div class="leg"><b>{esc(l["num"])} [{esc(l["league"])}] '
                          f'{esc(l["home"])} vs {esc(l["away"])}</b>　推荐 <b>【{esc(l["pick"])}】</b> '
                          f'胜率 {fmt_p(l["prob"])} · 单关赔率 {l["odds"]:.2f}'
                          f'<div class="sub">{sub}</div></div>')
+            risk_chip = ""
+            cr = cb.get("risk", "低")
+            if cr in ("中", "高"):
+                risk_chip = f'<span class="pill-r">爆冷风险 {cr}</span>'
             combo_html += (
                 f'<div class="combo"><div class="top">'
                 f'<b>TOP {i}</b>'
                 f'<span class="pill">联合胜率 {cb["joint"]:.1%}</span>'
-                f'<span class="pill">串后赔率 {cb["odds"]:.2f}</span></div>'
+                f'<span class="pill">串后赔率 {cb["odds"]:.2f}</span>{risk_chip}</div>'
                 f'<div class="prog"><i style="width:{min(cb["joint"]*100,100):.1f}%"></i></div>'
                 f'{legs}</div>')
     else:
         combo_html = ('<div class="note">暂无满足条件的组合(场次不足或串后赔率<2)。'
                       '可补充队名/联赛数据源后重试。</div>')
+
+    # ⚠️ 爆冷雷达: 有明显大热且防冷风险中/高的场次(含大概原因)
+    radar = []
+    for f, pr in zip(ordered, preds):
+        u = pr.get("upset") or {}
+        if u.get("hot") and u.get("risk") in ("中", "高"):
+            radar.append((f, u))
+    radar.sort(key=lambda x: (0 if x[1]["risk"] == "高" else 1,
+                              -x[1].get("no_win_p", 0)))
+    if radar:
+        cards = []
+        for f, u in radar:
+            fav_side = "主胜" if u["fav"] == "主胜" else "客胜"
+            reasons = "；".join(u["reasons"][:3])
+            cards.append(
+                f'<div class="card"><b>{esc(f["num_str"])} [{esc(f["league_abb"])}] '
+                f'{esc(f["home"])} vs {esc(f["away"])}</b>　'
+                f'大热 <b>{esc(u["fav_team"])}</b>(选{fav_side} @{u["fav_odds"]})　'
+                f'<span class="pill-r">风险[{u["risk"]}]</span><br>'
+                f'<span class="k">防冷概率(大热不胜) {u["no_win_p"]:.0%} · '
+                f'其中直接输 {u["upset_win_p"]:.0%} · 盘口隐含 {u["mkt_no_win_p"]:.0%}</span><br>'
+                f'<span class="k">原因:</span> {esc(reasons)}</div>')
+        upset_html = ('<h2>⚠️ 爆冷雷达(防冷提醒)</h2>'
+                      '<p style="color:var(--mut);font-size:13px">这些场次大热不胜风险较高, '
+                      '串关/做胆时请谨慎或考虑放弃</p>' + "".join(cards))
+    else:
+        upset_html = ('<h2>⚠️ 爆冷雷达(防冷提醒)</h2>'
+                      '<div class="note">今日暂无高风险爆冷场次(无明显大热或防冷概率低)。</div>')
 
     # 单场稳胆池(按胜率降序前 12 场, 表格)
     rows = sorted(zip(ordered, preds),
@@ -198,6 +240,8 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
 <h2>🎯 五大「两串一」推荐</h2>
 <p style="color:var(--mut);font-size:13px">规则: 只串两关 · 串后赔率 ≥ 2.0 · 按两场联合胜率从高到低</p>
 {combo_html}
+
+{upset_html}
 
 <h2>📊 单场稳胆池(胜率 Top 12)</h2>
 <div class="tbl"><table><tr><th>场次</th><th>联赛</th><th>对阵</th><th>推荐</th>
