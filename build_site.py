@@ -187,7 +187,8 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
 <style>{CSS}</style></head><body>
 <header><div class="wrap">
 <h1>⚽ 竞彩足球 · 两串一预测</h1>
-<p>销售日期 {esc(sales)} · 每 {NEXT_HOURS} 小时自动更新<span class="badge">更新于 {esc(gen_time)}</span></p>
+<p>销售日期 {esc(sales)} · 数据源 {esc((today or {}).get('source',''))}
+ · 每 {NEXT_HOURS} 小时自动更新<span class="badge">更新于 {esc(gen_time)}</span></p>
 </div></header>
 <div class="wrap">
 {warn_html}
@@ -206,13 +207,15 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
 <th>胜率</th><th>赔率</th><th>胜平负</th><th>数据</th></tr>{all_html}</table></div>
 
 <div class="note">
-<b>数据与免责:</b> 胜平负/让球赔率来自中国体彩·竞彩足球官方; 近况由已接入联赛的真实赛果计算
+<b>数据与免责:</b> 场次与胜平负/让球赔率自动取自 <b>中国体彩·竞彩官方</b> 或 <b>500彩票网</b>
+(官方接口封锁境外, 云端自动用 500 网; 赔率同为竞彩口径)。近况由已接入联赛的真实赛果计算
 (每场标注 完整/部分/仅赔率)。伤病、转会、教练、战意等无自动源, 需人工核实。
 本页为统计模型分析, 足球存在偶然性, <b>不构成投注建议</b>; 请理性购彩、量力而行, 未成年人不得购彩。
 </div>
 <footer>
-本页面由脚本自动生成: 每 {NEXT_HOURS} 小时重建一次, 时间为 {esc(gen_time)}。<br>
-模型 = 泊松强度(近10场近期加权) + 官方赔率隐含概率 融合 · 两串一按 p₁×p₂ 联合胜率排序。
+本页面由 GitHub Actions 自动重建: 每 {NEXT_HOURS} 小时更新一次(云端运行, 无需电脑开机),
+生成时间 {esc(gen_time)}。<br>
+模型 = 泊松强度(近10场近期加权) + 市场赔率隐含概率 融合 · 两串一按 p₁×p₂ 联合胜率排序。
 </footer>
 </div></body></html>"""
 
