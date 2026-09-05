@@ -14,6 +14,7 @@ import csv
 import json
 import os
 import ssl
+import time
 import urllib.request
 from datetime import date
 
@@ -25,10 +26,17 @@ _CTX.check_hostname = False
 _CTX.verify_mode = ssl.CERT_NONE
 
 
-def _http_json(url, timeout=12):
+def _http_json(url, timeout=12, tries=3):
     req = urllib.request.Request(url, headers=HEADERS)
-    with urllib.request.urlopen(req, timeout=timeout, context=_CTX) as r:
-        return json.loads(r.read().decode("utf-8", "ignore"))
+    last = None
+    for i in range(tries):
+        try:
+            with urllib.request.urlopen(req, timeout=timeout, context=_CTX) as r:
+                return json.loads(r.read().decode("utf-8", "ignore"))
+        except Exception as e:          # 网络抖动自动重试
+            last = e
+            time.sleep(0.6 * (i + 1))
+    raise last
 
 
 def _fmt_odds(o):

@@ -37,8 +37,17 @@ INDEX = os.path.join(SITE_DIR, "index.html")
 NEXT_HOURS = 4          # 更新周期(小时), 与 Actions cron 一致
 
 # ---------------- 数据采集 ----------------
+def _cache_age_hours():
+    """本地缓存 today_matches.json 的年龄(小时); 无文件返回很大值"""
+    p = os.path.join(DATA_DIR, "today_matches.json")
+    try:
+        return (time.time() - os.path.getmtime(p)) / 3600.0
+    except Exception:
+        return 9999.0
+
+
 def _collect(offline=False):
-    """返回 (today, ordered, preds, rec, used_offline_msg)"""
+    """返回 (today, ordered, preds, rec, msgs)"""
     msgs = []
     today = None
     try:
@@ -46,7 +55,9 @@ def _collect(offline=False):
     except Exception:
         try:
             today = fetch_today(force=False)     # 回退到上次缓存
-            msgs.append("⚠ 联网获取失败, 已使用本地缓存(数据可能非最新)")
+            # 只有缓存确实陈旧时才提示(避免每次重建都吓人)
+            if _cache_age_hours() > 6:
+                msgs.append("⚠ 联网获取失败, 当前为较早的缓存数据(将随下次定时更新自动刷新)")
         except Exception as e:
             msgs.append(f"⚠ 数据获取失败: {e}")
             return None, [], [], None, msgs
