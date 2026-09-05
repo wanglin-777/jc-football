@@ -180,6 +180,10 @@ def build_feature(match):
                 feat["h2h_summary"] = (f"近{len(hh)}次交锋(主队角度): "
                                        f"{cnt.get('胜',0)}胜{cnt.get('平',0)}平{cnt.get('负',0)}负"
                                        f"(由近到远:{seq}…)")
+                tot = len(hh)
+                pts = cnt.get("胜", 0) * 3 + cnt.get("平", 0)
+                # 交锋优势: -0.5~+0.5, 正=主队占优(供胜率公式温和加权)
+                feat["h2h_home_adv"] = (pts / (tot * 3)) - 0.5
             # 中文摘要
             feat["home_summary"] = _summarize(home_cn, hs, hrest, match.get("home_rank"))
             feat["away_summary"] = _summarize(away_cn, as_, arest, match.get("away_rank"))

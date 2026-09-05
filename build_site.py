@@ -251,6 +251,7 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
 
     verify_html = build_verify_html(vdata)
     self_html = build_self_html(vdata)
+    daily_ai = _ai_daily_block(today, ordered, preds, rec)
 
     return f"""<!DOCTYPE html>
 <html lang="zh-CN"><head><meta charset="utf-8">
@@ -278,6 +279,7 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
 <section class="panel show" id="tab-combo">
 <h2>🎯 五大「两串一」推荐</h2>
 <p class="mut">规则: 只串两关 · 串后赔率 ≥ 2.0 · 按两场联合胜率从高到低</p>
+{daily_ai}
 {combo_html}
 
 <h2>📊 单场稳胆池(胜率 Top 12)</h2>
@@ -508,6 +510,48 @@ def build_self_html(vdata):
     return (f"<h2>🧠 模型自我复盘(多日汇总)</h2>"
             f'<p class="mut">基于最近 {days_n} 个销售日已开奖场次的自动复盘</p>'
             f"{metrics}{by_txt}{bucket_html}{miss_html}{coup_html}{ai_html}")
+
+
+def _ai_daily_block(today, ordered, preds, rec):
+    """(可选) DeepSeek 今日胜率解读, 按销售日缓存; 未配 Key 或失败返回空"""
+    sales = (today or {}).get("date")
+    if not sales or not deepseek_client.available():
+        return ""
+    cache_path = os.path.join(DATA_DIR, "ai_cache.json")
+    cache = {}
+    try:
+        with open(cache_path, encoding="utf-8") as f:
+            cache = json.load(f)
+    except Exception:
+        pass
+    ckey = f"daily:{sales}"
+    if ckey in cache:
+        txt = cache[ckey]
+    else:
+        lines = [f"今日竞彩销售日 {sales}, 开胜平负可预测 {len(ordered)} 场。"]
+        top = sorted(zip(ordered, preds), key=lambda x: x[1]["pick_p"], reverse=True)[:5]
+        for f, pr in top:
+            u = pr.get("upset") or {}
+            extras = ""
+            if u.get("hot"):
+                extras = f"(大热不胜防冷 {u.get('no_win_p',0):.0%}, 风险[{u.get('risk')}])"
+            lines.append(f"- {f['num_str']} {f['league_abb']} {f['home']}vs{f['away']}: "
+                         f"推荐{pr['pick']} 胜率{pr['pick_p']:.0%} 赔率{pr.get('pick_odds')} "
+                         f"数据{f.get('data_quality')} {extras}")
+        prompt = ("请针对以上今日竞彩比赛做胜率解读(不编造数字, 只基于给到的信息): "
+                  "哪些场较可放心做胆、哪些要防冷或回避、整体信心如何。250字内。\n"
+                  + "\n".join(lines))
+        txt = deepseek_client.chat(prompt, max_tokens=520)
+        if not txt:
+            return ""
+        try:
+            cache[ckey] = txt
+            with open(cache_path, "w", encoding="utf-8") as f:
+                json.dump(cache, f, ensure_ascii=False)
+        except Exception:
+            pass
+    return ('<div class="note"><b>🤖 DeepSeek 今日胜率解读</b>'
+            f'<div style="white-space:pre-wrap;margin-top:4px">{esc(txt)}</div></div>')
 
 
 def minimal_error_page(exc, tb):

@@ -132,6 +132,26 @@ def poisson_lambdas(feat):
         adj = -gl * 0.10
         lam_home = max(0.1, lam_home + adj)
         lam_away = max(0.1, lam_away - adj)
+    # ---------- 上下文微调(小系数, 不盖过盘口基调) ----------
+    # 1) 休息天数差: 越充足越有利(每多休1天约 +0.8% 预期进球)
+    hr, ar = feat.get("home_rest"), feat.get("away_rest")
+    if hr is not None and ar is not None:
+        tilt = max(-0.05, min(0.05, (hr - ar) * 0.008))
+        lam_home += tilt
+        lam_away -= tilt
+    # 2) 联赛排名差(名次越小越强)
+    hrk = _rank_num(feat.get("home_rank"))
+    ark = _rank_num(feat.get("away_rank"))
+    if hrk and ark:
+        tilt = max(-0.04, min(0.04, (ark - hrk) * 0.004))
+        lam_home += tilt
+        lam_away -= tilt
+    # 3) 近期交锋优势(h2h_home_adv: -0.5~+0.5, 正=主队占优)
+    hh = feat.get("h2h_home_adv")
+    if hh is not None:
+        lam_home += hh * 0.10
+        lam_away -= hh * 0.10
+
     # 全局 λ 上限, 防止单一爆冷比分把概率推过头
     lam_home = max(0.25, min(3.8, lam_home))
     lam_away = max(0.25, min(3.8, lam_away))
