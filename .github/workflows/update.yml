@@ -29,6 +29,10 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: 远程数据源诊断(临时, 结果写入站点供查看)
+        run: |
+          mkdir -p site
+          python probe_remote.py > site/_diag.txt 2>&1 || true
       - name: 生成静态网站(自动抓取竞彩官方最新数据)
         run: python build_site.py
       - name: 上传站点产物
