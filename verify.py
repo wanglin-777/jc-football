@@ -155,6 +155,17 @@ def verify_all(now=None):
             combos.append({"odds": cb.get("odds"), "risk": cb.get("risk", "低"),
                            "legs": legs, "known": known,
                            "win": known and all(l["ok"] for l in legs)})
+
+        # 串关口径: 五组两串一, 每组下1注; 两组都命中→赢(赔率-1), 否则输1注
+        c_known = [c for c in combos if c.get("known")]
+        c_win = sum(1 for c in c_known if c.get("win"))
+        c_net = 0.0
+        for c in c_known:
+            c_net += (c["odds"] - 1.0) if c.get("win") else -1.0
+        stats["combo_total"] = len(combos)
+        stats["combo_known"] = len(c_known)
+        stats["combo_win"] = c_win
+        stats["combo_roi"] = c_net      # 串关净回报(每组按1注)
         res.append({"date": snap["date"], "rows": rows, "stats": stats,
                     "combos": combos, "n_pred": len(rows)})
     return res

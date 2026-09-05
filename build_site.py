@@ -333,15 +333,19 @@ def build_verify_html(vdata):
     for day in vdata:
         rows, st = day["rows"], day["stats"]
         hit_rate = f"{st['rate']:.0%}" if st["rate"] is not None else "-"
-        roi = st["roi"]
-        roi_txt = f"+{roi:.2f}" if roi >= 0 else f"{roi:.2f}"
+        c_known = st.get("combo_known", 0)
+        c_win = st.get("combo_win", 0)
+        croi = st.get("combo_roi", 0.0)
+        c_hit = f"{c_win}/{c_known}" if c_known else "—"
+        croi_txt = f"+{croi:.2f}" if croi >= 0 else f"{croi:.2f}"
         summary = (
-            f'<div class="metrics" style="grid-template-columns:repeat(auto-fit,minmax(110px,1fr))">'
+            f'<div class="metrics" style="grid-template-columns:repeat(auto-fit,minmax(118px,1fr))">'
             f'<div class="metric"><b>{st["total"]}</b><span>预测场次</span></div>'
-            f'<div class="metric"><b>{st["verified"]}</b><span>可核验</span></div>'
-            f'<div class="metric"><b>{st["hits"]}/{st["verified"]}</b><span>命中</span></div>'
-            f'<div class="metric"><b>{hit_rate}</b><span>命中率</span></div>'
-            f'<div class="metric"><b>{roi_txt}</b><span>单关净回报(每场1注)</span></div></div>')
+            f'<div class="metric"><b>{st["verified"]}</b><span>可核验场次</span></div>'
+            f'<div class="metric"><b>{st["hits"]}/{st["verified"]}</b><span>单场命中</span></div>'
+            f'<div class="metric"><b>{hit_rate}</b><span>单场命中率</span></div>'
+            f'<div class="metric"><b>{c_hit}</b><span>串关中(两组均中)</span></div>'
+            f'<div class="metric"><b>{croi_txt}</b><span>串关净回报(5组各1注)</span></div></div>')
         trs = ""
         for r in rows:
             actual = r.get("actual")
@@ -361,9 +365,7 @@ def build_verify_html(vdata):
                     f'<td>{esc(r["odds"] or "-")}</td><td>{mark}</td></tr>')
         c_txt = ""
         if day.get("combos"):
-            wins = sum(1 for c in day["combos"] if c.get("win"))
-            known = sum(1 for c in day["combos"] if c.get("known"))
-            c_txt = f'<p class="mut">五大串关: 已可判定 {known}/5 组 · 命中 {wins} 组</p>'
+            c_txt = '<p class="mut">注: 串关净回报按五组两串一、每组下 1 注计算; 只有当某组的两场都已开奖才参与判定。</p>'
         blocks.append(
             f'<h2>📅 {esc(day["date"])} 复盘</h2>{summary}{c_txt}'
             f'<div class="tbl"><table><tr><th>场次</th><th>联赛</th><th>对阵</th>'
