@@ -154,13 +154,13 @@
    "away": "马竞",
    "pick": "客胜",
    "probs": [
-    0.3034,
-    0.2685,
-    0.428
+    0.2857,
+    0.2645,
+    0.4498
    ],
    "odds": 2.07,
-   "source": "仅赔率",
-   "quality": "odds_only"
+   "source": "模型+赔率",
+   "quality": "full"
   },
   {
    "num": "周六017",
@@ -240,7 +240,7 @@
    ],
    "odds": 1.85,
    "source": "仅赔率",
-   "quality": "odds_only"
+   "quality": "partial"
   },
   {
    "num": "周六023",
@@ -336,7 +336,7 @@
    ],
    "odds": 1.33,
    "source": "仅赔率",
-   "quality": "odds_only"
+   "quality": "partial"
   },
   {
    "num": "周六029",
