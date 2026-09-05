@@ -106,6 +106,13 @@ th{background:#eef4f0;color:#34503f}
 .tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
 .note{background:#fff8e6;border:1px solid #f0dcA0;border-radius:10px;padding:12px;font-size:13px;line-height:1.7;margin-top:16px}
 footer{color:var(--mut);font-size:12px;line-height:1.8;margin:18px 0 40px}
+.tabbar{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0;position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:5}
+.tabbtn{border:1px solid var(--line);background:#fff;border-radius:24px;padding:9px 16px;font-size:14px;cursor:pointer;color:var(--txt);font-weight:600}
+.tabbtn.on{background:var(--green);color:#fff;border-color:var(--green)}
+.tabbtn:hover:not(.on){border-color:var(--green)}
+.panel{display:none}
+.panel.show{display:block}
+.mut{color:var(--mut);font-size:13px}
 @media(max-width:600px){th,td{font-size:12px}}
 """
 
@@ -119,6 +126,16 @@ def fmt_p(x):
         return f"{float(x):.1%}"
     except Exception:
         return "-"
+
+
+JS = r"""
+function showTab(id){
+  var ids=['combo','probs','upset','info'];
+  for(var i=0;i<ids.length;i++){var p=document.getElementById('tab-'+ids[i]); if(p){p.style.display=(ids[i]===id)?'block':'none';}}
+  var bs=document.querySelectorAll('.tabbtn');
+  for(var j=0;j<bs.length;j++){bs[j].classList.toggle('on', bs[j].getAttribute('data-tab')===id);}
+}
+"""
 
 
 def build_html(today, ordered, preds, rec, msgs, gen_time):
@@ -205,17 +222,16 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
                           f'<td>{c["odds"]:.2f}</td>'
                           f'<td>{esc(f.get("data_quality",""))}</td></tr>')
 
-    # 全场预测表格
+    # 全部场次预测表(三向概率 + 推荐)
     all_html = ""
     for f, pr in sorted(zip(ordered, preds),
                         key=lambda x: x[1]["pick_p"], reverse=True):
-        had = f"/".join(str(x) for x in [f["had_h"], f["had_d"], f["had_a"]])
         all_html += (f'<tr><td>{esc(f["num_str"])}</td><td>{esc(f["league_abb"])}</td>'
                      f'<td>{esc(f["home"])} vs {esc(f["away"])}</td>'
-                     f'<td>{esc(pr["pick"])}</td>'
+                     f'<td>{fmt_p(pr["home"])}</td><td>{fmt_p(pr["draw"])}</td><td>{fmt_p(pr["away"])}</td>'
+                     f'<td><b>{esc(pr["pick"])}</b></td>'
                      f'<td>{fmt_p(pr["pick_p"])}</td>'
                      f'<td>{esc(pr.get("pick_odds") or "-")}</td>'
-                     f'<td>{had}</td>'
                      f'<td>{esc(f.get("data_quality",""))}</td></tr>')
 
     metrics = (f'<div class="metric"><b>{total}</b><span>在售场次</span></div>'
@@ -237,20 +253,42 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
 {warn_html}
 <div class="metrics">{metrics}</div>
 
-<h2>🎯 五大「两串一」推荐</h2>
-<p style="color:var(--mut);font-size:13px">规则: 只串两关 · 串后赔率 ≥ 2.0 · 按两场联合胜率从高到低</p>
-{combo_html}
+<div class="tabbar">
+<button class="tabbtn on" data-tab="combo" onclick="showTab('combo')">🎯 串关方案</button>
+<button class="tabbtn" data-tab="probs" onclick="showTab('probs')">📊 全部概率</button>
+<button class="tabbtn" data-tab="upset" onclick="showTab('upset')">⚠️ 爆冷雷达</button>
+<button class="tabbtn" data-tab="info" onclick="showTab('info')">ℹ️ 说明</button>
+</div>
 
-{upset_html}
+<section class="panel show" id="tab-combo">
+<h2>🎯 五大「两串一」推荐</h2>
+<p class="mut">规则: 只串两关 · 串后赔率 ≥ 2.0 · 按两场联合胜率从高到低</p>
+{combo_html}
 
 <h2>📊 单场稳胆池(胜率 Top 12)</h2>
 <div class="tbl"><table><tr><th>场次</th><th>联赛</th><th>对阵</th><th>推荐</th>
 <th>胜率</th><th>赔率</th><th>数据</th></tr>{cand_html}</table></div>
+</section>
 
-<h2>📋 全部场次预测</h2>
-<div class="tbl"><table><tr><th>场次</th><th>联赛</th><th>对阵</th><th>推荐</th>
-<th>胜率</th><th>赔率</th><th>胜平负</th><th>数据</th></tr>{all_html}</table></div>
+<section class="panel" id="tab-probs">
+<h2>📊 全部场次概率</h2>
+<p class="mut">每场 主胜 / 平 / 客胜 的模型概率与推荐(点上方「🎯 串关方案」可回看五大方案)</p>
+<div class="tbl"><table><tr><th>场次</th><th>联赛</th><th>对阵</th>
+<th>主胜</th><th>平局</th><th>客胜</th><th>推荐</th><th>胜率</th><th>赔率</th><th>数据</th>
+</tr>{all_html}</table></div>
+</section>
 
+<section class="panel" id="tab-upset">
+{upset_html}
+</section>
+
+<section class="panel" id="tab-info">
+<h2>ℹ️ 说明与免责</h2>
+<div class="note">
+<b>本页怎么用:</b> 点上方按钮切换——
+「🎯 串关方案」看五大两串一与单场稳胆；「📊 全部概率」看每场胜平负三向概率；
+「⚠️ 爆冷雷达」看大热翻车风险与原因；「ℹ️ 说明」看数据来源与免责。
+</div>
 <div class="note">
 <b>数据与免责:</b> 场次与胜平负/让球赔率自动取自 <b>中国体彩·竞彩官方</b> 或 <b>500彩票网</b>
 (官方接口封锁境外, 云端自动用 500 网; 赔率同为竞彩口径)。近况由已接入联赛的真实赛果计算
@@ -258,11 +296,15 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
 本页为统计模型分析, 足球存在偶然性, <b>不构成投注建议</b>; 请理性购彩、量力而行, 未成年人不得购彩。
 </div>
 <footer>
-本页面由 GitHub Actions 自动重建: 每 {NEXT_HOURS} 小时更新一次(云端运行, 无需电脑开机),
+本页面由 GitHub Actions 自动发布: 数据每 {NEXT_HOURS} 小时由电脑更新并推送, 页面随之刷新;
 生成时间 {esc(gen_time)}。<br>
 模型 = 泊松强度(近10场近期加权) + 市场赔率隐含概率 融合 · 两串一按 p₁×p₂ 联合胜率排序。
 </footer>
-</div></body></html>"""
+</section>
+
+</div>
+<script>{JS}</script>
+</body></html>"""
 
 
 def minimal_error_page(exc, tb):
