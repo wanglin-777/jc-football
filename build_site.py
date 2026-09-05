@@ -30,6 +30,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import model   # noqa: E402
 import parlay  # noqa: E402
 import scout   # noqa: E402
+import verify  # noqa: E402
 from config import BASE_DIR, DATA_DIR, N_RECOMMEND  # noqa: E402
 from source import fetch_today  # noqa: E402
 
@@ -130,7 +131,7 @@ def fmt_p(x):
 
 JS = r"""
 function showTab(id){
-  var ids=['combo','probs','upset','info'];
+  var ids=['combo','probs','upset','verify','info'];
   for(var i=0;i<ids.length;i++){var p=document.getElementById('tab-'+ids[i]); if(p){p.style.display=(ids[i]===id)?'block':'none';}}
   var bs=document.querySelectorAll('.tabbtn');
   for(var j=0;j<bs.length;j++){bs[j].classList.toggle('on', bs[j].getAttribute('data-tab')===id);}
@@ -139,6 +140,14 @@ function showTab(id){
 
 
 def build_html(today, ordered, preds, rec, msgs, gen_time):
+    # 记录本次预测并取历史验证数据(失败不影响出页)
+    vdata = []
+    try:
+        verify.store(today.get("date") if today else None, ordered, preds, rec)
+        vdata = verify.verify_all()
+    except Exception:
+        vdata = []
+
     # 顶部时间戳
     sales = today["date"] if today else "-"
     total = len(today["matches"]) if today else 0
@@ -239,6 +248,8 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
                f'<div class="metric"><b>{full}</b><span>完整情报</span></div>'
                f'<div class="metric"><b>{parts}</b><span>部分情报</span></div>')
 
+    verify_html = build_verify_html(vdata)
+
     return f"""<!DOCTYPE html>
 <html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -257,6 +268,7 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
 <button class="tabbtn on" data-tab="combo" onclick="showTab('combo')">🎯 串关方案</button>
 <button class="tabbtn" data-tab="probs" onclick="showTab('probs')">📊 全部概率</button>
 <button class="tabbtn" data-tab="upset" onclick="showTab('upset')">⚠️ 爆冷雷达</button>
+<button class="tabbtn" data-tab="verify" onclick="showTab('verify')">✅ 预测验证</button>
 <button class="tabbtn" data-tab="info" onclick="showTab('info')">ℹ️ 说明</button>
 </div>
 
@@ -282,6 +294,10 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
 {upset_html}
 </section>
 
+<section class="panel" id="tab-verify">
+{verify_html}
+</section>
+
 <section class="panel" id="tab-info">
 <h2>ℹ️ 说明与免责</h2>
 <div class="note">
@@ -305,6 +321,59 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
 </div>
 <script>{JS}</script>
 </body></html>"""
+
+
+def build_verify_html(vdata):
+    """把历史验证数据渲染成页面 HTML"""
+    if not vdata:
+        return ('<h2>✅ 预测验证 / 复盘</h2>'
+                '<div class="note">还没有历史预测可验证。从今天起每次自动更新都会把当天预测存档，'
+                '等当天比赛全部结束后即可在这里看到「预测 vs 实际」的复盘（命中率与回报）。</div>')
+    blocks = []
+    for day in vdata:
+        rows, st = day["rows"], day["stats"]
+        hit_rate = f"{st['rate']:.0%}" if st["rate"] is not None else "-"
+        roi = st["roi"]
+        roi_txt = f"+{roi:.2f}" if roi >= 0 else f"{roi:.2f}"
+        summary = (
+            f'<div class="metrics" style="grid-template-columns:repeat(auto-fit,minmax(110px,1fr))">'
+            f'<div class="metric"><b>{st["total"]}</b><span>预测场次</span></div>'
+            f'<div class="metric"><b>{st["verified"]}</b><span>可核验</span></div>'
+            f'<div class="metric"><b>{st["hits"]}/{st["verified"]}</b><span>命中</span></div>'
+            f'<div class="metric"><b>{hit_rate}</b><span>命中率</span></div>'
+            f'<div class="metric"><b>{roi_txt}</b><span>单关净回报(每场1注)</span></div></div>')
+        trs = ""
+        for r in rows:
+            actual = r.get("actual")
+            if actual is None:
+                mark = f'<span style="color:var(--mut)">{esc(r["status"])}</span>'
+            else:
+                ok = r.get("hit")
+                icon = "✅" if ok else "❌"
+                col = "#0a7d3e" if ok else "#c0392b"
+                mark = f'<span style="color:{col};font-weight:700">{icon} {esc(actual)}</span>'
+            prob = r.get("probs") or []
+            ptxt = (f"{fmt_p(prob[0])}/{fmt_p(prob[1])}/{fmt_p(prob[2])}"
+                    if len(prob) == 3 else "-")
+            trs += (f'<tr><td>{esc(r["num"])}</td><td>{esc(r["league"])}</td>'
+                    f'<td>{esc(r["home"])} vs {esc(r["away"])}</td>'
+                    f'<td><b>{esc(r["pick"])}</b></td><td>{ptxt}</td>'
+                    f'<td>{esc(r["odds"] or "-")}</td><td>{mark}</td></tr>')
+        c_txt = ""
+        if day.get("combos"):
+            wins = sum(1 for c in day["combos"] if c.get("win"))
+            known = sum(1 for c in day["combos"] if c.get("known"))
+            c_txt = f'<p class="mut">五大串关: 已可判定 {known}/5 组 · 命中 {wins} 组</p>'
+        blocks.append(
+            f'<h2>📅 {esc(day["date"])} 复盘</h2>{summary}{c_txt}'
+            f'<div class="tbl"><table><tr><th>场次</th><th>联赛</th><th>对阵</th>'
+            f'<th>预测</th><th>主/平/客</th><th>赔率</th><th>实际结果</th></tr>'
+            f'{trs}</table></div>'
+            '<div class="note">注: “待开奖”=比赛未结束；“缺结果源/未找到”=该联赛暂无自动赛果源'
+            '(如西甲/葡超/挪超/巴甲/沙职等)或未匹配到。命中只统计“已核验”场次。</div>')
+    return ('<h2>✅ 预测验证 / 复盘</h2>'
+            '<p class="mut">当天比赛全部结束后, 自动把「预测选项」和「实际胜平负」比对, 统计命中率与回报</p>'
+            + "".join(blocks))
 
 
 def minimal_error_page(exc, tb):

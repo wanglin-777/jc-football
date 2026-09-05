@@ -1,0 +1,435 @@
+{
+ "date": "2026-09-05",
+ "n": 22,
+ "items": [
+  {
+   "num": "周六006",
+   "league_abb": "意甲",
+   "league_code": "ISA",
+   "home": "佛罗伦萨",
+   "away": "都灵",
+   "pick": "主胜",
+   "probs": [
+    0.4517,
+    0.3175,
+    0.2308
+   ],
+   "odds": 1.92,
+   "source": "模型+赔率",
+   "quality": "full"
+  },
+  {
+   "num": "周六007",
+   "league_abb": "德甲",
+   "league_code": "BUN",
+   "home": "门兴",
+   "away": "埃沃斯堡",
+   "pick": "主胜",
+   "probs": [
+    0.5274,
+    0.2332,
+    0.2395
+   ],
+   "odds": 1.68,
+   "source": "仅赔率",
+   "quality": "odds_only"
+  },
+  {
+   "num": "周六008",
+   "league_abb": "德甲",
+   "league_code": "BUN",
+   "home": "不来梅",
+   "away": "莱红牛",
+   "pick": "客胜",
+   "probs": [
+    0.2445,
+    0.2281,
+    0.5274
+   ],
+   "odds": 1.52,
+   "source": "模型+赔率",
+   "quality": "full"
+  },
+  {
+   "num": "周六009",
+   "league_abb": "德甲",
+   "league_code": "BUN",
+   "home": "帕德博恩",
+   "away": "弗赖堡",
+   "pick": "客胜",
+   "probs": [
+    0.2395,
+    0.2332,
+    0.5274
+   ],
+   "odds": 1.68,
+   "source": "仅赔率",
+   "quality": "odds_only"
+  },
+  {
+   "num": "周六010",
+   "league_abb": "德甲",
+   "league_code": "BUN",
+   "home": "霍芬海姆",
+   "away": "多特蒙德",
+   "pick": "客胜",
+   "probs": [
+    0.3414,
+    0.2646,
+    0.394
+   ],
+   "odds": 2.26,
+   "source": "模型+赔率",
+   "quality": "full"
+  },
+  {
+   "num": "周六011",
+   "league_abb": "德甲",
+   "league_code": "BUN",
+   "home": "勒沃库森",
+   "away": "柏林联合",
+   "pick": "主胜",
+   "probs": [
+    0.693,
+    0.177,
+    0.13
+   ],
+   "odds": 1.25,
+   "source": "模型+赔率",
+   "quality": "full"
+  },
+  {
+   "num": "周六012",
+   "league_abb": "英超",
+   "league_code": "EPL",
+   "home": "诺丁汉",
+   "away": "热刺",
+   "pick": "主胜",
+   "probs": [
+    0.4538,
+    0.2813,
+    0.265
+   ],
+   "odds": 2.27,
+   "source": "模型+赔率",
+   "quality": "full"
+  },
+  {
+   "num": "周六014",
+   "league_abb": "英超",
+   "league_code": "EPL",
+   "home": "布伦特",
+   "away": "桑德兰",
+   "pick": "主胜",
+   "probs": [
+    0.6031,
+    0.2309,
+    0.166
+   ],
+   "odds": 1.52,
+   "source": "模型+赔率",
+   "quality": "full"
+  },
+  {
+   "num": "周六015",
+   "league_abb": "英超",
+   "league_code": "EPL",
+   "home": "富勒姆",
+   "away": "水晶宫",
+   "pick": "主胜",
+   "probs": [
+    0.5409,
+    0.2489,
+    0.2102
+   ],
+   "odds": 2.02,
+   "source": "模型+赔率",
+   "quality": "full"
+  },
+  {
+   "num": "周六016",
+   "league_abb": "西甲",
+   "league_code": "LLA",
+   "home": "毕尔巴鄂",
+   "away": "马竞",
+   "pick": "客胜",
+   "probs": [
+    0.3034,
+    0.2685,
+    0.428
+   ],
+   "odds": 2.07,
+   "source": "仅赔率",
+   "quality": "odds_only"
+  },
+  {
+   "num": "周六017",
+   "league_abb": "法甲",
+   "league_code": "FR1",
+   "home": "朗斯",
+   "away": "洛里昂",
+   "pick": "主胜",
+   "probs": [
+    0.5568,
+    0.2338,
+    0.2093
+   ],
+   "odds": 1.36,
+   "source": "模型+赔率",
+   "quality": "full"
+  },
+  {
+   "num": "周六018",
+   "league_abb": "意甲",
+   "league_code": "ISA",
+   "home": "国际米兰",
+   "away": "那不勒斯",
+   "pick": "主胜",
+   "probs": [
+    0.5947,
+    0.2428,
+    0.1626
+   ],
+   "odds": 1.49,
+   "source": "仅赔率",
+   "quality": "partial"
+  },
+  {
+   "num": "周六019",
+   "league_abb": "挪超",
+   "league_code": "NOR",
+   "home": "布兰",
+   "away": "利勒斯特",
+   "pick": "主胜",
+   "probs": [
+    0.557,
+    0.2331,
+    0.2099
+   ],
+   "odds": 1.59,
+   "source": "仅赔率",
+   "quality": "odds_only"
+  },
+  {
+   "num": "周六020",
+   "league_abb": "英超",
+   "league_code": "EPL",
+   "home": "赫尔城",
+   "away": "维拉",
+   "pick": "客胜",
+   "probs": [
+    0.2274,
+    0.2687,
+    0.5039
+   ],
+   "odds": 1.76,
+   "source": "仅赔率",
+   "quality": "partial"
+  },
+  {
+   "num": "周六022",
+   "league_abb": "西甲",
+   "league_code": "LLA",
+   "home": "巴列卡诺",
+   "away": "桑坦德",
+   "pick": "主胜",
+   "probs": [
+    0.4788,
+    0.2568,
+    0.2644
+   ],
+   "odds": 1.85,
+   "source": "仅赔率",
+   "quality": "odds_only"
+  },
+  {
+   "num": "周六023",
+   "league_abb": "葡超",
+   "league_code": "POR",
+   "home": "马里迪莫",
+   "away": "本菲卡",
+   "pick": "客胜",
+   "probs": [
+    0.0633,
+    0.1384,
+    0.7983
+   ],
+   "odds": 1.11,
+   "source": "仅赔率",
+   "quality": "odds_only"
+  },
+  {
+   "num": "周六024",
+   "league_abb": "沙职",
+   "league_code": "SAP",
+   "home": "吉达联合",
+   "away": "利雅胜利",
+   "pick": "客胜",
+   "probs": [
+    0.1704,
+    0.1827,
+    0.6469
+   ],
+   "odds": 1.37,
+   "source": "仅赔率",
+   "quality": "odds_only"
+  },
+  {
+   "num": "周六025",
+   "league_abb": "荷甲",
+   "league_code": "ERE",
+   "home": "阿贾克斯",
+   "away": "埃因霍温",
+   "pick": "客胜",
+   "probs": [
+    0.2555,
+    0.217,
+    0.5275
+   ],
+   "odds": 2.1,
+   "source": "模型+赔率",
+   "quality": "full"
+  },
+  {
+   "num": "周六026",
+   "league_abb": "意甲",
+   "league_code": "ISA",
+   "home": "罗马",
+   "away": "亚特兰大",
+   "pick": "主胜",
+   "probs": [
+    0.5669,
+    0.2447,
+    0.1884
+   ],
+   "odds": 1.58,
+   "source": "模型+赔率",
+   "quality": "full"
+  },
+  {
+   "num": "周六027",
+   "league_abb": "法甲",
+   "league_code": "FR1",
+   "home": "勒阿弗尔",
+   "away": "布雷斯特",
+   "pick": "主胜",
+   "probs": [
+    0.4159,
+    0.2884,
+    0.2957
+   ],
+   "odds": 2.5,
+   "source": "模型+赔率",
+   "quality": "full"
+  },
+  {
+   "num": "周六028",
+   "league_abb": "西甲",
+   "league_code": "LLA",
+   "home": "比利亚雷",
+   "away": "拉科",
+   "pick": "主胜",
+   "probs": [
+    0.6659,
+    0.1946,
+    0.1395
+   ],
+   "odds": 1.33,
+   "source": "仅赔率",
+   "quality": "odds_only"
+  },
+  {
+   "num": "周六029",
+   "league_abb": "巴甲",
+   "league_code": "BRA",
+   "home": "布拉干RB",
+   "away": "巴伊亚",
+   "pick": "主胜",
+   "probs": [
+    0.4612,
+    0.2767,
+    0.262
+   ],
+   "odds": 1.92,
+   "source": "仅赔率",
+   "quality": "odds_only"
+  }
+ ],
+ "combos": [
+  {
+   "odds": 2.24,
+   "joint": 0.4318,
+   "risk": "中",
+   "legs": [
+    {
+     "num": "周六023",
+     "pick": "客胜"
+    },
+    {
+     "num": "周六015",
+     "pick": "主胜"
+    }
+   ]
+  },
+  {
+   "odds": 2.33,
+   "joint": 0.4211,
+   "risk": "高",
+   "legs": [
+    {
+     "num": "周六023",
+     "pick": "客胜"
+    },
+    {
+     "num": "周六025",
+     "pick": "客胜"
+    }
+   ]
+  },
+  {
+   "odds": 2.02,
+   "joint": 0.4016,
+   "risk": "中",
+   "legs": [
+    {
+     "num": "周六028",
+     "pick": "主胜"
+    },
+    {
+     "num": "周六014",
+     "pick": "主胜"
+    }
+   ]
+  },
+  {
+   "odds": 2.08,
+   "joint": 0.3901,
+   "risk": "中",
+   "legs": [
+    {
+     "num": "周六024",
+     "pick": "客胜"
+    },
+    {
+     "num": "周六014",
+     "pick": "主胜"
+    }
+   ]
+  },
+  {
+   "odds": 2.04,
+   "joint": 0.3847,
+   "risk": "中",
+   "legs": [
+    {
+     "num": "周六024",
+     "pick": "客胜"
+    },
+    {
+     "num": "周六018",
+     "pick": "主胜"
+    }
+   ]
+  }
+ ]
+}
