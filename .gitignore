@@ -4,13 +4,13 @@ __pycache__/
 .venv/
 .venv-1/
 
-# 运行时数据(不进仓库; GitHub Actions 每次会联网重建)
-data/cache/
+# 运行时数据(仅本机私有, 不上传 GitHub)
 data/server.log
 data/server.pid
 data/refresh.log
 data/deepseek_key.txt
 data/ai_cache.json
+# 注: data/cache/ 各联赛整季历史赛果缓存已纳入 GitHub 作历史备份; data/history/ 每日预测账本也已上传
 
 # 生成的静态网页目录 docs/ 需要提交(由 GitHub Pages 发布), 故不忽略
 # 旧的 site/ 目录不再使用

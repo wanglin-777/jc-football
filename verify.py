@@ -50,6 +50,48 @@ def store(sales_date, ordered, preds, rec):
     path = os.path.join(HIST_DIR, f"{sales_date}.json")
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=1)
+    # 同时生成方便阅读的 CSV(GitHub 可直接预览, Excel/WPS 可直接打开)
+    export_csv(data)
+
+
+def export_csv(snap):
+    """把某日预测导出成 CSV: 每天一份 + 全量汇总(都在 data/history_csv/)"""
+    import csv as _csv
+    csv_dir = os.path.join(DATA_DIR, "history_csv")
+    os.makedirs(csv_dir, exist_ok=True)
+    cols = ["日期", "场次", "联赛", "主队", "客队", "推荐", "主胜%", "平局%", "客胜%", "赔率", "来源", "情报"]
+    rows = []
+    for it in snap.get("items", []):
+        p = it.get("probs") or []
+        rows.append([snap.get("date", ""), it.get("num", ""), it.get("league_abb", ""),
+                     it.get("home", ""), it.get("away", ""), it.get("pick", ""),
+                     _pct(p[0]), _pct(p[1]), _pct(p[2]),
+                     it.get("odds", ""), it.get("source", ""), it.get("quality", "")])
+    # 每天一份
+    per = os.path.join(csv_dir, f"预测_{snap.get('date','')}.csv")
+    with open(per, "w", newline="", encoding="utf-8-sig") as f:
+        w = _csv.writer(f)
+        w.writerow(cols)
+        w.writerows(rows)
+    # 全量汇总(每次重写为全部历史)
+    all_path = os.path.join(csv_dir, "历史预测_全量.csv")
+    with open(all_path, "w", newline="", encoding="utf-8-sig") as f:
+        w = _csv.writer(f)
+        w.writerow(cols)
+        for snap_old in _load_dates():
+            for it in snap_old.get("items", []):
+                p = it.get("probs") or []
+                w.writerow([snap_old.get("date", ""), it.get("num", ""),
+                            it.get("league_abb", ""), it.get("home", ""), it.get("away", ""),
+                            it.get("pick", ""), _pct(p[0]), _pct(p[1]), _pct(p[2]),
+                            it.get("odds", ""), it.get("source", ""), it.get("quality", "")])
+
+
+def _pct(x):
+    try:
+        return f"{float(x):.1%}"
+    except Exception:
+        return ""
 
 
 def _load_dates():
