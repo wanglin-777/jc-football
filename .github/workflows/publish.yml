@@ -1,0 +1,34 @@
+# 发布网页: 只把已提交的 docs/ 上传到 GitHub Pages
+# 数据由"你的电脑"每4小时抓取并生成 docs/ 后推送; 云端这里只做纯静态发布(不抓数据, 稳定)
+name: 发布网页
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+      - name: 上传 docs 静态网页
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+      - name: 部署到 GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
