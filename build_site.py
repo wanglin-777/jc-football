@@ -414,9 +414,37 @@ def build_verify_html(vdata):
                     f'<td><b>{esc(r["pick"])}</b></td><td>{ptxt}</td>'
                     f'<td>{esc(r["odds"] or "-")}</td><td>{mark}</td></tr>')
         c_txt = ""
+        # ---- 串关方案验证明细(五组两串一, 逐组给出两场实际结果) ----
+        rows_by_num = {r["num"]: r for r in rows}
+        combo_html = ""
         if day.get("combos"):
-            c_txt = ('<p class="mut">注: 串关净回报按五组两串一、每组下 1 注计算; '
-                     '只有当某组的两场都已开奖才参与判定。</p>')
+            ctr = ""
+            for ci, cb in enumerate(day["combos"], 1):
+                legs_txt = []
+                for leg in cb.get("legs", []):
+                    rr = rows_by_num.get(leg["num"])
+                    teams = f' {rr["home"]} vs {rr["away"]}' if rr else ""
+                    act = leg.get("actual")
+                    if act:
+                        icon = "✅" if leg.get("ok") else "❌"
+                        a = f'实际 <b>{esc(act)}</b> {icon}'
+                    else:
+                        a = '<span style="color:var(--mut)">待开奖</span>'
+                    legs_txt.append(
+                        f'{esc(leg["num"])}{esc(teams)}　预测 <b>【{esc(leg.get("pick", ""))}】</b>　{a}')
+                if cb.get("known"):
+                    if cb.get("win"):
+                        res = '<b style="color:#0a7d3e">✅ 命中</b>'
+                    else:
+                        res = '<b style="color:#c0392b">❌ 未中</b>'
+                else:
+                    res = '<span style="color:var(--mut)">待开奖</span>'
+                ctr += (f'<tr><td><b>方案{ci}</b></td>'
+                        f'<td style="text-align:left">{"<br>".join(legs_txt)}</td>'
+                        f'<td>{esc(cb.get("odds") or "-")}</td><td>{res}</td></tr>')
+            combo_html = ('<h4>🎯 串关方案验证(五组两串一)</h4>'
+                          '<div class="tbl"><table><tr><th>方案</th><th>两场(场次/预测/实际)</th>'
+                          f'<th>串后赔率</th><th>结果</th></tr>{ctr}</table></div>')
         disp = "block" if day["date"] == default else "none"
         blocks.append(
             f'<div class="vdbox" id="vd-{esc(day["date"])}" style="display:{disp}">'
@@ -424,6 +452,7 @@ def build_verify_html(vdata):
             f'<div class="tbl"><table><tr><th>场次</th><th>联赛</th><th>对阵</th>'
             f'<th>预测</th><th>主/平/客</th><th>赔率</th><th>实际结果</th></tr>'
             f'{trs}</table></div>'
+            f'{combo_html}'
             '<div class="note">注: 赛果由竞彩口径快源(okooo, 与体彩同套场次/队名)自动核验,'
             '覆盖日职/韩职/挪超/巴甲/沙职等全部竞彩联赛; “待开奖”=尚未完场;'
             '“缺结果源”=本次自动更新时结果源暂不可达。命中只统计“已核验”场次。</div>'
