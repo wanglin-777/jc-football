@@ -30,6 +30,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import model   # noqa: E402
 import parlay  # noqa: E402
 import scout   # noqa: E402
+import selftune  # noqa: E402
 import verify  # noqa: E402
 import deepseek_client  # noqa: E402
 from config import BASE_DIR, DATA_DIR, N_RECOMMEND  # noqa: E402
@@ -160,6 +161,13 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
         vdata = verify.verify_all()
     except Exception:
         vdata = []
+
+    # 复盘自调优: 用最新已核验结果更新 model_tune.json, 下一期预测即自动应用
+    try:
+        selftune.update_from_verify(
+            vdata, ai=(deepseek_client.chat if deepseek_client.available() else None))
+    except Exception:
+        pass
 
     # 顶部时间戳
     sales = today["date"] if today else "-"
@@ -582,9 +590,24 @@ def build_self_html(vdata):
     if agg.get("coups"):
         coup_html = ('<h2>💰 以小博大成功(≥2.0 赔率命中)</h2>' + _card_rows(agg["coups"]))
     ai_html = _ai_self_block(agg)
+
+    # ⚙️ 模型自调优卡片: 显示复盘校准已应用到下次预测
+    tune_card = ""
+    try:
+        t = selftune.load()
+        tdesc = selftune.describe(t)
+        if tdesc:
+            extra = ''
+            if t.get("ai_note"):
+                extra = f'<p class="mut">🤖 DeepSeek 复盘意见: {esc(t["ai_note"])}</p>'
+            tune_card = ('<h2>⚙️ 模型自调优(复盘已用于下次预测)</h2>'
+                         '<div class="note"><b>' + esc(tdesc) + '</b>' + extra + '</div>')
+    except Exception:
+        tune_card = ""
+
     return (f"<h2>🧠 模型自我复盘(多日汇总)</h2>"
             f'<p class="mut">基于最近 {days_n} 个销售日已开奖场次的自动复盘</p>'
-            f"{metrics}{by_txt}{bucket_html}{miss_html}{coup_html}{ai_html}")
+            f"{metrics}{by_txt}{tune_card}{bucket_html}{miss_html}{coup_html}{ai_html}")
 
 
 def _ai_daily_block(today, ordered, preds, rec):

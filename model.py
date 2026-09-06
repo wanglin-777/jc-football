@@ -318,6 +318,13 @@ def predict(feat):
     total = sum(probs)
     probs = [max(0.001, p) / total for p in probs]
 
+    # 复盘自调优: 把历史"预测 vs 实际"的经验应用到本次概率(温和, 见 selftune.py)
+    try:
+        from selftune import apply_tune
+        probs = apply_tune(probs)
+    except Exception:
+        pass
+
     labels = ["主胜", "平", "客胜"]
     idx = max(range(3), key=lambda i: probs[i])
     pick = labels[idx]
