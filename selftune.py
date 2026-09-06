@@ -108,7 +108,7 @@ def _compute_calib(vdata):
 
 
 def _summarize(stats, total):
-    lines = [f"已核验 {total} 场。"]
+    lines = [f"已核验 {total} 场"]
     for lab, s in stats.items():
         if s["avg_p"] is not None:
             lines.append(f"{lab}: 预测均 {s['avg_p']:.0%} / 实际 {s['rate']:.0%} (n={s['n']})")
