@@ -175,6 +175,18 @@ function sortVD(d,m){
   var bs=document.querySelectorAll('#vd-'+d+' [data-vdm]');
   for(var j=0;j<bs.length;j++){bs[j].classList.toggle('on', bs[j].getAttribute('data-vdm')===m);}
 }
+function sortGT(d,m){
+  var tb=document.getElementById('gv-'+d);
+  if(!tb){return;}
+  var rows=Array.prototype.slice.call(tb.querySelectorAll('tr.vg'));
+  rows.sort(function(a,b){
+    if(m==='p'){var x=parseFloat(a.getAttribute('data-gp'))||0,y=parseFloat(b.getAttribute('data-gp'))||0;return y-x;}
+    return _vdnum(a.getAttribute('data-num'))-_vdnum(b.getAttribute('data-num'));
+  });
+  for(var k=0;k<rows.length;k++){tb.appendChild(rows[k]);}
+  var bs=document.querySelectorAll('#vd-'+d+' [data-vgt]');
+  for(var j=0;j<bs.length;j++){bs[j].classList.toggle('on', bs[j].getAttribute('data-vgt')===m);}
+}
 """
 
 
@@ -557,7 +569,9 @@ def build_verify_html(vdata):
                            f'{"✅" if ok else "❌"} 实际{esc(r["g_actual"])}球</span>')
                 else:
                     res = '<span style="color:var(--mut)">待开奖/无比分</span>'
-                gt += (f'<tr><td>{esc(r["num"])}</td>'
+                gpv = ("%.6f" % pv) if pv is not None else "0"
+                gt += (f'<tr class="vg" data-num="{esc(r["num"])}" data-gp="{gpv}">'
+                       f'<td>{esc(r["num"])}</td>'
                        f'<td>{esc(r["home"])} vs {esc(r["away"])}</td>'
                        f'<td>{picktxt}</td>'
                        f'<td>{esc(r.get("score") or "-")}</td>'
@@ -568,8 +582,12 @@ def build_verify_html(vdata):
                          f'<b>{st["goals_hits"]}</b>'
                          + (f' ({st["goals_rate"]:.0%})'
                             if st.get("goals_rate") is not None else '') + '</p>')
-            goals_html = ('<h4>⚽ 总进球验证(分开统计)</h4>' + gstat +
-                          '<div class="tbl"><table><tr><th>场次</th><th>对阵</th>'
+            gd = esc(day["date"])
+            gbar = ('<div class="tabbar" style="margin:6px 0">'
+                    f'<button class="tabbtn on" data-vgt="num" onclick="sortGT(\'{gd}\',\'num\')">🕑 场次顺序</button>'
+                    f'<button class="tabbtn" data-vgt="p" onclick="sortGT(\'{gd}\',\'p\')">📈 按命中概率</button></div>')
+            goals_html = ('<h4>⚽ 总进球验证(分开统计)</h4>' + gstat + gbar +
+                          f'<div class="tbl"><table id="gv-{gd}"><tr><th>场次</th><th>对阵</th>'
                           f'<th>预测(档·概率)</th><th>全场比分</th><th>结果</th></tr>{gt}</table></div>')
         else:
             goals_html = ('<div class="note">该期未做总进球预测(自 09-06 起每期开始记录)。</div>')
