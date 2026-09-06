@@ -33,7 +33,8 @@ import scout   # noqa: E402
 import selftune  # noqa: E402
 import verify  # noqa: E402
 import deepseek_client  # noqa: E402
-from config import BASE_DIR, DATA_DIR, N_RECOMMEND  # noqa: E402
+from config import (BANKER_MAX_ODDS, BANKER_MIN_PROB, BASE_DIR, COMBO_MARGIN_TIERS,
+                    DATA_DIR, N_RECOMMEND)  # noqa: E402
 from source import fetch_today  # noqa: E402
 
 SITE_DIR = os.path.join(BASE_DIR, "docs")   # 生成到 docs/, 由 GitHub Pages 直接发布该目录
@@ -260,14 +261,15 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
                 f'<td>{c["odds"]:.2f}</td>'
                 f'<td>{esc(f.get("data_quality", ""))}</td></tr>')
     banker_html = ""
+    _bm = f"胜率≥{BANKER_MIN_PROB:.0%} 且 赔率≤{BANKER_MAX_ODDS:.2f}"
     if rec and rec.get("bankers"):
         inner = "".join(_rowtr(c) for c in rec["bankers"])
-        banker_html = ('<h2>🎯 严格单关胆材(胜率≥70% 且 赔率≤1.6)</h2>'
+        banker_html = (f'<h2>🎯 严格单关胆材({esc(_bm)})</h2>'
                        '<div class="tbl"><table><tr><th>场次</th><th>联赛</th><th>对阵</th>'
                        f'<th>推荐</th><th>胜率</th><th>赔率</th><th>数据</th></tr>{inner}</table></div>')
     else:
-        banker_html = ('<div class="note">今日无符合严格单关胆材(预测胜率≥70% 且 赔率≤1.6)的场次——'
-                       '按 AI 复盘建议不硬凑单关胆材(两串一仍正常给出)。</div>')
+        banker_html = (f'<div class="note">今日无符合严格单关胆材({esc(_bm)})的场次——'
+                       '稳定优先, 不硬凑单关胆材(两串一仍按低风险档正常给出)。</div>')
     cand_html = ""
     if rec:
         pool = sorted(rec["candidates"], key=lambda c: c["prob"], reverse=True)
@@ -322,14 +324,15 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
 </div>
 
 <section class="panel show" id="tab-combo">
-<h2>🎯 五大「两串一」推荐</h2>
-<p class="mut">规则: 只串两关 · 串后赔率 ≥ 2.0 · 按两场联合胜率从高到低</p>
+<h2>🎯 两串一推荐(稳定优先)</h2>
+<p class="mut">规则: 只串两关 · 串后赔率 ≥ 2.0 · 只取低爆冷风险+高胜率差的场 · 按联合胜率从高到低(宁缺毋滥)</p>
 {daily_ai}
 {combo_html}
 
 {banker_html}
 <h2>📈 模型候选(预测胜率 Top 12)</h2>
-<p class="mut">串关已执行过滤: 剔除爆冷高风险场 · 优先胜率差≥20%的场(不足5组时自动放宽门槛)</p>
+<p class="mut">稳定优先: 串关只取低爆冷风险、胜率差≥{int(COMBO_MARGIN_TIERS[0]*100)}%的场,'
+宁缺毋滥(某天不足时宁肯少出, 不硬凑高风险)。</p>
 <div class="tbl"><table><tr><th>场次</th><th>联赛</th><th>对阵</th><th>推荐</th>
 <th>胜率</th><th>赔率</th><th>数据</th></tr>{cand_html}</table></div>
 </section>

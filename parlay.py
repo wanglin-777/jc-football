@@ -14,7 +14,7 @@
   按联合胜率排序, 贪心挑选同时兼顾"每支球队最多出现在两组串关中"的多样性。
 """
 from config import (BANKER_MAX_ODDS, BANKER_MIN_PROB, COMBO_MARGIN_TIERS,
-                    COMBO_MIN_ODDS, COMBO_LEGS, COMBO_SKIP_RISK, N_RECOMMEND)
+                    COMBO_MIN_ODDS, COMBO_LEGS, MIN_PROB_LEG, N_RECOMMEND)
 import itertools
 
 
@@ -30,16 +30,16 @@ def pick_best_leg(feat, pred):
             "source": pred["source"]}
 
 
-def recommend(feats, preds, min_prob=0.45):
+def recommend(feats, preds, min_prob=MIN_PROB_LEG):
     """
     输入: feats(每场特征), preds(每场 model.predict 结果)
     返回: {"candidates": 全部候选(按胜率降序), "bankers": 严格单关胆材,
-           "combos":  5组两串一(按联合胜率降序)}
-    硬规则(AI 复盘建议):
-      建议1: 只有 胜率≥BANKER_MIN_PROB 且赔率≤BANKER_MAX_ODDS 才列为单关胆材
-      建议2: 串关选腿跳过爆冷风险=高 的场, 并尽量要求主/客胜概率差≥20%;
-             若严格筛选后凑不足5组, 则按 COMBO_MARGIN_TIERS 逐级放宽(仍跳高风险),
-             最后实在没有才允许高风险腿兜底(避免当天无串可推)。
+           "combos":  两串一(按联合胜率降序, 宁缺毋滥)}
+    策略(稳定优先):
+      - 胆材: 仅 胜率≥BANKER_MIN_PROB 且 赔率≤BANKER_MAX_ODDS 且非高风险
+      - 串关: 默认只接受"低爆冷风险 + 胜率差≥COMBO_MARGIN_TIERS[0](25%)"的腿;
+        若该严格档凑不出任一组, 才逐级放宽(18%/10% 仍只限低风险 → 4% 允许中等风险
+        → 2% 才最后兜底允许高风险)。宁肯某天少出几组, 也不硬凑高风险串。
     """
     full = []
     for f, pr in zip(feats, preds):
@@ -54,11 +54,11 @@ def recommend(feats, preds, min_prob=0.45):
                          "margin": leg["prob"] - second, "risk": risk})
     full.sort(key=lambda x: x["prob"], reverse=True)
 
-    # 建议1: 严格单关胆材(≥70% 且 ≤1.6), 仅用于展示, 不参与串关
+    # 严格单关胆材: 非高风险(仅用于展示, 不参与串关)
     bankers = [x for x in full
                if x["prob"] >= BANKER_MIN_PROB
                and x["odds"] <= BANKER_MAX_ODDS
-               and x["risk"] != COMBO_SKIP_RISK]
+               and x["risk"] == "低"]
 
     def make_combos(pool):
         cand = []
@@ -82,21 +82,18 @@ def recommend(feats, preds, min_prob=0.45):
                                          "joint": joint}))
         return combos
 
-    # 建议2: 分级筛选(跳过爆冷高风险, 概率差从 20% 逐级放宽)
+    # 稳定优先的逐级筛选: 先从最严档取, 该档一旦有解就不再放宽去追 5 组
+    rk = {"低": 0, "中": 1, "高": 2}
+    stages = [(m, "低") for m in COMBO_MARGIN_TIERS]
+    stages += [(0.04, "中"), (0.02, "高")]
     best = None
-    for m in COMBO_MARGIN_TIERS:
+    for m, allow in stages:
         pool = [x for x in full
-                if x["margin"] >= m and x["risk"] != COMBO_SKIP_RISK]
+                if x["margin"] >= m and rk.get(x["risk"], 0) <= rk[allow]]
         c = make_combos(pool)
-        if len(c) >= N_RECOMMEND:
+        if c:
             best = c
             break
-        if best is None and c:
-            best = c
-    if best is None:                       # 极少数兜底: 允许高风险腿, 避免空手
-        pool = [x for x in full if x["margin"] >= 0.02]
-        best = make_combos(pool)
-
     return {"candidates": full, "bankers": bankers, "combos": best or []}
 
 
