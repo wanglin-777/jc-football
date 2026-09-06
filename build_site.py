@@ -385,7 +385,10 @@ def build_verify_html(vdata):
                 ok = r.get("hit")
                 icon = "✅" if ok else "❌"
                 col = "#0a7d3e" if ok else "#c0392b"
+                sc = r.get("score")
                 mark = f'<span style="color:{col};font-weight:700">{icon} {esc(actual)}</span>'
+                if sc:
+                    mark += f' <span class="mut">({esc(sc)})</span>'
             prob = r.get("probs") or []
             ptxt = (f"{fmt_p(prob[0])}/{fmt_p(prob[1])}/{fmt_p(prob[2])}"
                     if len(prob) == 3 else "-")
@@ -401,8 +404,9 @@ def build_verify_html(vdata):
             f'<div class="tbl"><table><tr><th>场次</th><th>联赛</th><th>对阵</th>'
             f'<th>预测</th><th>主/平/客</th><th>赔率</th><th>实际结果</th></tr>'
             f'{trs}</table></div>'
-            '<div class="note">注: “待开奖”=比赛未结束；“缺结果源/未找到”=该联赛暂无自动赛果源'
-            '(如西甲/葡超/挪超/巴甲/沙职等)或未匹配到。命中只统计“已核验”场次。</div>')
+            '<div class="note">注: 赛果由竞彩口径快源(okooo, 与体彩同套场次/队名)自动核验,'
+            '覆盖日职/韩职/挪超/巴甲/沙职等全部竞彩联赛; “待开奖”=尚未完场;'
+            '“缺结果源”=本次自动更新时结果源暂不可达。命中只统计“已核验”场次。</div>')
     return ('<h2>✅ 预测验证 / 复盘</h2>'
             '<p class="mut">当天比赛全部结束后, 自动把「预测选项」和「实际胜平负」比对, 统计命中率与回报</p>'
             + "".join(blocks))
