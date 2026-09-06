@@ -72,7 +72,8 @@ def store(sales_date, ordered, preds, rec):
             "odds": pr.get("pick_odds"), "source": pr["source"],
             "quality": f.get("data_quality", ""),
             "goals": ({"pick": g["pick"], "p": g["p"], "avg": g["avg"],
-                       "probs": g["probs"]} if g else None),
+                       "probs": g["probs"],
+                       "os_side": g.get("os_side"), "os_p": g.get("os_p")} if g else None),
         })
     combos = []
     for cb in (rec or {}).get("combos", []):
@@ -236,6 +237,10 @@ def verify_all(now=None):
             row["g_avg"] = _g.get("avg")
             row["g_actual"] = None
             row["g_hit"] = None
+            row["g_os"] = _g.get("os_side")      # 大小球(2.5): 小/大
+            row["g_os_p"] = _g.get("os_p")
+            row["g_os_actual"] = None
+            row["g_os_hit"] = None
 
             # 1) 首选: 竞彩口径快源 okooo(覆盖所有竞彩联赛, 含日职/韩职/巴甲等)
             okrows = _okooo_rows(d)
@@ -282,13 +287,18 @@ def verify_all(now=None):
                     r["status"] = "已核验"
         _vcache_save(d, rows)
 
-        # ---- 总进球核验(与胜负分开): 该期有总进球预测且有比分才判 ----
+        # ---- 总进球核验(与胜负分开): 含 单档 与 大小球(2.5) ----
         for r in rows:
             if r.get("g_pick") is not None and r.get("score"):
                 t = _score_total(r["score"])
                 if t is not None:
                     r["g_actual"] = _goal_bucket(t)
                     r["g_hit"] = (r["g_actual"] == str(r["g_pick"]))
+            if r.get("g_os") is not None and r.get("score"):
+                t = _score_total(r["score"])
+                if t is not None:
+                    r["g_os_actual"] = "大" if t >= 3 else "小"
+                    r["g_os_hit"] = (r["g_os_actual"] == r["g_os"])
 
         # 统计(只算已核验)
         verified = [r for r in rows if r["hit"] is not None]
@@ -297,15 +307,17 @@ def verify_all(now=None):
         for r in verified:
             net += (r["odds"] - 1.0) if r["hit"] else -1.0
         gv = [r for r in rows if r.get("g_hit") is not None]
+        go = [r for r in rows if r.get("g_os_hit") is not None]
         stats = {"total": len(rows), "verified": len(verified), "hits": hits,
                  "rate": (hits / len(verified)) if verified else None,
                  "roi": net,   # 每场按1注的净回报(单位:元)
                  "goals_n": len(gv),
-                 "goals_hits": sum(1 for r in gv if r["g_hit"])}
-        if gv:
-            stats["goals_rate"] = sum(1 for r in gv if r["g_hit"]) / len(gv)
-        else:
-            stats["goals_rate"] = None
+                 "goals_hits": sum(1 for r in gv if r["g_hit"]),
+                 "goals_os_n": len(go),
+                 "goals_os_hits": sum(1 for r in go if r["g_os_hit"])}
+        stats["goals_rate"] = (sum(1 for r in gv if r["g_hit"]) / len(gv)) if gv else None
+        stats["goals_os_rate"] = ((sum(1 for r in go if r["g_os_hit"]) / len(go))
+                                   if go else None)
 
         # 串关验证(两场均已核验且都命中)
         combos = []

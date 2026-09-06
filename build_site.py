@@ -333,15 +333,20 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
         for lab, pv in zip(g["labels"], g["probs"]):
             hl = ' style="color:#0a7d3e;font-weight:700"' if lab == g["pick"] else ""
             cells += f'<td{hl}>{fmt_p(pv)}</td>'
+        ocell = ""
+        if g.get("under25") is not None and g.get("os_side"):
+            hl = ' style="color:#0a7d3e;font-weight:700"'
+            ocell = (f'<td><b{hl}>{esc(g["os_side"])}球</b> '
+                     f'<span class="mut">小{fmt_p(g["under25"])}·大{fmt_p(g["over25"])}</span></td>')
         return (f'<tr><td>{esc(f["num_str"])}</td><td>{esc(f["league_abb"])}</td>'
                 f'<td>{esc(f["home"])} vs {esc(f["away"])}</td>'
-                f'{cells}'
+                f'{cells}{ocell}'
                 f'<td>{esc(f.get("data_quality", ""))}</td></tr>')
     _gpairs = [(f, pr) for f, pr in zip(ordered, preds) if pr.get("goals")]
     _gh = '<tr><th>场次</th><th>联赛</th><th>对阵</th>'
     for lab in ["0", "1", "2", "3", "4", "5", "6", "7+"]:
         _gh += f'<th>{lab}</th>'
-    _gh += '<th>数据</th></tr>'
+    _gh += '<th>大小(2.5)</th><th>数据</th></tr>'
     goals_num_html = "".join(
         x for x in (_grow(f, pr) for f, pr in sorted(_gpairs, key=lambda q: q[0]["num_str"])) if x)
     goals_rate_html = "".join(
@@ -583,26 +588,47 @@ def build_verify_html(vdata):
                            f'{"✅" if ok else "❌"} 实际{esc(r["g_actual"])}球</span>')
                 else:
                     res = '<span style="color:var(--mut)">待开奖/无比分</span>'
+                # 大小球(2.5) 另一种情况
+                os_pred = os_res = ""
+                if r.get("g_os"):
+                    os_pred = (f'<b>{esc(r["g_os"])}</b> {fmt_p(r.get("g_os_p"))}'
+                               if r.get("g_os_p") is not None else esc(r["g_os"]))
+                    if r.get("g_os_hit") is not None:
+                        ok2 = r["g_os_hit"]
+                        col2 = "#0a7d3e" if ok2 else "#c0392b"
+                        os_res = (f'<span style="color:{col2};font-weight:700">'
+                                  f'{"✅" if ok2 else "❌"} 实际{esc(r["g_os_actual"])}</span>')
+                    else:
+                        os_res = '<span style="color:var(--mut)">待开奖</span>'
                 gpv = ("%.6f" % pv) if pv is not None else "0"
                 gt += (f'<tr class="vg" data-num="{esc(r["num"])}" data-gp="{gpv}">'
                        f'<td>{esc(r["num"])}</td>'
                        f'<td>{esc(r["home"])} vs {esc(r["away"])}</td>'
                        f'<td>{picktxt}</td>'
                        f'<td>{esc(r.get("score") or "-")}</td>'
-                       f'<td>{res}</td></tr>')
+                       f'<td>{res}</td>'
+                       f'<td>{os_pred}</td><td>{os_res}</td></tr>')
             gstat = ""
             if st.get("goals_n"):
-                gstat = (f'<p class="mut">总进球已核验 <b>{st["goals_n"]}</b> · 命中 '
-                         f'<b>{st["goals_hits"]}</b>'
-                         + (f' ({st["goals_rate"]:.0%})'
-                            if st.get("goals_rate") is not None else '') + '</p>')
+                parts = [f'总进球(单档)已核验 <b>{st["goals_n"]}</b> · 命中 '
+                         f'<b>{st["goals_hits"]}</b>']
+                if st.get("goals_rate") is not None:
+                    parts[0] += f' ({st["goals_rate"]:.0%})'
+                if st.get("goals_os_n"):
+                    t = (f'　大小球(2.5)已核验 <b>{st["goals_os_n"]}</b> · 命中 '
+                         f'<b>{st["goals_os_hits"]}</b>')
+                    if st.get("goals_os_rate") is not None:
+                        t += f' ({st["goals_os_rate"]:.0%})'
+                    parts.append(t)
+                gstat = '<p class="mut">' + "".join(parts) + '</p>'
             gd = esc(day["date"])
             gbar = ('<div class="tabbar" style="margin:6px 0">'
                     f'<button class="tabbtn on" data-vgt="num" onclick="sortGT(\'{gd}\',\'num\')">🕑 场次顺序</button>'
                     f'<button class="tabbtn" data-vgt="p" onclick="sortGT(\'{gd}\',\'p\')">📈 按命中概率</button></div>')
-            goals_html = ('<h4>⚽ 总进球验证(分开统计)</h4>' + gstat + gbar +
+            goals_html = ('<h4>⚽ 总进球验证(单档 + 大小球, 分开统计)</h4>' + gstat + gbar +
                           f'<div class="tbl"><table id="gv-{gd}"><tr><th>场次</th><th>对阵</th>'
-                          f'<th>预测(档·概率)</th><th>全场比分</th><th>结果</th></tr>{gt}</table></div>')
+                          f'<th>预测(单档·概率)</th><th>全场比分</th><th>单档结果</th>'
+                          f'<th>大小预测</th><th>大小结果</th></tr>{gt}</table></div>')
         else:
             goals_html = ('<div class="note">该期未做总进球预测(自 09-06 起每期开始记录)。</div>')
 
