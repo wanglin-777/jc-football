@@ -143,6 +143,12 @@ function showProbs(m){
   document.getElementById('pb-num').classList.toggle('on', m==='num');
   document.getElementById('pb-rate').classList.toggle('on', m==='rate');
 }
+function showVD(d){
+  var ds=document.querySelectorAll('[id^="vd-"]');
+  for(var i=0;i<ds.length;i++){ds[i].style.display=(ds[i].id==='vd-'+d)?'block':'none';}
+  var bs=document.querySelectorAll('[data-vd]');
+  for(var j=0;j<bs.length;j++){bs[j].classList.toggle('on', bs[j].getAttribute('data-vd')===d);}
+}
 """
 
 
@@ -359,6 +365,17 @@ def build_verify_html(vdata):
         return ('<h2>✅ 预测验证 / 复盘</h2>'
                 '<div class="note">还没有历史预测可验证。从今天起每次自动更新都会把当天预测存档，'
                 '等当天比赛全部结束后即可在这里看到「预测 vs 实际」的复盘（命中率与回报）。</div>')
+    # 顶部日期切换按钮(最新在前, 默认显示最新一天)
+    default = vdata[0]["date"]
+    btn_items = []
+    for day in vdata:
+        d = day["date"]
+        on = " on" if d == default else ""
+        btn_items.append(f'<button class="tabbtn{on}" data-vd="{esc(d)}" '
+                         f'onclick="showVD(\'{esc(d)}\')">📅 {esc(d)}</button>')
+    bar = ('<div class="tabbar" style="margin:10px 0;flex-wrap:wrap">'
+           + "".join(btn_items) + '</div>')
+
     blocks = []
     for day in vdata:
         rows, st = day["rows"], day["stats"]
@@ -398,18 +415,22 @@ def build_verify_html(vdata):
                     f'<td>{esc(r["odds"] or "-")}</td><td>{mark}</td></tr>')
         c_txt = ""
         if day.get("combos"):
-            c_txt = '<p class="mut">注: 串关净回报按五组两串一、每组下 1 注计算; 只有当某组的两场都已开奖才参与判定。</p>'
+            c_txt = ('<p class="mut">注: 串关净回报按五组两串一、每组下 1 注计算; '
+                     '只有当某组的两场都已开奖才参与判定。</p>')
+        disp = "block" if day["date"] == default else "none"
         blocks.append(
-            f'<h2>📅 {esc(day["date"])} 复盘</h2>{summary}{c_txt}'
+            f'<div class="vdbox" id="vd-{esc(day["date"])}" style="display:{disp}">'
+            f'<h3>📅 {esc(day["date"])} 复盘</h3>{summary}{c_txt}'
             f'<div class="tbl"><table><tr><th>场次</th><th>联赛</th><th>对阵</th>'
             f'<th>预测</th><th>主/平/客</th><th>赔率</th><th>实际结果</th></tr>'
             f'{trs}</table></div>'
             '<div class="note">注: 赛果由竞彩口径快源(okooo, 与体彩同套场次/队名)自动核验,'
             '覆盖日职/韩职/挪超/巴甲/沙职等全部竞彩联赛; “待开奖”=尚未完场;'
-            '“缺结果源”=本次自动更新时结果源暂不可达。命中只统计“已核验”场次。</div>')
+            '“缺结果源”=本次自动更新时结果源暂不可达。命中只统计“已核验”场次。</div>'
+            '</div>')
     return ('<h2>✅ 预测验证 / 复盘</h2>'
-            '<p class="mut">当天比赛全部结束后, 自动把「预测选项」和「实际胜平负」比对, 统计命中率与回报</p>'
-            + "".join(blocks))
+            '<p class="mut">点上方日期按钮切换查看某天的逐场验证</p>'
+            + bar + "".join(blocks))
 
 
 def _fmt_row_pick(r):
