@@ -156,13 +156,22 @@ function showGoals(m){
   document.getElementById('gb-num').classList.toggle('on', m==='num');
   document.getElementById('gb-rate').classList.toggle('on', m==='rate');
 }
-function showVD(d){
-  var ds=document.querySelectorAll('[id^="vd-"]');
-  for(var i=0;i<ds.length;i++){ds[i].style.display=(ds[i].id==='vd-'+d)?'block':'none';}
-  var bs=document.querySelectorAll('[data-vd]');
-  for(var j=0;j<bs.length;j++){bs[j].classList.toggle('on', bs[j].getAttribute('data-vd')===d);}
-}
+var VP={'play':'spf','day':''};
 function _vdnum(s){var m=(s||'').match(/(\d+)$/);return m?parseInt(m[1],10):0;}
+function vpApply(){
+  var i,x;
+  var ds=document.querySelectorAll('[id^="vd-"]');
+  for(i=0;i<ds.length;i++){x=ds[i];x.style.display=(VP.play==='spf'&&x.id==='vd-'+VP.day)?'block':'none';}
+  var gs=document.querySelectorAll('[id^="vg-"]');
+  for(i=0;i<gs.length;i++){x=gs[i];x.style.display=(VP.play==='goals'&&x.id==='vg-'+VP.day)?'block':'none';}
+  var ps=document.querySelectorAll('[data-play]');
+  for(i=0;i<ps.length;i++){ps[i].classList.toggle('on',ps[i].getAttribute('data-play')===VP.play);}
+  var db=document.querySelectorAll('[data-vd]');
+  for(i=0;i<db.length;i++){db[i].classList.toggle('on',db[i].getAttribute('data-vd')===VP.day);}
+}
+function showPlay(p){VP.play=p;vpApply();}
+function showVD(d){VP.day=d;vpApply();}
+function vpInit(){var c=document.querySelector('[data-vpday]');VP.day=c?c.getAttribute('data-vpday'):'';vpApply();}
 function sortVD(d,m){
   var tb=document.getElementById('vt-'+d);
   if(!tb){return;}
@@ -184,9 +193,10 @@ function sortGT(d,m){
     return _vdnum(a.getAttribute('data-num'))-_vdnum(b.getAttribute('data-num'));
   });
   for(var k=0;k<rows.length;k++){tb.appendChild(rows[k]);}
-  var bs=document.querySelectorAll('#vd-'+d+' [data-vgt]');
+  var bs=document.querySelectorAll('#vg-'+d+' [data-vgt]');
   for(var j=0;j<bs.length;j++){bs[j].classList.toggle('on', bs[j].getAttribute('data-vgt')===m);}
 }
+vpInit();
 """
 
 
@@ -470,8 +480,11 @@ def build_verify_html(vdata):
         return ('<h2>✅ 预测验证 / 复盘</h2>'
                 '<div class="note">还没有历史预测可验证。从今天起每次自动更新都会把当天预测存档，'
                 '等当天比赛全部结束后即可在这里看到「预测 vs 实际」的复盘（命中率与回报）。</div>')
-    # 顶部日期切换按钮(最新在前, 默认显示最新一天)
+    # 玩法切换: 胜负/总进球 分开(都在预测验证里), 默认胜平负
     default = vdata[0]["date"]
+    playbar = ('<div class="tabbar" style="margin:6px 0;flex-wrap:wrap" data-vpday="' + esc(default) + '">'
+               '<button class="tabbtn on" data-play="spf" onclick="showPlay(\'spf\')">✅ 胜负(胜平负)验证</button>'
+               '<button class="tabbtn" data-play="goals" onclick="showPlay(\'goals\')">⚽ 总进球验证</button></div>')
     btn_items = []
     for day in vdata:
         d = day["date"]
@@ -481,7 +494,8 @@ def build_verify_html(vdata):
     bar = ('<div class="tabbar" style="margin:10px 0;flex-wrap:wrap">'
            + "".join(btn_items) + '</div>')
 
-    blocks = []
+    spf_blocks = []
+    goal_blocks = []
     for day in vdata:
         rows, st = day["rows"], day["stats"]
         hit_rate = f"{st['rate']:.0%}" if st["rate"] is not None else "-"
@@ -597,7 +611,8 @@ def build_verify_html(vdata):
         sortbar = ('<div class="tabbar" style="margin:6px 0">'
                    f'<button class="tabbtn on" data-vdm="num" onclick="sortVD(\'{d_esc}\',\'num\')">🕑 场次顺序</button>'
                    f'<button class="tabbtn" data-vdm="p" onclick="sortVD(\'{d_esc}\',\'p\')">📈 按预测胜率</button></div>')
-        blocks.append(
+        # 胜平负视图(含串关验证)
+        spf_blocks.append(
             f'<div class="vdbox" id="vd-{d_esc}" style="display:{disp}">'
             f'<h3>📅 {d_esc} 复盘</h3>{summary}{c_txt}'
             f'{sortbar}'
@@ -605,14 +620,18 @@ def build_verify_html(vdata):
             f'<th>预测</th><th>主/平/客</th><th>赔率</th><th>实际结果</th></tr>'
             f'{trs}</table></div>'
             f'{combo_html}'
-            f'{goals_html}'
             '<div class="note">注: 赛果由竞彩口径快源(okooo, 与体彩同套场次/队名)自动核验,'
             '覆盖日职/韩职/挪超/巴甲/沙职等全部竞彩联赛; “待开奖”=尚未完场;'
             '“缺结果源”=本次自动更新时结果源暂不可达。命中只统计“已核验”场次。</div>'
             '</div>')
+        # 总进球视图(与胜负分开, 单独统计)
+        goal_blocks.append(
+            f'<div id="vg-{d_esc}" style="display:none">'
+            f'<h3>📅 {d_esc} · ⚽ 总进球验证</h3>{goals_html}'
+            '</div>')
     return ('<h2>✅ 预测验证 / 复盘</h2>'
-            '<p class="mut">点上方日期按钮切换查看某天的逐场验证</p>'
-            + bar + "".join(blocks))
+            '<p class="mut">先选玩法(胜负/总进球), 再用日期按钮切换查看某天</p>'
+            + playbar + bar + "".join(spf_blocks) + "".join(goal_blocks))
 
 
 def _fmt_row_pick(r):
