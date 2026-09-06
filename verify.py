@@ -110,20 +110,31 @@ def _load_dates():
     return out
 
 
-# ---------------- 结果获取 ----------------
-def _results_for(slug, d0, d1):
-    """返回该联赛在 [d0,d1] 已开赛结果的查找表 {(home,away):{gf,ga}}"""
-    try:
-        lh = get_league(slug)
-    except Exception:
-        return {}
-    if not lh.available:
-        return {}
-    table = {}
-    for x in lh.all_matches():
-        if d0 <= x["date"] <= d1:
-            table[(x["home"], x["away"])] = {"gf": x["gh"], "ga": x["ga"]}
-    return table
+# ---------------- 结果获取(验证时强制拉取最新赛果) ----------------
+_TABLES = {}
+
+
+def _result_table(slug):
+    if slug not in _TABLES:
+        try:
+            lh = get_league(slug, force=True)   # 强制联网拿最新赛果(避免用旧缓存)
+        except Exception:
+            lh = None
+        tab = {}
+        if lh is not None and lh.available:
+            for x in lh.all_matches():
+                tab.setdefault((x["home"], x["away"]), []).append((x["date"], x["gh"], x["ga"]))
+        _TABLES[slug] = tab
+    return _TABLES[slug]
+
+
+def _find_result(slug, he, ae, d0, d1):
+    for (h, a), lst in _result_table(slug).items():
+        if h == he and a == ae:
+            for dt, gf, ga in lst:
+                if d0 <= dt <= d1:
+                    return gf, ga
+    return None
 
 
 def _actual_label(gf, ga):
@@ -141,8 +152,6 @@ def verify_all(now=None):
         except Exception:
             continue
         rows = []
-        # 每个联赛只取一次结果表
-        cache = {}
         for it in snap.get("items", []):
             league_abb = it.get("league_abb", "")
             code = it.get("league_code") or LEAGUE_ABB_TO_CODE.get(league_abb, "")
@@ -155,16 +164,13 @@ def verify_all(now=None):
                    "probs": it.get("probs"), "actual": None, "hit": None,
                    "status": "缺结果源" if not (slug and he and ae) else "待开奖"}
             if slug and he and ae:
-                key = (slug, d)
-                if key not in cache:
-                    cache[key] = _results_for(slug, d, d + timedelta(days=1))
-                m = cache[key].get((he, ae))
-                if m:
-                    row["actual"] = _actual_label(m["gf"], m["ga"])
+                got = _find_result(slug, he, ae, d, d + timedelta(days=1))
+                if got:
+                    gf, ga = got
+                    row["actual"] = _actual_label(gf, ga)
                     row["hit"] = (row["actual"] == row["pick"])
                     row["status"] = "已核验"
                 else:
-                    # 比赛日太早还没开赛/没收录
                     if (now - d) > timedelta(days=3):
                         row["status"] = "未找到结果"
                     else:

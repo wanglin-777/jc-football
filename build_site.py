@@ -137,6 +137,12 @@ function showTab(id){
   var bs=document.querySelectorAll('.tabbtn');
   for(var j=0;j<bs.length;j++){bs[j].classList.toggle('on', bs[j].getAttribute('data-tab')===id);}
 }
+function showProbs(m){
+  document.getElementById('probs-num').style.display=(m==='num')?'block':'none';
+  document.getElementById('probs-rate').style.display=(m==='rate')?'block':'none';
+  document.getElementById('pb-num').classList.toggle('on', m==='num');
+  document.getElementById('pb-rate').classList.toggle('on', m==='rate');
+}
 """
 
 
@@ -232,17 +238,21 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
                           f'<td>{c["odds"]:.2f}</td>'
                           f'<td>{esc(f.get("data_quality",""))}</td></tr>')
 
-    # 全部场次预测表(三向概率 + 推荐)
-    all_html = ""
-    for f, pr in sorted(zip(ordered, preds),
-                        key=lambda x: x[1]["pick_p"], reverse=True):
-        all_html += (f'<tr><td>{esc(f["num_str"])}</td><td>{esc(f["league_abb"])}</td>'
-                     f'<td>{esc(f["home"])} vs {esc(f["away"])}</td>'
-                     f'<td>{fmt_p(pr["home"])}</td><td>{fmt_p(pr["draw"])}</td><td>{fmt_p(pr["away"])}</td>'
-                     f'<td><b>{esc(pr["pick"])}</b></td>'
-                     f'<td>{fmt_p(pr["pick_p"])}</td>'
-                     f'<td>{esc(pr.get("pick_odds") or "-")}</td>'
-                     f'<td>{esc(f.get("data_quality",""))}</td></tr>')
+    # 全部场次预测表(三向概率 + 推荐): 生成两种排序(按场次/按胜率)
+    def _prob_rows(pairs):
+        s = ""
+        for f, pr in pairs:
+            s += (f'<tr><td>{esc(f["num_str"])}</td><td>{esc(f["league_abb"])}</td>'
+                  f'<td>{esc(f["home"])} vs {esc(f["away"])}</td>'
+                  f'<td>{fmt_p(pr["home"])}</td><td>{fmt_p(pr["draw"])}</td><td>{fmt_p(pr["away"])}</td>'
+                  f'<td><b>{esc(pr["pick"])}</b></td>'
+                  f'<td>{fmt_p(pr["pick_p"])}</td>'
+                  f'<td>{esc(pr.get("pick_odds") or "-")}</td>'
+                  f'<td>{esc(f.get("data_quality",""))}</td></tr>')
+        return s
+    _pairs = list(zip(ordered, preds))
+    all_num_html = _prob_rows(sorted(_pairs, key=lambda x: x[0]["num_str"]))
+    all_prob_html = _prob_rows(sorted(_pairs, key=lambda x: x[1]["pick_p"], reverse=True))
 
     metrics = (f'<div class="metric"><b>{total}</b><span>在售场次</span></div>'
                f'<div class="metric"><b>{len(ordered)}</b><span>可预测场次</span></div>'
@@ -289,10 +299,21 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
 
 <section class="panel" id="tab-probs">
 <h2>📊 全部场次概率</h2>
-<p class="mut">每场 主胜 / 平 / 客胜 的模型概率与推荐(点上方「🎯 串关方案」可回看五大方案)</p>
+<p class="mut">每场 主胜 / 平 / 客胜 的模型概率与推荐</p>
+<div class="tabbar" style="margin:8px 0">
+<button class="tabbtn on" id="pb-num" onclick="showProbs('num')">🕑 按场次顺序</button>
+<button class="tabbtn" id="pb-rate" onclick="showProbs('rate')">📈 按胜率高低</button>
+</div>
+<div id="probs-num">
 <div class="tbl"><table><tr><th>场次</th><th>联赛</th><th>对阵</th>
 <th>主胜</th><th>平局</th><th>客胜</th><th>推荐</th><th>胜率</th><th>赔率</th><th>数据</th>
-</tr>{all_html}</table></div>
+</tr>{all_num_html}</table></div>
+</div>
+<div id="probs-rate" style="display:none">
+<div class="tbl"><table><tr><th>场次</th><th>联赛</th><th>对阵</th>
+<th>主胜</th><th>平局</th><th>客胜</th><th>推荐</th><th>胜率</th><th>赔率</th><th>数据</th>
+</tr>{all_prob_html}</table></div>
+</div>
 </section>
 
 <section class="panel" id="tab-upset">

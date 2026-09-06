@@ -67,10 +67,10 @@ def _to_d(s):
 class LeagueHistory:
     """某联赛当前赛季(+上一赛季)的历史赛果"""
 
-    def __init__(self, slug):
+    def __init__(self, slug, force=False):
         self.slug = slug
         stem, year = _split_year(slug)
-        self.curr = _load_slug(slug)
+        self.curr = _load_slug(slug, force=force)
         self.prev = []
         if year:
             prev_slug = f"{stem}-{year - 1}"
@@ -154,7 +154,9 @@ class LeagueHistory:
 _HIST_CACHE = {}
 
 
-def get_league(slug):
+def get_league(slug, force=False):
+    if force and slug in _HIST_CACHE:
+        del _HIST_CACHE[slug]
     if slug not in _HIST_CACHE:
-        _HIST_CACHE[slug] = LeagueHistory(slug)
+        _HIST_CACHE[slug] = LeagueHistory(slug, force=force)
     return _HIST_CACHE[slug]
