@@ -386,20 +386,14 @@ def total_goals(feat):
         probs = [0.13] * 7 + [0.09]
         s = sum(probs)
     probs = [p / s for p in probs]
-    idx = max(range(len(GOAL_LABELS)), key=lambda i: probs[i])
-    under25 = probs[0] + probs[1] + probs[2]      # 0-2 球 -> 小球(<2.5)
-    over25 = 1.0 - under25                        # 3+ 球 -> 大球(>2.5)
-    os_side = "小" if under25 >= over25 else "大"
+    order = sorted(range(len(GOAL_LABELS)), key=lambda i: probs[i], reverse=True)
     return {
         "labels": GOAL_LABELS,
         "probs": [round(x, 5) for x in probs],
-        "pick": GOAL_LABELS[idx],
-        "p": round(probs[idx], 4),
+        "pick": GOAL_LABELS[order[0]],          # 第1可能
+        "pick2": GOAL_LABELS[order[1]],         # 第2可能(双候选, 命中其一即中)
+        "p": round(probs[order[0]], 4),
+        "p2": round(probs[order[1]], 4),
         "avg": round(lh + la, 2),
         "quality": feat.get("data_quality", ""),
-        # 另加一种情况: 大小球(2.5 线)
-        "os_side": os_side,
-        "os_p": round(max(under25, over25), 4),
-        "under25": round(under25, 4),
-        "over25": round(over25, 4),
     }
