@@ -342,8 +342,49 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
     goals_tbl_html = "".join(
         x for x in (_grow2(f, pr) for f, pr in sorted(_gpairs, key=lambda q: q[0]["num_str"])) if x)
 
-    metrics = (f'<div class="metric"><b>{total}</b><span>在售场次</span></div>'
-               f'<div class="metric"><b>{len(ordered)}</b><span>可预测场次</span></div>'
+    # 当天场次总览(含已开赛/完场): 让已开始的比赛也能在页面上看到
+    import re as _re
+    insale = sum(1 for m in (today or {}).get("matches", []) if m.get("in_sale", True))
+    _score_map = {}
+    for _dv in vdata:
+        if _dv["date"] == sales:
+            for _r in _dv["rows"]:
+                if _r.get("score"):
+                    _score_map[_r["num"]] = _r["score"]
+
+    def _numkey(n):
+        mm = _re.search(r"(\d+)$", n or "")
+        return int(mm.group(1)) if mm else 0
+
+    sched_rows = ""
+    for m in sorted((today or {}).get("matches", []), key=lambda x: _numkey(x.get("num_str"))):
+        sc = _score_map.get(m.get("num_str"))
+        if sc:
+            stxt = f'<span style="color:#0a7d3e;font-weight:700">完场 {esc(sc)}</span>'
+        elif not m.get("in_sale", True) or m.get("started"):
+            stxt = '<span style="color:#c0392b;font-weight:600">已开赛/停售</span>'
+        else:
+            stxt = '<span style="color:#0a7d3e;font-weight:600">在售</span>'
+        had = ""
+        if m.get("in_sale", True) and m.get("had_h"):
+            had = f"{m['had_h']}/{m['had_d']}/{m['had_a']}"
+        sched_rows += (f'<tr><td>{esc(m.get("num_str", ""))}</td>'
+                       f'<td>{esc(m.get("time", ""))}</td>'
+                       f'<td>{esc(m.get("league_abb", ""))}</td>'
+                       f'<td>{esc(m.get("home", ""))} vs {esc(m.get("away", ""))}</td>'
+                       f'<td>{had or "-"}</td>'
+                       f'<td>{stxt}</td></tr>')
+    n_day = len((today or {}).get("matches", []))
+    schedule_html = ('<h2 style="margin-top:6px">📋 当天场次总览'
+                     f'({n_day} 场 · 在售 {insale})</h2>'
+                     '<p class="mut">保留开赛前已发布的全部场次; 开赛后标“已开赛/停售”, '
+                     '完场的直接显示比分(赛后随自动更新刷新)</p>'
+                     f'<div class="tbl"><table><tr><th>场次</th><th>时间</th><th>联赛</th>'
+                     f'<th>对阵</th><th>胜平负</th><th>状态</th></tr>{sched_rows}</table></div>')
+
+    metrics = (f'<div class="metric"><b>{n_day}</b><span>当天场次</span></div>'
+               f'<div class="metric"><b>{insale}</b><span>在售</span></div>'
+               f'<div class="metric"><b>{len(ordered)}</b><span>可预测(在售)</span></div>'
                f'<div class="metric"><b>{full}</b><span>完整情报</span></div>'
                f'<div class="metric"><b>{parts}</b><span>部分情报</span></div>')
 
@@ -364,6 +405,7 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
 <div class="wrap">
 {warn_html}
 <div class="metrics">{metrics}</div>
+{schedule_html}
 
 <div class="tabbar">
 <button class="tabbtn on" data-tab="combo" onclick="showTab('combo')">🎯 串关方案</button>

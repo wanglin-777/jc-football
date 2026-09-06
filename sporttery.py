@@ -16,7 +16,7 @@ import os
 import ssl
 import time
 import urllib.request
-from datetime import date
+from datetime import date, timedelta
 
 from config import CACHE_DIR, DATA_DIR, HEADERS, SPORTTERY_MATCH_URL
 
@@ -24,6 +24,14 @@ from config import CACHE_DIR, DATA_DIR, HEADERS, SPORTTERY_MATCH_URL
 _CTX = ssl.create_default_context()
 _CTX.check_hostname = False
 _CTX.verify_mode = ssl.CERT_NONE
+
+# 同一开售日内的场次合并保留文件(记录今天"见过"的全部场次,
+# 避免开赛后从官方"在售"接口消失 -> 当天看不到)
+_SCHED_FILE = os.path.join(DATA_DIR, "day_schedule.json")
+
+
+def _in_sale_status(m):
+    return m.get("matchStatus") in ("Selling", "On Sale")
 
 
 def _http_json(url, timeout=12, tries=3):
@@ -90,41 +98,128 @@ def _parse_match(m):
     }
 
 
-def fetch_today(force=False):
-    """抓取竞彩当天在售场次。
+def _load_schedule(day):
+    """读同开售日已见过的场次(用于保留已开赛/已结束的比赛)"""
+    try:
+        with open(_SCHED_FILE, encoding="utf-8") as f:
+            d = json.load(f)
+        if d.get("date") == day:
+            return d.get("matches") or []
+    except Exception:
+        pass
+    # 兼容旧版 today_matches.json
+    try:
+        with open(os.path.join(DATA_DIR, "today_matches.json"), encoding="utf-8") as f:
+            d = json.load(f)
+        if d.get("date") == day:
+            return d.get("matches") or []
+    except Exception:
+        pass
+    return []
 
-    返回 dict: {"date": "2026-09-05", "matches": [ {场次...}, ... ]}
-    只保留状态为在售(Selling/On Sale) 且是最近一个开售日的场次。
-    本地 json 存在且未 force 时直接读取缓存(离线可用)。
+
+def fetch_today(force=False):
+    """抓取竞彩当天场次(不只在售)。
+
+    说明: 官方接口只返回【仍可投注】的场次, 一旦开赛就从接口消失。
+    因此本函数做"同开售日合并保留": 今天已见过的场次(存于 day_schedule.json)
+    即使之后开赛/结束, 仍保留在返回里并标记 started/in_sale, 避免"刷新后
+    已开赛的比赛看不到"; 已结束场次仍可被验证/复盘读取。
+
+    返回 dict: {"date": "2026-09-06", "matches": [{场次(含 in_sale/started)}, ...]}
     """
+    import re as _re
     today_json = os.path.join(DATA_DIR, "today_matches.json")
+    # 未 force: 直接读缓存(缓存里已含当天已开赛/结束的保留场次, 离线可用)
     if (not force) and os.path.exists(today_json):
-        with open(today_json, encoding="utf-8") as f:
-            cached = json.load(f)
-        if cached and cached.get("matches"):
-            return cached
+        try:
+            with open(today_json, encoding="utf-8") as f:
+                cached = json.load(f)
+            if cached and cached.get("matches"):
+                return cached
+        except Exception:
+            pass
 
     data = _http_json(SPORTTERY_MATCH_URL)
     days = (data.get("value") or {}).get("matchInfoList") or []
+    # 取"该开售日"(优先沿用上次已记录的日期, 否则第一个有在售的, 再否则第一个)
+    prev_day = None
+    for f in (_SCHED_FILE, today_json):
+        try:
+            with open(f, encoding="utf-8") as fp:
+                prev_day = json.load(fp).get("date")
+            if prev_day:
+                break
+        except Exception:
+            prev_day = None
+    target = None
+    if prev_day:
+        target = next((g for g in days if g.get("businessDate") == prev_day), None)
+    if target is None:
+        target = next((g for g in days
+                       if any(_in_sale_status(m) for m in (g.get("subMatchList") or []))), None)
+    if target is None and days:
+        target = days[0]
+    if target is None:
+        raise RuntimeError("官方接口无返回任何场次")
 
-    def selling(m):
-        return (m.get("matchStatus") in ("Selling", "On Sale"))
+    bd = target.get("businessDate")
+    live = []
+    for m in (target.get("subMatchList") or []):
+        pm = _parse_match(m)
+        pm["in_sale"] = _in_sale_status(m)
+        pm["started"] = not pm["in_sale"]
+        if not pm["in_sale"]:            # 已开赛/结束 -> 官方不再提供在售赔率
+            pm["had_h"] = pm["had_d"] = pm["had_a"] = None
+            pm["hhad_h"] = pm["hhad_d"] = pm["hhad_a"] = None
+        live.append(pm)
 
-    # 官方按天分组; 只取第一个(通常=当天开售日)在售场次
-    matches = []
-    picked_day = None
-    for day in days:
-        subs = [m for m in (day.get("subMatchList") or []) if selling(m)]
-        if subs:
-            matches = [_parse_match(m) for m in subs]
-            picked_day = day.get("businessDate")
-            break
+    # 与当天已保留的场次合并(位置稳定, 保留已开赛的)
+    prev = _load_schedule(bd)
+    bynum, merged = {}, []
+    for old in prev:
+        merged.append(dict(old))
+        bynum[old.get("num_str")] = len(merged) - 1
+    cur = set()
+    for pm in live:
+        num = pm.get("num_str")
+        if not num:
+            continue
+        cur.add(num)
+        if num in bynum:
+            merged[bynum[num]] = pm
+        else:
+            bynum[num] = len(merged)
+            merged.append(pm)
+    for old in prev:                     # 上次在售、这次没出现 -> 已开赛/截止
+        num = old.get("num_str")
+        if num and num not in cur:
+            o2 = dict(old)
+            o2["in_sale"] = False
+            o2["started"] = True
+            o2["had_h"] = o2["had_d"] = o2["had_a"] = None
+            o2["hhad_h"] = o2["hhad_d"] = o2["hhad_a"] = None
+            merged[bynum[num]] = o2
 
-    result = {"date": picked_day, "matches": matches}
-    with open(today_json, "w", encoding="utf-8") as f:
-        json.dump(result, f, ensure_ascii=False, indent=1)
+    def numkey(n):
+        mm = _re.search(r"(\d+)$", n or "")
+        return int(mm.group(1)) if mm else 0
+    merged.sort(key=lambda m: numkey(m.get("num_str")))
 
-    # 顺便导出 CSV 便于 Excel 查看
+    if not merged:                       # 空结果不覆盖已有缓存
+        try:
+            with open(today_json, encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return {"date": bd, "matches": []}
+
+    result = {"date": bd, "matches": merged}
+    for f, obj in ((today_json, result), (_SCHED_FILE, result)):
+        try:
+            with open(f, "w", encoding="utf-8") as fp:
+                json.dump(obj, fp, ensure_ascii=False, indent=1)
+        except Exception:
+            pass
     _export_csv(result)
     return result
 
@@ -132,7 +227,8 @@ def fetch_today(force=False):
 def _export_csv(result):
     path = os.path.join(DATA_DIR, "today_matches.csv")
     cols = ["num_str", "league_abb", "time", "home", "home_rank", "away",
-            "away_rank", "had_h", "had_d", "had_a",
+            "away_rank", "in_sale", "started",
+            "had_h", "had_d", "had_a",
             "hhad_gl", "hhad_h", "hhad_d", "hhad_a"]
     with open(path, "w", newline="", encoding="utf-8-sig") as f:
         w = csv.DictWriter(f, fieldnames=cols)

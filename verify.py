@@ -85,8 +85,25 @@ def store(sales_date, ordered, preds, rec):
             "odds": cb["odds"], "joint": cb["joint"], "risk": cb.get("risk", "低"),
             "legs": [{"num": l["num"], "pick": l["pick"]} for l in cb["legs"]],
         })
-    data = {"date": sales_date, "n": len(items), "items": items, "combos": combos}
     path = os.path.join(HIST_DIR, f"{sales_date}.json")
+    # 同销售日合并保留: 早前已预测、本次已不在售(开赛/停售)的场次保留其预测, 便于赛后核验
+    try:
+        with open(path, encoding="utf-8") as f:
+            old = json.load(f)
+    except Exception:
+        old = None
+    if old and old.get("items") and items:
+        cur = {it["num"] for it in items if it.get("num")}
+        for oi in old["items"]:
+            if oi.get("num") and oi["num"] not in cur:
+                items.append(oi)
+        import re as _re
+
+        def _nk(n):
+            mm = _re.search(r"(\d+)$", n or "")
+            return int(mm.group(1)) if mm else 0
+        items.sort(key=lambda x: _nk(x.get("num")))
+    data = {"date": sales_date, "n": len(items), "items": items, "combos": combos}
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=1)
     # 同时生成方便阅读的 CSV(GitHub 可直接预览, Excel/WPS 可直接打开)
