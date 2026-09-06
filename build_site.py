@@ -164,6 +164,8 @@ function vpApply(){
   for(i=0;i<ds.length;i++){x=ds[i];x.style.display=(VP.play==='spf'&&x.id==='vd-'+VP.day)?'block':'none';}
   var gs=document.querySelectorAll('[id^="vg-"]');
   for(i=0;i<gs.length;i++){x=gs[i];x.style.display=(VP.play==='goals'&&x.id==='vg-'+VP.day)?'block':'none';}
+  var us=document.querySelectorAll('[id^="vu-"]');
+  for(i=0;i<us.length;i++){x=us[i];x.style.display=(VP.play==='upset'&&x.id==='vu-'+VP.day)?'block':'none';}
   var ps=document.querySelectorAll('[data-play]');
   for(i=0;i<ps.length;i++){ps[i].classList.toggle('on',ps[i].getAttribute('data-play')===VP.play);}
   var db=document.querySelectorAll('[data-vd]');
@@ -467,7 +469,8 @@ def build_verify_html(vdata):
     default = vdata[0]["date"]
     playbar = ('<div class="tabbar" style="margin:6px 0;flex-wrap:wrap" data-vpday="' + esc(default) + '">'
                '<button class="tabbtn on" data-play="spf" onclick="showPlay(\'spf\')">✅ 胜负(胜平负)验证</button>'
-               '<button class="tabbtn" data-play="goals" onclick="showPlay(\'goals\')">⚽ 总进球验证</button></div>')
+               '<button class="tabbtn" data-play="goals" onclick="showPlay(\'goals\')">⚽ 总进球验证</button>'
+               '<button class="tabbtn" data-play="upset" onclick="showPlay(\'upset\')">⚡ 爆冷验证</button></div>')
     btn_items = []
     for day in vdata:
         d = day["date"]
@@ -479,6 +482,7 @@ def build_verify_html(vdata):
 
     spf_blocks = []
     goal_blocks = []
+    upset_blocks = []
     for day in vdata:
         rows, st = day["rows"], day["stats"]
         hit_rate = f"{st['rate']:.0%}" if st["rate"] is not None else "-"
@@ -590,6 +594,48 @@ def build_verify_html(vdata):
         else:
             goals_html = ('<div class="note">该期未做总进球预测(自 09-06 起每期开始记录)。</div>')
 
+        # ⚡ 爆冷验证(单独视图)
+        ur_rows = [r for r in rows if r.get("u_fav")]
+        upset_html = ""
+        if ur_rows:
+            ut = ""
+            for r in ur_rows:
+                fav_team = r["home"] if r["u_fav"] == "主胜" else r["away"]
+                favtxt = (f'<b>{esc(fav_team)}</b> ({esc(r["u_fav"])}'
+                          + (f' @{r.get("u_odds")}' if r.get("u_odds") else '') + ')')
+                risk_chip = f'<span class="pill-r">风险{r.get("u_risk", "-")}</span>'
+                if r.get("actual"):
+                    if r.get("u_upset"):
+                        res = ('<span style="color:#c0392b;font-weight:700">⚠ 爆冷·实际'
+                               f'{esc(r["actual"])}</span>')
+                    else:
+                        res = ('<span style="color:#0a7d3e;font-weight:700">大热取胜·实际'
+                               f'{esc(r["actual"])}</span>')
+                else:
+                    res = '<span style="color:var(--mut)">待开奖</span>'
+                ut += (f'<tr><td>{esc(r["num"])}</td>'
+                       f'<td>{esc(r["home"])} vs {esc(r["away"])}</td>'
+                       f'<td>{favtxt}</td><td>{risk_chip}</td>'
+                       f'<td>{fmt_p(r.get("u_nowin")) if r.get("u_nowin") is not None else "-"}</td>'
+                       f'<td>{esc(r.get("score") or "-")}</td>'
+                       f'<td>{res}</td></tr>')
+            um = ""
+            if st.get("upset_n"):
+                um = (f'<p class="mut">已核验大热 <b>{st["upset_n"]}</b> 场 · 实际爆冷 '
+                      f'<b>{st["upset_events"]}</b> 场 (爆冷率 {st["upset_rate"]:.0%})'
+                      + (f' · 中/高风险提示 {st.get("upset_f_events", 0)}/{st.get("upset_f_n", 0)} 场真爆冷'
+                         if st.get("upset_f_n") else '')
+                      + (f' · 模型平均防冷概率 {st["upset_nowin_avg"]:.0%}'
+                         if st.get("upset_nowin_avg") is not None else '') + '</p>')
+            gdu = esc(day["date"])
+            upset_html = ('<h3>📅 ' + gdu + ' · ⚡ 爆冷验证</h3>' + um +
+                          '<div class="tbl"><table><tr><th>场次</th><th>对阵</th>'
+                          '<th>大热(方向·赔率)</th><th>风险</th><th>模型防冷概率</th>'
+                          f'<th>比分</th><th>结果</th></tr>{ut}</table></div>')
+        else:
+            upset_html = ('<h3>📅 ' + esc(day["date"]) + ' · ⚡ 爆冷验证</h3>'
+                          '<div class="note">该期无爆冷记录(自 09-06 起每期记录大热/风险)。</div>')
+
         disp = "block" if day["date"] == default else "none"
         d_esc = esc(day["date"])
         sortbar = ('<div class="tabbar" style="margin:6px 0">'
@@ -613,9 +659,13 @@ def build_verify_html(vdata):
             f'<div id="vg-{d_esc}" style="display:none">'
             f'<h3>📅 {d_esc} · ⚽ 总进球验证</h3>{goals_html}'
             '</div>')
+        # 爆冷视图(单独统计)
+        upset_blocks.append(
+            f'<div id="vu-{d_esc}" style="display:none">{upset_html}</div>')
     return ('<h2>✅ 预测验证 / 复盘</h2>'
-            '<p class="mut">先选玩法(胜负/总进球), 再用日期按钮切换查看某天</p>'
-            + playbar + bar + "".join(spf_blocks) + "".join(goal_blocks))
+            '<p class="mut">先选玩法(胜负/总进球/爆冷), 再用日期按钮切换查看某天</p>'
+            + playbar + bar + "".join(spf_blocks) + "".join(goal_blocks)
+            + "".join(upset_blocks))
 
 
 def _fmt_row_pick(r):

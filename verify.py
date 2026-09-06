@@ -64,6 +64,7 @@ def store(sales_date, ordered, preds, rec):
     items = []
     for f, pr in zip(ordered, preds):
         g = pr.get("goals") if isinstance(pr, dict) else None
+        u = (pr.get("upset") or {}) if isinstance(pr, dict) else None
         items.append({
             "num": f["num_str"], "league_abb": f["league_abb"],
             "league_code": LEAGUE_ABB_TO_CODE.get(f["league_abb"], f.get("league_code", "")),
@@ -74,6 +75,9 @@ def store(sales_date, ordered, preds, rec):
             "goals": ({"pick": g["pick"], "p": g["p"], "pick2": g.get("pick2"),
                        "p2": g.get("p2"), "avg": g["avg"],
                        "probs": g["probs"]} if g else None),
+            "upset": ({"fav": u["fav"], "fav_odds": u.get("fav_odds"),
+                       "risk": u.get("risk"), "no_win_p": u.get("no_win_p"),
+                       "hot": bool(u.get("hot"))} if u else None),
         })
     combos = []
     for cb in (rec or {}).get("combos", []):
@@ -238,6 +242,13 @@ def verify_all(now=None):
             row["g_avg"] = _g.get("avg")
             row["g_actual"] = None
             row["g_hit"] = None
+            _u = it.get("upset") or {}
+            row["u_fav"] = _u.get("fav")          # 大热方向(主胜/客胜)
+            row["u_odds"] = _u.get("fav_odds")
+            row["u_risk"] = _u.get("risk")
+            row["u_nowin"] = _u.get("no_win_p")
+            row["u_hot"] = bool(_u.get("hot"))
+            row["u_upset"] = None
 
             # 1) 首选: 竞彩口径快源 okooo(覆盖所有竞彩联赛, 含日职/韩职/巴甲等)
             okrows = _okooo_rows(d)
@@ -291,7 +302,12 @@ def verify_all(now=None):
                 if t is not None:
                     r["g_actual"] = _goal_bucket(t)
                     r["g_hit"] = (r["g_actual"] in
-                                   {str(r["g_pick"]), str(r.get("g_pick2") or r["g_pick"])})
+                                  {str(r["g_pick"]), str(r.get("g_pick2") or r["g_pick"])})
+
+        # ---- 爆冷验证: 大热方(主胜/客胜)实际未赢=爆冷发生 ----
+        for r in rows:
+            if r.get("u_fav") and r.get("actual"):
+                r["u_upset"] = (r["actual"] != r["u_fav"])
 
         # 统计(只算已核验)
         verified = [r for r in rows if r["hit"] is not None]
@@ -300,12 +316,24 @@ def verify_all(now=None):
         for r in verified:
             net += (r["odds"] - 1.0) if r["hit"] else -1.0
         gv = [r for r in rows if r.get("g_hit") is not None]
+        up = [r for r in rows if r.get("u_upset") is not None]
         stats = {"total": len(rows), "verified": len(verified), "hits": hits,
                  "rate": (hits / len(verified)) if verified else None,
                  "roi": net,   # 每场按1注的净回报(单位:元)
                  "goals_n": len(gv),
-                 "goals_hits": sum(1 for r in gv if r["g_hit"])}
+                 "goals_hits": sum(1 for r in gv if r["g_hit"]),
+                 "upset_n": len(up),
+                 "upset_events": sum(1 for r in up if r["u_upset"])}
         stats["goals_rate"] = (sum(1 for r in gv if r["g_hit"]) / len(gv)) if gv else None
+        if up:
+            stats["upset_rate"] = sum(1 for r in up if r["u_upset"]) / len(up)
+        else:
+            stats["upset_rate"] = None
+        uf = [r for r in up if r.get("u_risk") in ("中", "高")]
+        stats["upset_f_n"] = len(uf)
+        stats["upset_f_events"] = sum(1 for r in uf if r["u_upset"])
+        nowins = [r.get("u_nowin") for r in up if r.get("u_nowin") is not None]
+        stats["upset_nowin_avg"] = (sum(nowins) / len(nowins)) if nowins else None
 
         # 串关验证(两场均已核验且都命中)
         combos = []
