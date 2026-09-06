@@ -150,6 +150,19 @@ function showVD(d){
   var bs=document.querySelectorAll('[data-vd]');
   for(var j=0;j<bs.length;j++){bs[j].classList.toggle('on', bs[j].getAttribute('data-vd')===d);}
 }
+function _vdnum(s){var m=(s||'').match(/(\d+)$/);return m?parseInt(m[1],10):0;}
+function sortVD(d,m){
+  var tb=document.getElementById('vt-'+d);
+  if(!tb){return;}
+  var rows=Array.prototype.slice.call(tb.querySelectorAll('tr.vrow'));
+  rows.sort(function(a,b){
+    if(m==='p'){var x=parseFloat(a.getAttribute('data-p'))||0,y=parseFloat(b.getAttribute('data-p'))||0;return y-x;}
+    return _vdnum(a.getAttribute('data-num'))-_vdnum(b.getAttribute('data-num'));
+  });
+  for(var k=0;k<rows.length;k++){tb.appendChild(rows[k]);}
+  var bs=document.querySelectorAll('#vd-'+d+' [data-vdm]');
+  for(var j=0;j<bs.length;j++){bs[j].classList.toggle('on', bs[j].getAttribute('data-vdm')===m);}
+}
 """
 
 
@@ -424,7 +437,10 @@ def build_verify_html(vdata):
             prob = r.get("probs") or []
             ptxt = (f"{fmt_p(prob[0])}/{fmt_p(prob[1])}/{fmt_p(prob[2])}"
                     if len(prob) == 3 else "-")
-            trs += (f'<tr><td>{esc(r["num"])}</td><td>{esc(r["league"])}</td>'
+            _pi = {"主胜": 0, "平": 1, "客胜": 2}.get(r.get("pick"), 0)
+            pv = (prob[_pi] if len(prob) == 3 else 0.0)
+            trs += (f'<tr class="vrow" data-num="{esc(r["num"])}" data-p="{pv:.6f}">'
+                    f'<td>{esc(r["num"])}</td><td>{esc(r["league"])}</td>'
                     f'<td>{esc(r["home"])} vs {esc(r["away"])}</td>'
                     f'<td><b>{esc(r["pick"])}</b></td><td>{ptxt}</td>'
                     f'<td>{esc(r["odds"] or "-")}</td><td>{mark}</td></tr>')
@@ -461,10 +477,15 @@ def build_verify_html(vdata):
                           '<div class="tbl"><table><tr><th>方案</th><th>两场(场次/预测/实际)</th>'
                           f'<th>串后赔率</th><th>结果</th></tr>{ctr}</table></div>')
         disp = "block" if day["date"] == default else "none"
+        d_esc = esc(day["date"])
+        sortbar = ('<div class="tabbar" style="margin:6px 0">'
+                   f'<button class="tabbtn on" data-vdm="num" onclick="sortVD(\'{d_esc}\',\'num\')">🕑 场次顺序</button>'
+                   f'<button class="tabbtn" data-vdm="p" onclick="sortVD(\'{d_esc}\',\'p\')">📈 按预测胜率</button></div>')
         blocks.append(
-            f'<div class="vdbox" id="vd-{esc(day["date"])}" style="display:{disp}">'
-            f'<h3>📅 {esc(day["date"])} 复盘</h3>{summary}{c_txt}'
-            f'<div class="tbl"><table><tr><th>场次</th><th>联赛</th><th>对阵</th>'
+            f'<div class="vdbox" id="vd-{d_esc}" style="display:{disp}">'
+            f'<h3>📅 {d_esc} 复盘</h3>{summary}{c_txt}'
+            f'{sortbar}'
+            f'<div class="tbl"><table id="vt-{d_esc}"><tr><th>场次</th><th>联赛</th><th>对阵</th>'
             f'<th>预测</th><th>主/平/客</th><th>赔率</th><th>实际结果</th></tr>'
             f'{trs}</table></div>'
             f'{combo_html}'
