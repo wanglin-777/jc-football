@@ -250,20 +250,28 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
         upset_html = ('<h2>⚠️ 爆冷雷达(防冷提醒)</h2>'
                       '<div class="note">今日暂无高风险爆冷场次(无明显大热或防冷概率低)。</div>')
 
-    # 单场稳胆池(按胜率降序前 12 场, 表格)
-    rows = sorted(zip(ordered, preds),
-                  key=lambda x: x[1]["pick_p"], reverse=True)
+    # 严格单关胆材(AI建议1) + 模型候选表(AI建议2过滤后)
+    def _rowtr(c):
+        f = c["feat"]
+        return (f'<tr><td>{esc(f["num_str"])}</td><td>{esc(f["league_abb"])}</td>'
+                f'<td>{esc(f["home"])} vs {esc(f["away"])}</td>'
+                f'<td><b>{esc(c["pick"])}</b></td>'
+                f'<td>{fmt_p(c["prob"])}</td>'
+                f'<td>{c["odds"]:.2f}</td>'
+                f'<td>{esc(f.get("data_quality", ""))}</td></tr>')
+    banker_html = ""
+    if rec and rec.get("bankers"):
+        inner = "".join(_rowtr(c) for c in rec["bankers"])
+        banker_html = ('<h2>🎯 严格单关胆材(胜率≥70% 且 赔率≤1.6)</h2>'
+                       '<div class="tbl"><table><tr><th>场次</th><th>联赛</th><th>对阵</th>'
+                       f'<th>推荐</th><th>胜率</th><th>赔率</th><th>数据</th></tr>{inner}</table></div>')
+    else:
+        banker_html = ('<div class="note">今日无符合严格单关胆材(预测胜率≥70% 且 赔率≤1.6)的场次——'
+                       '按 AI 复盘建议不硬凑单关胆材(两串一仍正常给出)。</div>')
     cand_html = ""
     if rec:
         pool = sorted(rec["candidates"], key=lambda c: c["prob"], reverse=True)
-        for c in pool[:12]:
-            f = c["feat"]
-            cand_html += (f'<tr><td>{esc(f["num_str"])}</td><td>{esc(f["league_abb"])}</td>'
-                          f'<td>{esc(f["home"])} vs {esc(f["away"])}</td>'
-                          f'<td><b>{esc(c["pick"])}</b></td>'
-                          f'<td>{fmt_p(c["prob"])}</td>'
-                          f'<td>{c["odds"]:.2f}</td>'
-                          f'<td>{esc(f.get("data_quality",""))}</td></tr>')
+        cand_html = "".join(_rowtr(c) for c in pool[:12])
 
     # 全部场次预测表(三向概率 + 推荐): 生成两种排序(按场次/按胜率)
     def _prob_rows(pairs):
@@ -319,7 +327,9 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
 {daily_ai}
 {combo_html}
 
-<h2>📊 单场稳胆池(胜率 Top 12)</h2>
+{banker_html}
+<h2>📈 模型候选(预测胜率 Top 12)</h2>
+<p class="mut">串关已执行过滤: 剔除爆冷高风险场 · 优先胜率差≥20%的场(不足5组时自动放宽门槛)</p>
 <div class="tbl"><table><tr><th>场次</th><th>联赛</th><th>对阵</th><th>推荐</th>
 <th>胜率</th><th>赔率</th><th>数据</th></tr>{cand_html}</table></div>
 </section>

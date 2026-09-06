@@ -13,7 +13,8 @@
   再在所有两两组合中枚举满足 串后赔率>=2 的组合,
   按联合胜率排序, 贪心挑选同时兼顾"每支球队最多出现在两组串关中"的多样性。
 """
-from config import COMBO_MIN_ODDS, COMBO_LEGS, N_RECOMMEND
+from config import (BANKER_MAX_ODDS, BANKER_MIN_PROB, COMBO_MARGIN_TIERS,
+                    COMBO_MIN_ODDS, COMBO_LEGS, COMBO_SKIP_RISK, N_RECOMMEND)
 import itertools
 
 
@@ -32,43 +33,71 @@ def pick_best_leg(feat, pred):
 def recommend(feats, preds, min_prob=0.45):
     """
     输入: feats(每场特征), preds(每场 model.predict 结果)
-    返回: {"candidates": 单场稳胆池(按胜率降序),
+    返回: {"candidates": 全部候选(按胜率降序), "bankers": 严格单关胆材,
            "combos":  5组两串一(按联合胜率降序)}
+    硬规则(AI 复盘建议):
+      建议1: 只有 胜率≥BANKER_MIN_PROB 且赔率≤BANKER_MAX_ODDS 才列为单关胆材
+      建议2: 串关选腿跳过爆冷风险=高 的场, 并尽量要求主/客胜概率差≥20%;
+             若严格筛选后凑不足5组, 则按 COMBO_MARGIN_TIERS 逐级放宽(仍跳高风险),
+             最后实在没有才允许高风险腿兜底(避免当天无串可推)。
     """
-    pool = []
+    full = []
     for f, pr in zip(feats, preds):
         if not (f.get("had_h") and f.get("had_d") and f.get("had_a")):
             continue                      # 未开胜平负(如部分强弱悬殊场)不参与
         leg = pick_best_leg(f, pr)
         if leg and leg["prob"] >= min_prob:
-            pool.append({"feat": f, "pred": pr, **leg})
-    # 候选池按单场模型胜率降序
-    pool.sort(key=lambda x: x["prob"], reverse=True)
+            probs = leg["probs"] or []
+            second = sorted(probs, reverse=True)[1] if len(probs) >= 2 else 0.0
+            risk = (pr.get("upset") or {}).get("risk", "低")
+            full.append({"feat": f, "pred": pr, **leg,
+                         "margin": leg["prob"] - second, "risk": risk})
+    full.sort(key=lambda x: x["prob"], reverse=True)
 
-    # 枚举两两组合
-    cand = []
-    for a, b in itertools.combinations(pool, COMBO_LEGS):
-        odds = a["odds"] * b["odds"]
-        if odds < COMBO_MIN_ODDS - 1e-9:
-            continue
-        joint = a["prob"] * b["prob"]
-        cand.append({"a": a, "b": b, "odds": odds, "joint": joint})
-    cand.sort(key=lambda x: x["joint"], reverse=True)
+    # 建议1: 严格单关胆材(≥70% 且 ≤1.6), 仅用于展示, 不参与串关
+    bankers = [x for x in full
+               if x["prob"] >= BANKER_MIN_PROB
+               and x["odds"] <= BANKER_MAX_ODDS
+               and x["risk"] != COMBO_SKIP_RISK]
 
-    # 贪心挑选 N_RECOMMEND 组, 每支球队/每场比赛最多出现在 2 组中保证多样
-    used = {}
-    combos = []
-    for c in cand:
-        if len(combos) >= N_RECOMMEND:
+    def make_combos(pool):
+        cand = []
+        for a, b in itertools.combinations(pool, COMBO_LEGS):
+            odds = a["odds"] * b["odds"]
+            if odds < COMBO_MIN_ODDS - 1e-9:
+                continue
+            cand.append((a, b, odds, a["prob"] * b["prob"]))
+        cand.sort(key=lambda t: t[3], reverse=True)
+        used = {}
+        combos = []
+        for a, b, odds, joint in cand:
+            if len(combos) >= N_RECOMMEND:
+                break
+            keys = (a["feat"]["num_str"], b["feat"]["num_str"])
+            if any(used.get(k, 0) >= 2 for k in keys):
+                continue
+            for k in keys:
+                used[k] = used.get(k, 0) + 1
+            combos.append(_format_combo({"a": a, "b": b, "odds": odds,
+                                         "joint": joint}))
+        return combos
+
+    # 建议2: 分级筛选(跳过爆冷高风险, 概率差从 20% 逐级放宽)
+    best = None
+    for m in COMBO_MARGIN_TIERS:
+        pool = [x for x in full
+                if x["margin"] >= m and x["risk"] != COMBO_SKIP_RISK]
+        c = make_combos(pool)
+        if len(c) >= N_RECOMMEND:
+            best = c
             break
-        keys = (c["a"]["feat"]["num_str"], c["b"]["feat"]["num_str"])
-        if any(used.get(k, 0) >= 2 for k in keys):
-            continue
-        # 排除"同一场比赛选两次"的不可能情形(组合本身保证不同场)
-        for k in keys:
-            used[k] = used.get(k, 0) + 1
-        combos.append(_format_combo(c))
-    return {"candidates": pool, "combos": combos}
+        if best is None and c:
+            best = c
+    if best is None:                       # 极少数兜底: 允许高风险腿, 避免空手
+        pool = [x for x in full if x["margin"] >= 0.02]
+        best = make_combos(pool)
+
+    return {"candidates": full, "bankers": bankers, "combos": best or []}
 
 
 def _upset_digest(x):

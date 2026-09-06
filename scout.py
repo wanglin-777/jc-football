@@ -66,6 +66,7 @@ def _team_stats(rows):
     if games == 0:
         return None
     win_w = _sum_wavg(rows, lambda r: 1 if r["pts"] == 3 else 0)
+    draw_w = _sum_wavg(rows, lambda r: 1 if r["pts"] == 1 else 0)
     pts_w = _sum_wavg(rows, lambda r: r["pts"])
     gf_all = _sum_wavg(rows, lambda r: r["gf"])
     ga_all = _sum_wavg(rows, lambda r: r["ga"])
@@ -75,7 +76,7 @@ def _team_stats(rows):
     ga_home = _sum_wavg(home, lambda r: r["ga"]) if home else None
     gf_away = _sum_wavg(away, lambda r: r["gf"]) if away else None
     ga_away = _sum_wavg(away, lambda r: r["ga"]) if away else None
-    return {"games": games, "win_w": win_w, "pts_w": pts_w,
+    return {"games": games, "win_w": win_w, "draw_w": draw_w, "pts_w": pts_w,
             "gf": gf_all, "ga": ga_all,
             "gf_home": gf_home, "ga_home": ga_home,
             "gf_away": gf_away, "ga_away": ga_away}
@@ -97,6 +98,8 @@ def _summarize(team_cn, st, rest, rank):
     win = st["win_w"]
     if pts is not None and win is not None:
         parts.append(f"场均积分{pts:.1f} 胜率{win:.0%}")
+    if st.get("draw_w") is not None:
+        parts.append(f"平率{st['draw_w']:.0%}")
     if st["gf"] is not None and st["ga"] is not None:
         parts.append(f"场均进{st['gf']:.1f}/失{st['ga']:.1f}")
     parts.append(f"休息{rest if rest is not None else '?'}天")
@@ -151,12 +154,14 @@ def build_feature(match):
                 feat.update({"home_games": hs["games"],
                              "home_gf": hs["gf"], "home_ga": hs["ga"],
                              "home_home_gf": hs["gf_home"], "home_home_ga": hs["ga_home"],
-                             "home_win_w": hs["win_w"]})
+                             "home_win_w": hs["win_w"],
+                             "home_draw_w": hs["draw_w"]})
             if as_:
                 feat.update({"away_games": as_["games"],
                              "away_gf": as_["gf"], "away_ga": as_["ga"],
                              "away_away_gf": as_["gf_away"], "away_away_ga": as_["ga_away"],
-                             "away_win_w": as_["win_w"]})
+                             "away_win_w": as_["win_w"],
+                             "away_draw_w": as_["draw_w"]})
 
             hrest = _rest_days(hrows, mdate)
             arest = _rest_days(arows, mdate)

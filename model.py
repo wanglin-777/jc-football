@@ -16,7 +16,8 @@
 """
 import math
 
-from config import MAX_PROB_PICK, N_RECENT, RECENT_DECAY
+from config import (DRAW_PRONE_RATE, MAX_PROB_PICK, N_RECENT,
+                    RECENT_DECAY)
 
 # 近期场次对"可信任度"的权重曲线: 场次越多, 历史模型占比越高
 # 说明: 欧洲主流联赛 9 月仅开赛数轮, 近期样本偏小; 官方赔率(市场共识)是更强先验,
@@ -317,6 +318,20 @@ def predict(feat):
             probs[2] += s; probs[1] -= s * 0.4; probs[0] -= s * 0.6
     total = sum(probs)
     probs = [max(0.001, p) / total for p in probs]
+
+    # AI建议3(补平局盲区): 两队历史平局率都较高时, 强制给平局加权
+    try:
+        hd = feat.get("home_draw_w")
+        ad = feat.get("away_draw_w")
+        if hd is not None and ad is not None:
+            dmin = min(hd, ad)
+            if dmin >= DRAW_PRONE_RATE:
+                boost = min(0.08, dmin * 0.12)
+                probs[1] += boost
+                t2 = sum(probs)
+                probs = [max(0.001, p) / t2 for p in probs]
+    except Exception:
+        pass
 
     # 复盘自调优: 把历史"预测 vs 实际"的经验应用到本次概率(温和, 见 selftune.py)
     try:

@@ -68,3 +68,14 @@ COMBO_MIN_ODDS = 2.0   # 串后最低赔率(用户要求 >= 2)
 COMBO_LEGS = 2         # 只串两关
 MIN_PROB_PICK = 0.50   # 单场入选推荐的最低模型胜率(可调; 过高会导致可选场太少)
 MAX_PROB_PICK = 0.92   # 过高的模型胜率视为异常, 防止把"必死盘"当稳胆
+
+# ---------- AI 复盘建议 -> 硬规则 ----------
+# 建议1(严格胆材): 只有当 预测胜率>=BANKER_MIN_PROB 且 赔率<=BANKER_MAX_ODDS 才列为单关胆材
+BANKER_MIN_PROB = 0.70
+BANKER_MAX_ODDS = 1.60
+# 建议2(串关避险): 串关选腿跳过爆冷风险达此级别的场; 且要求"首选项与次优的胜率差"达标,
+#   从 COMBO_MARGIN_TIERS 的严格档(0.20=AI建议20%)往下逐级放宽, 保证仍能出串而不过度冒险
+COMBO_SKIP_RISK = "高"
+COMBO_MARGIN_TIERS = (0.20, 0.12, 0.05)
+# 建议3(补平局): 两队近期平局率均不低于此值时, 模型强制给"平局"加权
+DRAW_PRONE_RATE = 0.25
