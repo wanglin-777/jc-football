@@ -70,7 +70,12 @@ def _collect(offline=False):
     pred_map, ordered, preds = {}, [], []
     for f in feats:
         if f["had_h"] and f["had_d"] and f["had_a"]:
-            pred_map[f["num_str"]] = model.predict(f)
+            pr = model.predict(f)
+            try:
+                pr["goals"] = model.total_goals(f)   # 总进球预测(与胜负分开)
+            except Exception:
+                pr["goals"] = None
+            pred_map[f["num_str"]] = pr
     ordered = [f for f in feats if f["num_str"] in pred_map]
     preds = [pred_map[f["num_str"]] for f in ordered]
     rec = parlay.recommend(ordered, preds)
@@ -134,7 +139,7 @@ def fmt_p(x):
 
 JS = r"""
 function showTab(id){
-  var ids=['combo','probs','upset','verify','self','info'];
+  var ids=['combo','probs','goals','upset','verify','self','info'];
   for(var i=0;i<ids.length;i++){var p=document.getElementById('tab-'+ids[i]); if(p){p.style.display=(ids[i]===id)?'block':'none';}}
   var bs=document.querySelectorAll('.tabbtn');
   for(var j=0;j<bs.length;j++){bs[j].classList.toggle('on', bs[j].getAttribute('data-tab')===id);}
@@ -144,6 +149,12 @@ function showProbs(m){
   document.getElementById('probs-rate').style.display=(m==='rate')?'block':'none';
   document.getElementById('pb-num').classList.toggle('on', m==='num');
   document.getElementById('pb-rate').classList.toggle('on', m==='rate');
+}
+function showGoals(m){
+  document.getElementById('goals-num').style.display=(m==='num')?'block':'none';
+  document.getElementById('goals-rate').style.display=(m==='rate')?'block':'none';
+  document.getElementById('gb-num').classList.toggle('on', m==='num');
+  document.getElementById('gb-rate').classList.toggle('on', m==='rate');
 }
 function showVD(d){
   var ds=document.querySelectorAll('[id^="vd-"]');
@@ -291,6 +302,32 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
     all_num_html = _prob_rows(sorted(_pairs, key=lambda x: x[0]["num_str"]))
     all_prob_html = _prob_rows(sorted(_pairs, key=lambda x: x[1]["pick_p"], reverse=True))
 
+    # ⚽ 总进球预测(与胜负分开): 每场 0~7+ 各档概率(加粗=推荐档)
+    def _grow(f, pr):
+        g = pr.get("goals")
+        if not g:
+            return None
+        cells = ""
+        for lab, pv in zip(g["labels"], g["probs"]):
+            hl = ' style="color:#0a7d3e;font-weight:700"' if lab == g["pick"] else ""
+            cells += f'<td{hl}>{fmt_p(pv)}</td>'
+        return (f'<tr><td>{esc(f["num_str"])}</td><td>{esc(f["league_abb"])}</td>'
+                f'<td>{esc(f["home"])} vs {esc(f["away"])}</td>'
+                f'{cells}'
+                f'<td>{esc(f.get("data_quality", ""))}</td></tr>')
+    _gpairs = [(f, pr) for f, pr in zip(ordered, preds) if pr.get("goals")]
+    _gh = '<tr><th>场次</th><th>联赛</th><th>对阵</th>'
+    for lab in ["0", "1", "2", "3", "4", "5", "6", "7+"]:
+        _gh += f'<th>{lab}</th>'
+    _gh += '<th>数据</th></tr>'
+    goals_num_html = "".join(
+        x for x in (_grow(f, pr) for f, pr in sorted(_gpairs, key=lambda q: q[0]["num_str"])) if x)
+    goals_rate_html = "".join(
+        x for x in (_grow(f, pr) for f, pr in sorted(
+            _gpairs, key=lambda q: q[1]["goals"]["p"], reverse=True)) if x)
+    if not goals_num_html:
+        goals_num_html = goals_rate_html = ""
+
     metrics = (f'<div class="metric"><b>{total}</b><span>在售场次</span></div>'
                f'<div class="metric"><b>{len(ordered)}</b><span>可预测场次</span></div>'
                f'<div class="metric"><b>{full}</b><span>完整情报</span></div>'
@@ -317,6 +354,7 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
 <div class="tabbar">
 <button class="tabbtn on" data-tab="combo" onclick="showTab('combo')">🎯 串关方案</button>
 <button class="tabbtn" data-tab="probs" onclick="showTab('probs')">📊 全部概率</button>
+<button class="tabbtn" data-tab="goals" onclick="showTab('goals')">⚽ 总进球</button>
 <button class="tabbtn" data-tab="upset" onclick="showTab('upset')">⚠️ 爆冷雷达</button>
 <button class="tabbtn" data-tab="verify" onclick="showTab('verify')">✅ 预测验证</button>
 <button class="tabbtn" data-tab="self" onclick="showTab('self')">🧠 自我复盘</button>
@@ -352,6 +390,21 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
 <div class="tbl"><table><tr><th>场次</th><th>联赛</th><th>对阵</th>
 <th>主胜</th><th>平局</th><th>客胜</th><th>推荐</th><th>胜率</th><th>赔率</th><th>数据</th>
 </tr>{all_prob_html}</table></div>
+</div>
+</section>
+
+<section class="panel" id="tab-goals">
+<h2>⚽ 总进球预测(与胜负分开)</h2>
+<p class="mut">每场总进球数落在 0/1/…/6/7+(7球及以上)各档的概率, 绿色加粗=推荐档; 由两队近期攻防强度泊松推算</p>
+<div class="tabbar" style="margin:8px 0">
+<button class="tabbtn on" id="gb-num" onclick="showGoals('num')">🕑 按场次顺序</button>
+<button class="tabbtn" id="gb-rate" onclick="showGoals('rate')">📈 按命中概率</button>
+</div>
+<div id="goals-num">
+<div class="tbl"><table>{_gh}{goals_num_html}</table></div>
+</div>
+<div id="goals-rate" style="display:none">
+<div class="tbl"><table>{_gh}{goals_rate_html}</table></div>
 </div>
 </section>
 
@@ -488,6 +541,39 @@ def build_verify_html(vdata):
             combo_html = ('<h4>🎯 串关方案验证(五组两串一)</h4>'
                           '<div class="tbl"><table><tr><th>方案</th><th>两场(场次/预测/实际)</th>'
                           f'<th>串后赔率</th><th>结果</th></tr>{ctr}</table></div>')
+        # ⚽ 总进球验证(与胜负分开)
+        gv_rows = [r for r in rows if r.get("g_pick") is not None]
+        goals_html = ""
+        if gv_rows:
+            gt = ""
+            for r in gv_rows:
+                pv = r.get("g_p")
+                picktxt = (f'<b>{esc(r["g_pick"])}球</b> {fmt_p(pv)}'
+                           if pv is not None else esc(r["g_pick"]))
+                if r.get("g_hit") is not None:
+                    ok = r["g_hit"]
+                    col = "#0a7d3e" if ok else "#c0392b"
+                    res = (f'<span style="color:{col};font-weight:700">'
+                           f'{"✅" if ok else "❌"} 实际{esc(r["g_actual"])}球</span>')
+                else:
+                    res = '<span style="color:var(--mut)">待开奖/无比分</span>'
+                gt += (f'<tr><td>{esc(r["num"])}</td>'
+                       f'<td>{esc(r["home"])} vs {esc(r["away"])}</td>'
+                       f'<td>{picktxt}</td>'
+                       f'<td>{esc(r.get("score") or "-")}</td>'
+                       f'<td>{res}</td></tr>')
+            gstat = ""
+            if st.get("goals_n"):
+                gstat = (f'<p class="mut">总进球已核验 <b>{st["goals_n"]}</b> · 命中 '
+                         f'<b>{st["goals_hits"]}</b>'
+                         + (f' ({st["goals_rate"]:.0%})'
+                            if st.get("goals_rate") is not None else '') + '</p>')
+            goals_html = ('<h4>⚽ 总进球验证(分开统计)</h4>' + gstat +
+                          '<div class="tbl"><table><tr><th>场次</th><th>对阵</th>'
+                          f'<th>预测(档·概率)</th><th>全场比分</th><th>结果</th></tr>{gt}</table></div>')
+        else:
+            goals_html = ('<div class="note">该期未做总进球预测(自 09-06 起每期开始记录)。</div>')
+
         disp = "block" if day["date"] == default else "none"
         d_esc = esc(day["date"])
         sortbar = ('<div class="tabbar" style="margin:6px 0">'
@@ -501,6 +587,7 @@ def build_verify_html(vdata):
             f'<th>预测</th><th>主/平/客</th><th>赔率</th><th>实际结果</th></tr>'
             f'{trs}</table></div>'
             f'{combo_html}'
+            f'{goals_html}'
             '<div class="note">注: 赛果由竞彩口径快源(okooo, 与体彩同套场次/队名)自动核验,'
             '覆盖日职/韩职/挪超/巴甲/沙职等全部竞彩联赛; “待开奖”=尚未完场;'
             '“缺结果源”=本次自动更新时结果源暂不可达。命中只统计“已核验”场次。</div>'

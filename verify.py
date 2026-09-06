@@ -13,6 +13,7 @@
 import glob
 import json
 import os
+import re
 from datetime import date, timedelta
 
 import okooo_results
@@ -62,6 +63,7 @@ def store(sales_date, ordered, preds, rec):
     os.makedirs(HIST_DIR, exist_ok=True)
     items = []
     for f, pr in zip(ordered, preds):
+        g = pr.get("goals") if isinstance(pr, dict) else None
         items.append({
             "num": f["num_str"], "league_abb": f["league_abb"],
             "league_code": LEAGUE_ABB_TO_CODE.get(f["league_abb"], f.get("league_code", "")),
@@ -69,6 +71,8 @@ def store(sales_date, ordered, preds, rec):
             "pick": pr["pick"], "probs": [pr["home"], pr["draw"], pr["away"]],
             "odds": pr.get("pick_odds"), "source": pr["source"],
             "quality": f.get("data_quality", ""),
+            "goals": ({"pick": g["pick"], "p": g["p"], "avg": g["avg"],
+                       "probs": g["probs"]} if g else None),
         })
     combos = []
     for cb in (rec or {}).get("combos", []):
@@ -171,6 +175,24 @@ def _actual_label(gf, ga):
     return "主胜" if gf > ga else ("平" if gf == ga else "客胜")
 
 
+def _score_total(score):
+    """从 "1-2" 这类全场比分算总进球; 解析不了返回 None"""
+    if not score:
+        return None
+    nums = re.findall(r"\d+", str(score))
+    if len(nums) < 2:
+        return None
+    try:
+        return int(nums[0]) + int(nums[1])
+    except (TypeError, ValueError):
+        return None
+
+
+def _goal_bucket(total):
+    """总进球 -> 竞彩档位(0~6, 7+)"""
+    return str(total) if total <= 6 else "7+"
+
+
 # 竞彩口径快源缓存(每销售日一次拉取; None=该日拉取失败)
 _OKOOO = {}
 
@@ -208,6 +230,12 @@ def verify_all(now=None):
                    "pick": it.get("pick"), "odds": it.get("odds"),
                    "probs": it.get("probs"), "actual": None, "score": None,
                    "hit": None, "status": "待开奖"}
+            _g = it.get("goals") or {}
+            row["g_pick"] = _g.get("pick")
+            row["g_p"] = _g.get("p")
+            row["g_avg"] = _g.get("avg")
+            row["g_actual"] = None
+            row["g_hit"] = None
 
             # 1) 首选: 竞彩口径快源 okooo(覆盖所有竞彩联赛, 含日职/韩职/巴甲等)
             okrows = _okooo_rows(d)
@@ -254,15 +282,30 @@ def verify_all(now=None):
                     r["status"] = "已核验"
         _vcache_save(d, rows)
 
+        # ---- 总进球核验(与胜负分开): 该期有总进球预测且有比分才判 ----
+        for r in rows:
+            if r.get("g_pick") is not None and r.get("score"):
+                t = _score_total(r["score"])
+                if t is not None:
+                    r["g_actual"] = _goal_bucket(t)
+                    r["g_hit"] = (r["g_actual"] == str(r["g_pick"]))
+
         # 统计(只算已核验)
         verified = [r for r in rows if r["hit"] is not None]
         hits = sum(1 for r in verified if r["hit"])
         net = 0.0
         for r in verified:
             net += (r["odds"] - 1.0) if r["hit"] else -1.0
+        gv = [r for r in rows if r.get("g_hit") is not None]
         stats = {"total": len(rows), "verified": len(verified), "hits": hits,
                  "rate": (hits / len(verified)) if verified else None,
-                 "roi": net}   # 每场按1注的净回报(单位:元)
+                 "roi": net,   # 每场按1注的净回报(单位:元)
+                 "goals_n": len(gv),
+                 "goals_hits": sum(1 for r in gv if r["g_hit"])}
+        if gv:
+            stats["goals_rate"] = sum(1 for r in gv if r["g_hit"]) / len(gv)
+        else:
+            stats["goals_rate"] = None
 
         # 串关验证(两场均已核验且都命中)
         combos = []

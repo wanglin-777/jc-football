@@ -351,3 +351,47 @@ def predict(feat):
         "source": source,
         "upset": upset_analysis(feat, probs),
     }
+
+
+# ---------------- 总进球预测(与胜平负分开) ----------------
+GOAL_LABELS = ["0", "1", "2", "3", "4", "5", "6", "7+"]   # 竞彩总进球玩法档位
+
+
+def total_goals(feat):
+    """
+    单独的总进球预测(不影响胜平负 predict)。
+    用同样的泊松强度 λ主/λ客 做独立泊松卷积, 得"总进球数"分布,
+    并按竞彩玩法切成 0/1/2/3/4/5/6/7+ 档。返回:
+      {"labels", "probs"(与labels同长, 未取整), "pick", "p", "avg", "quality"}
+    """
+    try:
+        lh, la = poisson_lambdas(feat)
+    except Exception:
+        lh, la = 1.55, 1.15
+    maxg = 12
+    ph = [poisson_pmf(i, lh) for i in range(maxg + 1)]
+    pa = [poisson_pmf(j, la) for j in range(maxg + 1)]
+    tg = [0.0] * (maxg * 2 + 1)
+    for i in range(maxg + 1):
+        for j in range(maxg + 1):
+            tg[i + j] += ph[i] * pa[j]
+    probs = [0.0] * len(GOAL_LABELS)
+    for k in range(len(tg)):
+        if k <= 6:
+            probs[k] = tg[k]
+        else:
+            probs[7] += tg[k]
+    s = sum(probs)
+    if s <= 0:
+        probs = [0.13] * 7 + [0.09]
+        s = sum(probs)
+    probs = [p / s for p in probs]
+    idx = max(range(len(GOAL_LABELS)), key=lambda i: probs[i])
+    return {
+        "labels": GOAL_LABELS,
+        "probs": [round(x, 5) for x in probs],
+        "pick": GOAL_LABELS[idx],
+        "p": round(probs[idx], 4),
+        "avg": round(lh + la, 2),
+        "quality": feat.get("data_quality", ""),
+    }
