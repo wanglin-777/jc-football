@@ -603,7 +603,13 @@ def build_verify_html(vdata):
                 fav_team = r["home"] if r["u_fav"] == "主胜" else r["away"]
                 favtxt = (f'<b>{esc(fav_team)}</b> ({esc(r["u_fav"])}'
                           + (f' @{r.get("u_odds")}' if r.get("u_odds") else '') + ')')
-                risk_chip = f'<span class="pill-r">风险{r.get("u_risk", "-")}</span>'
+                risk_chip = ""
+                if r.get("u_risk") in ("低", "中", "高"):
+                    risk_chip = f'<span class="pill-r">风险{r.get("u_risk")}</span>'
+                elif r.get("u_fav") and r.get("u_odds") is None:
+                    risk_chip = '<span class="mut">复盘回填(按模型概率)</span>'
+                else:
+                    risk_chip = '<span class="mut">-</span>'
                 if r.get("actual"):
                     if r.get("u_upset"):
                         res = ('<span style="color:#c0392b;font-weight:700">⚠ 爆冷·实际'

@@ -306,6 +306,15 @@ def verify_all(now=None):
 
         # ---- 爆冷验证: 大热方(主胜/客胜)实际未赢=爆冷发生 ----
         for r in rows:
+            # 旧快照没存爆冷字段时, 用当时的模型三向概率反推大热方向(仅作复盘口径)
+            if not r.get("u_fav") and r.get("actual"):
+                p = r.get("probs") or []
+                if len(p) == 3 and max(p) > 0:
+                    favside = "主胜" if p[0] >= p[2] else "客胜"
+                    r["u_fav"] = favside
+                    r["u_nowin"] = round(1.0 - max(p[0], p[2]), 4)
+                    r["u_odds"] = None
+                    r["u_risk"] = ""
             if r.get("u_fav") and r.get("actual"):
                 r["u_upset"] = (r["actual"] != r["u_fav"])
 
