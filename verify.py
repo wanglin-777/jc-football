@@ -21,7 +21,37 @@ from history import get_league
 from team_map import CH_TO_EN
 
 HIST_DIR = os.path.join(DATA_DIR, "history")
+VERIFY_CACHE_DIR = os.path.join(DATA_DIR, "verified_cache")
 KEEP_DAYS = 30          # 验证页最多展示最近多少天
+
+
+# ---------------- 已验证结果本地缓存 ----------------
+def _vcache_load(d):
+    """读某销售日的已验证结果缓存: {num: {actual, hit, score}}"""
+    try:
+        with open(os.path.join(VERIFY_CACHE_DIR, f"{d}.json"), encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def _vcache_save(d, rows):
+    """把当天已核验的场次缓存下来(源临时不可用时页面/校准仍可用)"""
+    items = {}
+    for r in rows:
+        if r.get("actual"):
+            items[r.get("num")] = {"actual": r["actual"],
+                                    "hit": bool(r.get("hit")),
+                                    "score": r.get("score")}
+    if not items:
+        return
+    try:
+        os.makedirs(VERIFY_CACHE_DIR, exist_ok=True)
+        with open(os.path.join(VERIFY_CACHE_DIR, f"{d}.json"), "w", encoding="utf-8") as f:
+            json.dump(items, f, ensure_ascii=False)
+    except Exception:
+        pass
+
 
 
 # ---------------- 存档 ----------------
@@ -211,6 +241,18 @@ def verify_all(now=None):
             if not okrows and not (slug and he and ae):
                 row["status"] = "缺结果源"
             rows.append(row)
+
+        # ---- 结果缓存回填: 源临时不可用时, 复用上次已核验结果(比分不会变) ----
+        cc = _vcache_load(d)
+        for r in rows:
+            if r["actual"] is None:
+                e = cc.get(r.get("num"))
+                if e and e.get("actual"):
+                    r["actual"] = e["actual"]
+                    r["hit"] = (e["actual"] == r["pick"])
+                    r["score"] = e.get("score")
+                    r["status"] = "已核验"
+        _vcache_save(d, rows)
 
         # 统计(只算已核验)
         verified = [r for r in rows if r["hit"] is not None]
