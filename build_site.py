@@ -324,15 +324,14 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
 </div>
 
 <section class="panel show" id="tab-combo">
-<h2>🎯 两串一推荐(稳定优先)</h2>
-<p class="mut">规则: 只串两关 · 串后赔率 ≥ 2.0 · 只取低爆冷风险+高胜率差的场 · 按联合胜率从高到低(宁缺毋滥)</p>
+<h2>🎯 两串一推荐(稳定优先·不足补齐)</h2>
+<p class="mut">规则: 只串两关 · 串后赔率 ≥ 2.0 · 每腿胜率≥50% · 按稳定度从高到低排, 不足5组按稳定度补齐</p>
 {daily_ai}
 {combo_html}
 
 {banker_html}
 <h2>📈 模型候选(预测胜率 Top 12)</h2>
-<p class="mut">稳定优先: 串关只取低爆冷风险、胜率差≥{int(COMBO_MARGIN_TIERS[0]*100)}%的场,'
-宁缺毋滥(某天不足时宁肯少出, 不硬凑高风险)。</p>
+<p class="mut">稳定优先: 两腿都需 胜率≥50% 且 胜率差≥5%; 串关按稳定度(低风险优先)排, 不足5组时按稳定度补齐。</p>
 <div class="tbl"><table><tr><th>场次</th><th>联赛</th><th>对阵</th><th>推荐</th>
 <th>胜率</th><th>赔率</th><th>数据</th></tr>{cand_html}</table></div>
 </section>

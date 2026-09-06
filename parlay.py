@@ -35,11 +35,11 @@ def recommend(feats, preds, min_prob=MIN_PROB_LEG):
     输入: feats(每场特征), preds(每场 model.predict 结果)
     返回: {"candidates": 全部候选(按胜率降序), "bankers": 严格单关胆材,
            "combos":  两串一(按联合胜率降序, 宁缺毋滥)}
-    策略(稳定优先):
+    策略(稳定优先, 不足按稳定度补满):
       - 胆材: 仅 胜率≥BANKER_MIN_PROB 且 赔率≤BANKER_MAX_ODDS 且非高风险
-      - 串关: 默认只接受"低爆冷风险 + 胜率差≥COMBO_MARGIN_TIERS[0](25%)"的腿;
-        若该严格档凑不出任一组, 才逐级放宽(18%/10% 仍只限低风险 → 4% 允许中等风险
-        → 2% 才最后兜底允许高风险)。宁肯某天少出几组, 也不硬凑高风险串。
+      - 串关: 枚举所有"两腿都≥MIN_PROB_LEG + 串后赔率≥2 + 两腿胜率差≥5%"的组合,
+        先按"稳定度"(两腿中较险一腿的风险档: 低>中>高)从高到低排, 同稳定度再按联合胜率降序,
+        贪心补齐到 N_RECOMMEND(5) 组——低风险优先, 不够 5 组时才把风险更高的排进来补满。
     """
     full = []
     for f, pr in zip(feats, preds):
@@ -60,41 +60,32 @@ def recommend(feats, preds, min_prob=MIN_PROB_LEG):
                and x["odds"] <= BANKER_MAX_ODDS
                and x["risk"] == "低"]
 
-    def make_combos(pool):
-        cand = []
-        for a, b in itertools.combinations(pool, COMBO_LEGS):
-            odds = a["odds"] * b["odds"]
-            if odds < COMBO_MIN_ODDS - 1e-9:
-                continue
-            cand.append((a, b, odds, a["prob"] * b["prob"]))
-        cand.sort(key=lambda t: t[3], reverse=True)
-        used = {}
-        combos = []
-        for a, b, odds, joint in cand:
-            if len(combos) >= N_RECOMMEND:
-                break
-            keys = (a["feat"]["num_str"], b["feat"]["num_str"])
-            if any(used.get(k, 0) >= 2 for k in keys):
-                continue
-            for k in keys:
-                used[k] = used.get(k, 0) + 1
-            combos.append(_format_combo({"a": a, "b": b, "odds": odds,
-                                         "joint": joint}))
-        return combos
-
-    # 稳定优先的逐级筛选: 先从最严档取, 该档一旦有解就不再放宽去追 5 组
-    rk = {"低": 0, "中": 1, "高": 2}
-    stages = [(m, "低") for m in COMBO_MARGIN_TIERS]
-    stages += [(0.04, "中"), (0.02, "高")]
-    best = None
-    for m, allow in stages:
-        pool = [x for x in full
-                if x["margin"] >= m and rk.get(x["risk"], 0) <= rk[allow]]
-        c = make_combos(pool)
-        if c:
-            best = c
+    # 枚举候选串: 两腿都达最低胜率、串后赔率≥2、且两腿胜率差≥5%(排除纯碰运气腿)
+    cand = []
+    for a, b in itertools.combinations(full, COMBO_LEGS):
+        odds = a["odds"] * b["odds"]
+        if odds < COMBO_MIN_ODDS - 1e-9:
+            continue
+        if min(a["margin"], b["margin"]) < 0.05:
+            continue
+        s = {"低": 3, "中": 2, "高": 1}
+        stab = min(s.get(a["risk"], 1), s.get(b["risk"], 1))  # 较险一腿决定稳定度
+        cand.append((a, b, odds, a["prob"] * b["prob"], stab))
+    # 按稳定度排序(先两腿都低风险), 同档内按联合胜率; 贪心补齐 5 组
+    cand.sort(key=lambda t: (-t[4], -t[3]))
+    used = {}
+    combos = []
+    for a, b, odds, joint, stab in cand:
+        if len(combos) >= N_RECOMMEND:
             break
-    return {"candidates": full, "bankers": bankers, "combos": best or []}
+        keys = (a["feat"]["num_str"], b["feat"]["num_str"])
+        if any(used.get(k, 0) >= 2 for k in keys):
+            continue
+        for k in keys:
+            used[k] = used.get(k, 0) + 1
+        combos.append(_format_combo({"a": a, "b": b, "odds": odds,
+                                     "joint": joint}))
+    return {"candidates": full, "bankers": bankers, "combos": combos}
 
 
 def _upset_digest(x):
