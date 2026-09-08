@@ -17,7 +17,7 @@
 import math
 
 from config import (DRAW_PRONE_RATE, MAX_PROB_PICK, N_RECENT,
-                    RECENT_DECAY)
+                    RECENT_DECAY, HISTORY_MODEL_VARIANT, FORM_PRIOR_GAMES)
 
 # 近期场次对"可信任度"的权重曲线: 场次越多, 历史模型占比越高
 # 说明: 欧洲主流联赛 9 月仅开赛数轮, 近期样本偏小; 官方赔率(市场共识)是更强先验,
@@ -54,17 +54,25 @@ def score_matrix_p(home_lam, away_lam, max_goals=10):
         return 0.34, 0.32, 0.34
     p_h, p_d, p_a = p_h / total, p_d / total, p_a / total
     draw_boost = 0.03
-    p_h -= draw_boost / 2
-    p_a -= draw_boost / 2
-    p_d += draw_boost
+    # 从非平局概率按比例转移，避免弱势一方出现负概率。
+    boost = min(draw_boost, p_h + p_a)
+    non_draw = p_h + p_a
+    if non_draw > 0:
+        p_h *= (non_draw - boost) / non_draw
+        p_a *= (non_draw - boost) / non_draw
+    p_d += boost
     return p_h, p_d, p_a
 
 
 def implied_from_odds(o_h, o_d, o_a):
     """官方赔率 -> 去水分后的市场隐含概率"""
-    if not (o_h and o_d and o_a):
+    try:
+        odds = [float(o) for o in (o_h, o_d, o_a)]
+    except (TypeError, ValueError, OverflowError):
         return None
-    inv = [1.0 / o_h, 1.0 / o_d, 1.0 / o_a]
+    if any(not math.isfinite(o) or o <= 1 for o in odds):
+        return None
+    inv = [1.0 / o for o in odds]
     s = sum(inv)
     if s <= 0:
         return None
@@ -87,7 +95,7 @@ def _wavg(games, key, is_home=None):
     return (wsum / num) if num > 0 else None
 
 
-def poisson_lambdas(feat):
+def poisson_lambdas(feat, variant=None, prior_games=FORM_PRIOR_GAMES):
     """
     由情报特征求 λ主/λ客。
     用「近 N 场主客分离的攻防率」对全场均值做比例缩放:
@@ -111,17 +119,42 @@ def poisson_lambdas(feat):
 
     def coef(team_val, overall_val, base):
         """比例系数: 优先主客样本, 样本不足向总体收缩; 收缩后温和放大/缩小"""
-        v = team_val or overall_val
+        v = team_val if team_val is not None else overall_val
         if v is None:
             return 1.0
         raw = v / max(base, 0.1)
         raw = max(0.65, min(1.4, raw))     # 防极端值
         return 1.0 + 0.75 * (raw - 1.0)    # 向 1 收缩 25%, 降低噪声
 
-    home_attack = coef(h_att, h_att_overall, base_h)
-    home_defence = coef(h_def, h_def_overall, base_a)
-    away_attack = coef(a_att, a_att_overall, base_a)
-    away_defence = coef(a_def, a_def_overall, base_h)
+    variant = variant or HISTORY_MODEL_VARIANT
+    if variant == "shrunk_form":
+        if not math.isfinite(prior_games) or prior_games <= 0:
+            raise ValueError("prior_games 必须是有限正数")
+        # 每队总体攻防先向联赛均值收缩，再按主客子样本量融合。
+        # 总体基线使用主客平均，避免把全场数据直接除以单一主场基线。
+        overall_base = (base_h + base_a) / 2
+
+        def shrunk(team_val, overall_val, base, n, venue_n):
+            if overall_val is None:
+                return 1.0
+            strength = (overall_val * n / max(overall_base, .1) + prior_games) / (n + prior_games)
+            if team_val is not None and venue_n > 0:
+                strength = (team_val * venue_n / max(base, .1) + prior_games * strength) / (venue_n + prior_games)
+            return max(.4, min(2.2, strength))
+
+        hn, an = feat.get("home_games", 0), feat.get("away_games", 0)
+        hv, av = feat.get("home_home_games", 0), feat.get("away_away_games", 0)
+        home_attack = shrunk(h_att, h_att_overall, base_h, hn, hv)
+        home_defence = shrunk(h_def, h_def_overall, base_a, hn, hv)
+        away_attack = shrunk(a_att, a_att_overall, base_a, an, av)
+        away_defence = shrunk(a_def, a_def_overall, base_h, an, av)
+    elif variant == "legacy":
+        home_attack = coef(h_att, h_att_overall, base_h)
+        home_defence = coef(h_def, h_def_overall, base_a)
+        away_attack = coef(a_att, a_att_overall, base_a)
+        away_defence = coef(a_def, a_def_overall, base_h)
+    else:
+        raise ValueError(f"未知历史模型: {variant}")
 
     lam_home = base_h * home_attack * away_defence
     lam_away = base_a * away_attack * home_defence
@@ -280,7 +313,7 @@ def upset_analysis(feat, probs):
 
 
 
-def predict(feat):
+def predict(feat, history_variant=None):
     """
     输入特征 dict(见 scout.build_feature), 输出:
       {"home": P主胜, "draw": P平, "away": P客胜,
@@ -291,7 +324,7 @@ def predict(feat):
     source = "仅赔率"
     hw = history_weight(feat)
     if hw > 0:
-        lh, la = poisson_lambdas(feat)
+        lh, la = poisson_lambdas(feat, variant=history_variant)
         mp = score_matrix_p(lh, la)
         ip = implied_from_odds(feat.get("had_h"), feat.get("had_d"), feat.get("had_a"))
         if ip:
@@ -307,6 +340,7 @@ def predict(feat):
         else:
             # 实在什么都没有: 中性先验
             probs = [0.34, 0.32, 0.34]
+            source = "中性先验(数据不足)"
 
     # 手动情报微调: +-0.02 量级
     adj = feat.get("intel_adj", 0.0)   # >0 利好主队, <0 利好客队
@@ -316,8 +350,9 @@ def predict(feat):
             probs[0] += s; probs[1] -= s * 0.4; probs[2] -= s * 0.6
         else:
             probs[2] += s; probs[1] -= s * 0.4; probs[0] -= s * 0.6
+    probs = [max(0.001, p) for p in probs]
     total = sum(probs)
-    probs = [max(0.001, p) / total for p in probs]
+    probs = [p / total for p in probs]
 
     # AI建议3(补平局盲区): 两队历史平局率都较高时, 强制给平局加权
     try:
@@ -345,12 +380,20 @@ def predict(feat):
     pick = labels[idx]
     pick_p = probs[idx]
     pick_odds = [feat.get("had_h"), feat.get("had_d"), feat.get("had_a")][idx]
-    return {
+    result = {
         "home": round(probs[0], 4), "draw": round(probs[1], 4), "away": round(probs[2], 4),
         "pick": pick, "pick_p": round(pick_p, 4), "pick_odds": pick_odds,
         "source": source,
+        "market_probs": ip,
+        "history_weight": round(hw, 4),
+        "history_model": history_variant or HISTORY_MODEL_VARIANT,
         "upset": upset_analysis(feat, probs),
     }
+    if history_variant is None:
+        # 同时保存原攻防算法的完整融合预测，用后续实际赛果做配对比较。
+        baseline = predict(feat, history_variant="legacy") if hw > 0 else result
+        result["legacy_probs"] = [baseline[k] for k in ("home", "draw", "away")]
+    return result
 
 
 # ---------------- 总进球预测(与胜平负分开) ----------------
@@ -365,7 +408,8 @@ def total_goals(feat):
       {"labels", "probs"(与labels同长, 未取整), "pick", "p", "avg", "quality"}
     """
     try:
-        lh, la = poisson_lambdas(feat)
+        # 本轮回测验证的是胜平负，独立总进球玩法保留原强度算法。
+        lh, la = poisson_lambdas(feat, variant="legacy")
     except Exception:
         lh, la = 1.55, 1.15
     maxg = 12

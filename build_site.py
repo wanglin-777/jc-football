@@ -24,6 +24,11 @@ import sys
 import time
 import traceback
 import webbrowser
+from pathlib import Path
+from datetime import datetime, timezone, timedelta
+
+import dashboard
+from evaluate import evaluate
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -66,10 +71,15 @@ def _collect(offline=False):
         except Exception as e:
             msgs.append(f"⚠ 数据获取失败: {e}")
             return None, [], [], None, msgs
-    feats = scout.build_features(today["matches"])
+    feats = scout.build_features(today["matches"], offline=offline)
     pred_map, ordered, preds = {}, [], []
     for f in feats:
-        if f["had_h"] and f["had_d"] and f["had_a"]:
+        if f.get("started") or not f.get("in_sale", True):
+            continue
+        kickoff = verify.kickoff_time(f)
+        if kickoff is not None and kickoff <= datetime.now(verify.BEIJING):
+            continue
+        if model.implied_from_odds(f["had_h"], f["had_d"], f["had_a"]):
             pr = model.predict(f)
             try:
                 pr["goals"] = model.total_goals(f)   # 总进球预测(与胜负分开)
@@ -142,13 +152,7 @@ function showTab(id){
   var ids=['combo','probs','goals','upset','verify','self','info'];
   for(var i=0;i<ids.length;i++){var p=document.getElementById('tab-'+ids[i]); if(p){p.style.display=(ids[i]===id)?'block':'none';}}
   var bs=document.querySelectorAll('.tabbtn');
-  for(var j=0;j<bs.length;j++){bs[j].classList.toggle('on', bs[j].getAttribute('data-tab')===id);}
-}
-function showProbs(m){
-  document.getElementById('probs-num').style.display=(m==='num')?'block':'none';
-  document.getElementById('probs-rate').style.display=(m==='rate')?'block':'none';
-  document.getElementById('pb-num').classList.toggle('on', m==='num');
-  document.getElementById('pb-rate').classList.toggle('on', m==='rate');
+  for(var j=0;j<bs.length;j++){if(!bs[j].hasAttribute('data-tab'))continue;var active=bs[j].getAttribute('data-tab')===id;bs[j].classList.toggle('on',active);bs[j].setAttribute('aria-selected',String(active));bs[j].tabIndex=active?0:-1;}
 }
 function showGoals(m){
   document.getElementById('goals-num').style.display=(m==='num')?'block':'none';
@@ -202,19 +206,21 @@ vpInit();
 """
 
 
-def build_html(today, ordered, preds, rec, msgs, gen_time):
+def build_html(today, ordered, preds, rec, msgs, gen_time, offline=False):
     # 记录本次预测并取历史验证数据(失败不影响出页)
     vdata = []
     try:
-        verify.store(today.get("date") if today else None, ordered, preds, rec)
-        vdata = verify.verify_all()
+        if not offline:
+            verify.store(today.get("date") if today else None, ordered, preds, rec)
+        vdata = verify.verify_all(offline=offline)
     except Exception:
         vdata = []
 
     # 复盘自调优: 用最新已核验结果更新 model_tune.json, 下一期预测即自动应用
     try:
-        selftune.update_from_verify(
-            vdata, ai=(deepseek_client.chat if deepseek_client.available() else None))
+        if not offline:
+            selftune.update_from_verify(
+                vdata, ai=(deepseek_client.chat if deepseek_client.available() else None))
     except Exception:
         pass
 
@@ -310,22 +316,6 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
         pool = sorted(rec["candidates"], key=lambda c: c["prob"], reverse=True)
         cand_html = "".join(_rowtr(c) for c in pool[:12])
 
-    # 全部场次预测表(三向概率 + 推荐): 生成两种排序(按场次/按胜率)
-    def _prob_rows(pairs):
-        s = ""
-        for f, pr in pairs:
-            s += (f'<tr><td>{esc(f["num_str"])}</td><td>{esc(f["league_abb"])}</td>'
-                  f'<td>{esc(f["home"])} vs {esc(f["away"])}</td>'
-                  f'<td>{fmt_p(pr["home"])}</td><td>{fmt_p(pr["draw"])}</td><td>{fmt_p(pr["away"])}</td>'
-                  f'<td><b>{esc(pr["pick"])}</b></td>'
-                  f'<td>{fmt_p(pr["pick_p"])}</td>'
-                  f'<td>{esc(pr.get("pick_odds") or "-")}</td>'
-                  f'<td>{esc(f.get("data_quality",""))}</td></tr>')
-        return s
-    _pairs = list(zip(ordered, preds))
-    all_num_html = _prob_rows(sorted(_pairs, key=lambda x: x[0]["num_str"]))
-    all_prob_html = _prob_rows(sorted(_pairs, key=lambda x: x[1]["pick_p"], reverse=True))
-
     # ⚽ 总进球预测(与胜负分开): 每场只给两种最可能进球数
     def _grow2(f, pr):
         g = pr.get("goals")
@@ -382,35 +372,37 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
                      f'<div class="tbl"><table><tr><th>场次</th><th>时间</th><th>联赛</th>'
                      f'<th>对阵</th><th>胜平负</th><th>状态</th></tr>{sched_rows}</table></div>')
 
-    metrics = (f'<div class="metric"><b>{n_day}</b><span>当天场次</span></div>'
-               f'<div class="metric"><b>{insale}</b><span>在售</span></div>'
-               f'<div class="metric"><b>{len(ordered)}</b><span>可预测(在售)</span></div>'
-               f'<div class="metric"><b>{full}</b><span>完整情报</span></div>'
-               f'<div class="metric"><b>{parts}</b><span>部分情报</span></div>')
+    metrics = (f'<div class="metric"><b>{n_day:02d}</b><span>当天赛程</span></div>'
+               f'<div class="metric"><b>{len(ordered):02d}</b><span>可分析场次</span></div>'
+               f'<div class="metric"><b>{full + parts:02d}<small> / {len(ordered)}</small></b><span>有历史数据支持</span></div>'
+               f'<div class="metric"><b>{len(radar):02d}</b><span>热门不胜风险提醒</span></div>')
 
     verify_html = build_verify_html(vdata)
-    self_html = build_self_html(vdata)
-    daily_ai = _ai_daily_block(today, ordered, preds, rec)
+    self_html = build_evaluation_html() + build_self_html(vdata, offline=offline)
+    daily_ai = "" if offline else _ai_daily_block(today, ordered, preds, rec)
+    explorer = dashboard.match_explorer(ordered, preds)
+    dashboard_css, dashboard_js = dashboard.assets()
 
     return f"""<!DOCTYPE html>
 <html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>竞彩两串一预测 · {esc(sales)}</title>
-<style>{CSS}</style></head><body>
+<meta name="description" content="足球比赛概率分析、市场基线对比与历史预测复盘。">
+<title>竞彩足球 · 两串一预测 · {esc(sales)}</title>
+<style>{CSS}\n{dashboard_css}</style></head><body>
+<a href="#main-content" class="skip-link">跳至比赛分析</a>
 <header><div class="wrap">
-<h1>⚽ 竞彩足球 · 两串一预测</h1>
-<p>销售日期 {esc(sales)} · 数据源 {esc((today or {}).get('source',''))}
- · 每 {NEXT_HOURS} 小时自动更新<span class="badge">更新于 {esc(gen_time)}</span></p>
+<div><h1>⚽ 竞彩足球 · 两串一预测</h1>
+<p>数据源 · {esc((today or {}).get('source',''))}　/　{"离线预览" if offline else "比赛概率与赛后复盘"}</p></div>
+<div class="header-date"><strong>{esc(sales)}</strong><span>销售日 · 北京时间</span></div>
 </div></header>
-<div class="wrap">
+<main class="wrap" id="main-content">
 {warn_html}
 <div class="metrics">{metrics}</div>
-{schedule_html}
 
-<div class="tabbar">
+<div class="tabbar main-tabs" role="tablist" aria-label="分析视图">
 <button class="tabbtn on" data-tab="combo" onclick="showTab('combo')">🎯 串关方案</button>
 <button class="tabbtn" data-tab="probs" onclick="showTab('probs')">📊 全部概率</button>
-<button class="tabbtn" data-tab="goals" onclick="showTab('goals')">⚽ 总进球</button>
+<button class="tabbtn" data-tab="goals" onclick="showTab('goals')">总进球</button>
 <button class="tabbtn" data-tab="upset" onclick="showTab('upset')">⚠️ 爆冷雷达</button>
 <button class="tabbtn" data-tab="verify" onclick="showTab('verify')">✅ 预测验证</button>
 <button class="tabbtn" data-tab="self" onclick="showTab('self')">🧠 自我复盘</button>
@@ -431,22 +423,7 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
 </section>
 
 <section class="panel" id="tab-probs">
-<h2>📊 全部场次概率</h2>
-<p class="mut">每场 主胜 / 平 / 客胜 的模型概率与推荐</p>
-<div class="tabbar" style="margin:8px 0">
-<button class="tabbtn on" id="pb-num" onclick="showProbs('num')">🕑 按场次顺序</button>
-<button class="tabbtn" id="pb-rate" onclick="showProbs('rate')">📈 按胜率高低</button>
-</div>
-<div id="probs-num">
-<div class="tbl"><table><tr><th>场次</th><th>联赛</th><th>对阵</th>
-<th>主胜</th><th>平局</th><th>客胜</th><th>推荐</th><th>胜率</th><th>赔率</th><th>数据</th>
-</tr>{all_num_html}</table></div>
-</div>
-<div id="probs-rate" style="display:none">
-<div class="tbl"><table><tr><th>场次</th><th>联赛</th><th>对阵</th>
-<th>主胜</th><th>平局</th><th>客胜</th><th>推荐</th><th>胜率</th><th>赔率</th><th>数据</th>
-</tr>{all_prob_html}</table></div>
-</div>
+{explorer}
 </section>
 
 <section class="panel" id="tab-goals">
@@ -496,8 +473,10 @@ def build_html(today, ordered, preds, rec, msgs, gen_time):
 </footer>
 </section>
 
-</div>
-<script>{JS}</script>
+<details class="schedule-details"><summary>完整赛程 · {n_day} 场（含已开赛与停售）</summary>{schedule_html}</details>
+<footer class="site-footer"><p>页面生成于 {esc(gen_time)} · 正常更新周期 {NEXT_HOURS} 小时<br>缓存预览不代表实时赔率，请以数据来源的实际更新时间为准。</p><p>统计分析仅供研究参考 · 不构成投注建议</p></footer>
+</main>
+<script>{JS}\n{dashboard_js}</script>
 </body></html>"""
 
 
@@ -788,7 +767,35 @@ def _ai_self_block(agg):
             f'<div class="card"><div style="white-space:pre-wrap">{esc(txt)}</div></div>')
 
 
-def build_self_html(vdata):
+def build_evaluation_html():
+    result = evaluate()
+    if not result["samples"]:
+        return '<div class="evaluation">暂无有效已核验概率，赛后将展示评估结果。</div>'
+    comparison = result["market_comparison"]
+    model_score, market_score = comparison["model"], comparison["market"]
+    if market_score["samples"]:
+        comparison_html = (f'<p class="mut">同一批 {market_score["samples"]} 场：模型 Brier '
+                           f'{model_score["brier"]:.3f} / 市场基线 {market_score["brier"]:.3f}。'
+                           '数值越低，概率误差越小。</p>')
+    else:
+        comparison_html = '<p class="mut">旧存档未保存完整市场概率，暂无法公平对比市场基线；新赛前记录将自动补齐。</p>'
+    paired = result["legacy_comparison"]
+    if paired["current"]["samples"]:
+        comparison_html += (f'<p class="mut">同场新旧算法对照（{paired["current"]["samples"]} 场）：'
+                            f'当前命中率 {paired["current"]["accuracy"]:.1%} / 原算法 {paired["legacy"]["accuracy"]:.1%}；'
+                            f'当前 Brier {paired["current"]["brier"]:.3f} / 原算法 {paired["legacy"]["brier"]:.3f}。</p>')
+    else:
+        comparison_html += '<p class="mut">新旧算法的同场实绩对照待新赛前记录积累后显示。</p>'
+    return (f'<div class="evaluation"><div class="eyebrow">MODEL PERFORMANCE</div><h2>概率质量</h2>'
+            f'<div class="metrics"><div class="metric"><b>{result["samples"]}</b><span>有效核验样本</span></div>'
+            f'<div class="metric"><b>{result["accuracy"]:.1%}</b><span>首选命中率</span></div>'
+            f'<div class="metric"><b>{result["brier"]:.3f}</b><span>Brier 分数 · 越低越好</span></div>'
+            f'<div class="metric"><b>{result["log_loss"]:.3f}</b><span>对数损失 · 越低越好</span></div></div>'
+            f'{comparison_html}<p class="mut">基于已有预测存档；属于历史表现统计，不是本次模型的时间外回测。'
+            f'无效概率 {result["skipped_invalid"]} 条，损坏文件 {result["invalid_files"]} 个。</p></div>')
+
+
+def build_self_html(vdata, offline=False):
     """🧠 模型自我复盘: 多日汇总 + 概率校准 + 翻车检讨 + (可选)DeepSeek AI"""
     agg = verify.aggregate(vdata) if vdata else {"total": 0}
     if not agg.get("total"):
@@ -835,7 +842,7 @@ def build_self_html(vdata):
     coup_html = ""
     if agg.get("coups"):
         coup_html = ('<h2>💰 以小博大成功(≥2.0 赔率命中)</h2>' + _card_rows(agg["coups"]))
-    ai_html = _ai_self_block(agg)
+    ai_html = "" if offline else _ai_self_block(agg)
 
     # ⚙️ 模型自调优卡片: 显示复盘校准已应用到下次预测
     tune_card = ""
@@ -922,26 +929,29 @@ def main():
         try:
             with open(err_path, "w", encoding="utf-8") as f:
                 f.write(tb)
-            with open(INDEX, "w", encoding="utf-8") as f:
-                f.write(minimal_error_page(e, tb))
         except Exception:
             pass
         print("❌ 生成异常:\n", tb)
-        return 0                       # 仍成功结束, 便于读取诊断
+        return 1
     if today is None:
         try:
             with open(err_path, "w", encoding="utf-8") as f:
                 f.write("无数据且无可用缓存")
-            with open(INDEX, "w", encoding="utf-8") as f:
-                f.write(minimal_error_page(RuntimeError("无数据且无可用缓存"), ""))
         except Exception:
             pass
         print("❌ 无数据且无可用缓存")
-        return 0
+        return 1
 
-    gen_time = time.strftime("%Y-%m-%d %H:%M")
-    with open(INDEX, "w", encoding="utf-8") as f:
-        f.write(build_html(today, ordered, preds, rec, msgs, gen_time))
+    gen_time = datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d %H:%M")
+    try:
+        page = build_html(today, ordered, preds, rec, msgs, gen_time, offline=offline)
+        temporary = Path(INDEX).with_suffix(".html.tmp")
+        temporary.write_text(page, encoding="utf-8")
+        os.replace(temporary, INDEX)
+    except Exception:
+        Path(err_path).write_text(traceback.format_exc(), encoding="utf-8")
+        print("网页生成失败，已保留上一次网页；详情见 docs/_err.txt")
+        return 1
 
     # 同时存一份结构化快照, 便于调试/其它展示
     snapshot = {"gen_time": gen_time, "date": today["date"],

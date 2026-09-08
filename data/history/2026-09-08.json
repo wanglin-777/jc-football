@@ -10,13 +10,54 @@
    "away": "首尔FC",
    "pick": "客胜",
    "probs": [
-    0.2483,
-    0.2534,
-    0.4983
+    0.2341,
+    0.2474,
+    0.5185
    ],
-   "odds": 1.88,
+   "odds": 1.81,
    "source": "仅赔率",
    "quality": "odds_only",
+   "predicted_at": "2026-09-08T13:57:16.682402+08:00",
+   "kickoff": "2026-09-08T18:30:00+08:00",
+   "model_version": "2.2",
+   "history_model": "shrunk_form",
+   "market_probs": [
+    0.2635114801831624,
+    0.24731803726687865,
+    0.48917048254995893
+   ],
+   "legacy_probs": [
+    0.2341,
+    0.2474,
+    0.5185
+   ],
+   "history_weight": 0.0,
+   "features": {
+    "num_str": "周二001",
+    "league_abb": "韩职",
+    "league_code": "KOR",
+    "time": "18:30:00",
+    "home": "蔚山现代",
+    "away": "首尔FC",
+    "date": "2026-09-08",
+    "home_rank": "[韩职3]",
+    "away_rank": "[韩职1]",
+    "had_h": 3.36,
+    "had_d": 3.58,
+    "had_a": 1.81,
+    "hhad_gl": 1.0,
+    "home_games": 0,
+    "away_games": 0,
+    "h2h_games": 0,
+    "data_quality": "odds_only",
+    "home_summary": "蔚山现代: 联赛(韩职)暂无历史源, 仅赔率预测",
+    "away_summary": "首尔FC: 同上",
+    "h2h_summary": "",
+    "intel_note": "",
+    "intel_adj": 0.0,
+    "in_sale": true,
+    "started": false
+   },
    "goals": {
     "pick": "2",
     "p": 0.245,
@@ -36,9 +77,9 @@
    },
    "upset": {
     "fav": "客胜",
-    "fav_odds": 1.88,
+    "fav_odds": 1.81,
     "risk": "高",
-    "no_win_p": 0.5017,
+    "no_win_p": 0.4815,
     "hot": true
    }
   },
@@ -50,13 +91,54 @@
    "away": "LASK林茨",
    "pick": "主胜",
    "probs": [
-    0.5296,
-    0.2303,
-    0.2401
+    0.5275,
+    0.23,
+    0.2425
    ],
    "odds": 1.59,
    "source": "仅赔率",
    "quality": "odds_only",
+   "predicted_at": "2026-09-08T13:57:16.682402+08:00",
+   "kickoff": "2026-09-09T00:45:00+08:00",
+   "model_version": "2.2",
+   "history_model": "shrunk_form",
+   "market_probs": [
+    0.5567558149664605,
+    0.22993292098614862,
+    0.2133112640473909
+   ],
+   "legacy_probs": [
+    0.5275,
+    0.23,
+    0.2425
+   ],
+   "history_weight": 0.0,
+   "features": {
+    "num_str": "周二002",
+    "league_abb": "欧冠",
+    "league_code": "UCL",
+    "time": "00:45:00",
+    "home": "雅典AEK",
+    "away": "LASK林茨",
+    "date": "2026-09-09",
+    "home_rank": "[欧冠1]",
+    "away_rank": "[欧冠15]",
+    "had_h": 1.59,
+    "had_d": 3.85,
+    "had_a": 4.15,
+    "hhad_gl": -1.0,
+    "home_games": 0,
+    "away_games": 0,
+    "h2h_games": 0,
+    "data_quality": "odds_only",
+    "home_summary": "雅典AEK: 联赛(欧冠)暂无历史源, 仅赔率预测",
+    "away_summary": "LASK林茨: 同上",
+    "h2h_summary": "",
+    "intel_note": "",
+    "intel_adj": 0.0,
+    "in_sale": true,
+    "started": false
+   },
    "goals": {
     "pick": "2",
     "p": 0.245,
@@ -78,7 +160,7 @@
     "fav": "主胜",
     "fav_odds": 1.59,
     "risk": "高",
-    "no_win_p": 0.4704,
+    "no_win_p": 0.4725,
     "hot": true
    }
   },
@@ -90,13 +172,54 @@
    "away": "维拉",
    "pick": "客胜",
    "probs": [
-    0.3403,
-    0.2649,
-    0.3948
+    0.3384,
+    0.2647,
+    0.397
    ],
    "odds": 2.41,
    "source": "仅赔率",
    "quality": "odds_only",
+   "predicted_at": "2026-09-08T13:57:16.682402+08:00",
+   "kickoff": "2026-09-09T00:45:00+08:00",
+   "model_version": "2.2",
+   "history_model": "shrunk_form",
+   "market_probs": [
+    0.3677277716794731,
+    0.2645444566410538,
+    0.3677277716794731
+   ],
+   "legacy_probs": [
+    0.3384,
+    0.2647,
+    0.397
+   ],
+   "history_weight": 0.0,
+   "features": {
+    "num_str": "周二003",
+    "league_abb": "欧冠",
+    "league_code": "UCL",
+    "time": "00:45:00",
+    "home": "布鲁日",
+    "away": "维拉",
+    "date": "2026-09-09",
+    "home_rank": "[欧冠9]",
+    "away_rank": "[欧冠3]",
+    "had_h": 2.41,
+    "had_d": 3.35,
+    "had_a": 2.41,
+    "hhad_gl": 1.0,
+    "home_games": 0,
+    "away_games": 0,
+    "h2h_games": 0,
+    "data_quality": "odds_only",
+    "home_summary": "布鲁日: 联赛(欧冠)暂无历史源, 仅赔率预测",
+    "away_summary": "维拉: 同上",
+    "h2h_summary": "",
+    "intel_note": "",
+    "intel_adj": 0.0,
+    "in_sale": true,
+    "started": false
+   },
    "goals": {
     "pick": "2",
     "p": 0.245,
@@ -118,7 +241,7 @@
     "fav": "主胜",
     "fav_odds": 2.41,
     "risk": "低",
-    "no_win_p": 0.6597,
+    "no_win_p": 0.6616,
     "hot": false
    }
   },
@@ -130,13 +253,54 @@
    "away": "SBV精英",
    "pick": "主胜",
    "probs": [
-    0.5719,
-    0.2065,
-    0.2216
+    0.5697,
+    0.2062,
+    0.224
    ],
    "odds": 1.48,
    "source": "仅赔率",
    "quality": "odds_only",
+   "predicted_at": "2026-09-08T13:57:16.682402+08:00",
+   "kickoff": "2026-09-09T00:45:00+08:00",
+   "model_version": "2.2",
+   "history_model": "shrunk_form",
+   "market_probs": [
+    0.5989958056516548,
+    0.20616599822429046,
+    0.19483819612405473
+   ],
+   "legacy_probs": [
+    0.5697,
+    0.2062,
+    0.224
+   ],
+   "history_weight": 0.0,
+   "features": {
+    "num_str": "周二004",
+    "league_abb": "荷甲",
+    "league_code": "ERE",
+    "time": "00:45:00",
+    "home": "奈梅亨",
+    "away": "SBV精英",
+    "date": "2026-09-09",
+    "home_rank": "[荷甲10]",
+    "away_rank": "[荷甲5]",
+    "had_h": 1.48,
+    "had_d": 4.3,
+    "had_a": 4.55,
+    "hhad_gl": -1.0,
+    "home_games": 0,
+    "away_games": 0,
+    "h2h_games": 0,
+    "data_quality": "odds_only",
+    "home_summary": "奈梅亨: 暂无匹配历史数据(请在 team_map.py 补充队名)",
+    "away_summary": "SBV精英: 同上",
+    "h2h_summary": "",
+    "intel_note": "",
+    "intel_adj": 0.0,
+    "in_sale": true,
+    "started": false
+   },
    "goals": {
     "pick": "2",
     "p": 0.245,
@@ -158,7 +322,7 @@
     "fav": "主胜",
     "fav_odds": 1.48,
     "risk": "中",
-    "no_win_p": 0.4281,
+    "no_win_p": 0.4303,
     "hot": true
    }
   },
@@ -170,13 +334,54 @@
    "away": "吉达国民",
    "pick": "主胜",
    "probs": [
-    0.479,
-    0.2335,
-    0.2875
+    0.477,
+    0.2332,
+    0.2898
    ],
    "odds": 1.75,
    "source": "仅赔率",
    "quality": "odds_only",
+   "predicted_at": "2026-09-08T13:57:16.682402+08:00",
+   "kickoff": "2026-09-09T02:00:00+08:00",
+   "model_version": "2.2",
+   "history_model": "shrunk_form",
+   "market_probs": [
+    0.5062695924764891,
+    0.23315047021943572,
+    0.26057993730407525
+   ],
+   "legacy_probs": [
+    0.477,
+    0.2332,
+    0.2898
+   ],
+   "history_weight": 0.0,
+   "features": {
+    "num_str": "周二005",
+    "league_abb": "沙职",
+    "league_code": "SAP",
+    "time": "02:00:00",
+    "home": "胡巴卡德",
+    "away": "吉达国民",
+    "date": "2026-09-09",
+    "home_rank": "[沙职3]",
+    "away_rank": "[沙职6]",
+    "had_h": 1.75,
+    "had_d": 3.8,
+    "had_a": 3.4,
+    "hhad_gl": -1.0,
+    "home_games": 0,
+    "away_games": 0,
+    "h2h_games": 0,
+    "data_quality": "odds_only",
+    "home_summary": "胡巴卡德: 联赛(沙职)暂无历史源, 仅赔率预测",
+    "away_summary": "吉达国民: 同上",
+    "h2h_summary": "",
+    "intel_note": "",
+    "intel_adj": 0.0,
+    "in_sale": true,
+    "started": false
+   },
    "goals": {
     "pick": "2",
     "p": 0.245,
@@ -198,7 +403,7 @@
     "fav": "主胜",
     "fav_odds": 1.75,
     "risk": "高",
-    "no_win_p": 0.521,
+    "no_win_p": 0.523,
     "hot": true
    }
   },
@@ -210,13 +415,54 @@
    "away": "斯旺西",
    "pick": "主胜",
    "probs": [
-    0.4998,
-    0.2463,
-    0.2539
+    0.5007,
+    0.246,
+    0.2533
    ],
-   "odds": 1.68,
+   "odds": 1.67,
    "source": "仅赔率",
    "quality": "odds_only",
+   "predicted_at": "2026-09-08T13:57:16.682402+08:00",
+   "kickoff": "2026-09-09T02:45:00+08:00",
+   "model_version": "2.2",
+   "history_model": "shrunk_form",
+   "market_probs": [
+    0.5300333600462196,
+    0.24587658646588517,
+    0.22409005348789532
+   ],
+   "legacy_probs": [
+    0.5007,
+    0.246,
+    0.2533
+   ],
+   "history_weight": 0.0,
+   "features": {
+    "num_str": "周二006",
+    "league_abb": "英冠",
+    "league_code": "CHA",
+    "time": "02:45:00",
+    "home": "南安普敦",
+    "away": "斯旺西",
+    "date": "2026-09-09",
+    "home_rank": "[英冠19]",
+    "away_rank": "[英冠1]",
+    "had_h": 1.67,
+    "had_d": 3.6,
+    "had_a": 3.95,
+    "hhad_gl": -1.0,
+    "home_games": 0,
+    "away_games": 0,
+    "h2h_games": 0,
+    "data_quality": "odds_only",
+    "home_summary": "南安普敦: 暂无匹配历史数据(请在 team_map.py 补充队名)",
+    "away_summary": "斯旺西: 同上",
+    "h2h_summary": "",
+    "intel_note": "",
+    "intel_adj": 0.0,
+    "in_sale": true,
+    "started": false
+   },
    "goals": {
     "pick": "2",
     "p": 0.245,
@@ -236,9 +482,9 @@
    },
    "upset": {
     "fav": "主胜",
-    "fav_odds": 1.68,
+    "fav_odds": 1.67,
     "risk": "高",
-    "no_win_p": 0.5002,
+    "no_win_p": 0.4993,
     "hot": true
    }
   },
@@ -250,13 +496,54 @@
    "away": "赫尔城",
    "pick": "主胜",
    "probs": [
-    0.5525,
-    0.2433,
-    0.2042
+    0.5504,
+    0.2431,
+    0.2066
    ],
    "odds": 1.53,
    "source": "仅赔率",
    "quality": "odds_only",
+   "predicted_at": "2026-09-08T13:57:16.682402+08:00",
+   "kickoff": "2026-09-09T02:45:00+08:00",
+   "model_version": "2.2",
+   "history_model": "shrunk_form",
+   "market_probs": [
+    0.5796503041178993,
+    0.24297670282202352,
+    0.17737299306007717
+   ],
+   "legacy_probs": [
+    0.5504,
+    0.2431,
+    0.2066
+   ],
+   "history_weight": 0.0,
+   "features": {
+    "num_str": "周二007",
+    "league_abb": "英联赛杯",
+    "league_code": "ELC",
+    "time": "02:45:00",
+    "home": "桑德兰",
+    "away": "赫尔城",
+    "date": "2026-09-09",
+    "home_rank": "",
+    "away_rank": "",
+    "had_h": 1.53,
+    "had_d": 3.65,
+    "had_a": 5.0,
+    "hhad_gl": -1.0,
+    "home_games": 0,
+    "away_games": 0,
+    "h2h_games": 0,
+    "data_quality": "odds_only",
+    "home_summary": "桑德兰: 联赛(英联赛杯)暂无历史源, 仅赔率预测",
+    "away_summary": "赫尔城: 同上",
+    "h2h_summary": "",
+    "intel_note": "",
+    "intel_adj": 0.0,
+    "in_sale": true,
+    "started": false
+   },
    "goals": {
     "pick": "2",
     "p": 0.245,
@@ -278,7 +565,7 @@
     "fav": "主胜",
     "fav_odds": 1.53,
     "risk": "中",
-    "no_win_p": 0.4475,
+    "no_win_p": 0.4496,
     "hot": true
    }
   },
@@ -290,13 +577,54 @@
    "away": "国际米兰",
    "pick": "主胜",
    "probs": [
-    0.5964,
-    0.2015,
-    0.2021
+    0.5942,
+    0.2013,
+    0.2045
    ],
    "odds": 1.42,
    "source": "仅赔率",
    "quality": "odds_only",
+   "predicted_at": "2026-09-08T13:57:16.682402+08:00",
+   "kickoff": "2026-09-09T03:00:00+08:00",
+   "model_version": "2.2",
+   "history_model": "shrunk_form",
+   "market_probs": [
+    0.6234742837902297,
+    0.20121215522321048,
+    0.17531356098655965
+   ],
+   "legacy_probs": [
+    0.5942,
+    0.2013,
+    0.2045
+   ],
+   "history_weight": 0.0,
+   "features": {
+    "num_str": "周二008",
+    "league_abb": "欧冠",
+    "league_code": "UCL",
+    "time": "03:00:00",
+    "home": "皇马",
+    "away": "国际米兰",
+    "date": "2026-09-09",
+    "home_rank": "[欧冠27]",
+    "away_rank": "[欧冠14]",
+    "had_h": 1.42,
+    "had_d": 4.4,
+    "had_a": 5.05,
+    "hhad_gl": -1.0,
+    "home_games": 0,
+    "away_games": 0,
+    "h2h_games": 0,
+    "data_quality": "odds_only",
+    "home_summary": "皇马: 联赛(欧冠)暂无历史源, 仅赔率预测",
+    "away_summary": "国际米兰: 同上",
+    "h2h_summary": "",
+    "intel_note": "",
+    "intel_adj": 0.0,
+    "in_sale": true,
+    "started": false
+   },
    "goals": {
     "pick": "2",
     "p": 0.245,
@@ -318,7 +646,7 @@
     "fav": "主胜",
     "fav_odds": 1.42,
     "risk": "中",
-    "no_win_p": 0.4036,
+    "no_win_p": 0.4058,
     "hot": true
    }
   },
@@ -330,13 +658,54 @@
    "away": "比利亚雷",
    "pick": "主胜",
    "probs": [
-    0.5376,
-    0.222,
-    0.2405
+    0.5354,
+    0.2217,
+    0.2428
    ],
    "odds": 1.57,
    "source": "仅赔率",
    "quality": "odds_only",
+   "predicted_at": "2026-09-08T13:57:16.682402+08:00",
+   "kickoff": "2026-09-09T03:00:00+08:00",
+   "model_version": "2.2",
+   "history_model": "shrunk_form",
+   "market_probs": [
+    0.5647122858940994,
+    0.22164957221343404,
+    0.21363814189246652
+   ],
+   "legacy_probs": [
+    0.5354,
+    0.2217,
+    0.2428
+   ],
+   "history_weight": 0.0,
+   "features": {
+    "num_str": "周二009",
+    "league_abb": "欧冠",
+    "league_code": "UCL",
+    "time": "03:00:00",
+    "home": "多特蒙德",
+    "away": "比利亚雷",
+    "date": "2026-09-09",
+    "home_rank": "[欧冠8]",
+    "away_rank": "[欧冠36]",
+    "had_h": 1.57,
+    "had_d": 4.0,
+    "had_a": 4.15,
+    "hhad_gl": -1.0,
+    "home_games": 0,
+    "away_games": 0,
+    "h2h_games": 0,
+    "data_quality": "odds_only",
+    "home_summary": "多特蒙德: 联赛(欧冠)暂无历史源, 仅赔率预测",
+    "away_summary": "比利亚雷: 同上",
+    "h2h_summary": "",
+    "intel_note": "",
+    "intel_adj": 0.0,
+    "in_sale": true,
+    "started": false
+   },
    "goals": {
     "pick": "2",
     "p": 0.245,
@@ -358,7 +727,7 @@
     "fav": "主胜",
     "fav_odds": 1.57,
     "risk": "高",
-    "no_win_p": 0.4624,
+    "no_win_p": 0.4646,
     "hot": true
    }
   },
@@ -370,13 +739,54 @@
    "away": "贝蒂斯",
    "pick": "主胜",
    "probs": [
-    0.4386,
-    0.2686,
-    0.2927
+    0.4366,
+    0.2684,
+    0.2951
    ],
    "odds": 1.9,
    "source": "仅赔率",
    "quality": "odds_only",
+   "predicted_at": "2026-09-08T13:57:16.682402+08:00",
+   "kickoff": "2026-09-09T03:00:00+08:00",
+   "model_version": "2.2",
+   "history_model": "shrunk_form",
+   "market_probs": [
+    0.46591198168404985,
+    0.26825235309081663,
+    0.2658356652251336
+   ],
+   "legacy_probs": [
+    0.4366,
+    0.2684,
+    0.2951
+   ],
+   "history_weight": 0.0,
+   "features": {
+    "num_str": "周二010",
+    "league_abb": "欧冠",
+    "league_code": "UCL",
+    "time": "03:00:00",
+    "home": "里尔",
+    "away": "贝蒂斯",
+    "date": "2026-09-09",
+    "home_rank": "[欧冠17]",
+    "away_rank": "[欧冠26]",
+    "had_h": 1.9,
+    "had_d": 3.3,
+    "had_a": 3.33,
+    "hhad_gl": -1.0,
+    "home_games": 0,
+    "away_games": 0,
+    "h2h_games": 0,
+    "data_quality": "odds_only",
+    "home_summary": "里尔: 联赛(欧冠)暂无历史源, 仅赔率预测",
+    "away_summary": "贝蒂斯: 同上",
+    "h2h_summary": "",
+    "intel_note": "",
+    "intel_adj": 0.0,
+    "in_sale": true,
+    "started": false
+   },
    "goals": {
     "pick": "2",
     "p": 0.245,
@@ -398,7 +808,7 @@
     "fav": "主胜",
     "fav_odds": 1.9,
     "risk": "高",
-    "no_win_p": 0.5614,
+    "no_win_p": 0.5634,
     "hot": true
    }
   },
@@ -410,13 +820,54 @@
    "away": "曼城",
    "pick": "客胜",
    "probs": [
-    0.155,
-    0.2191,
-    0.626
+    0.1532,
+    0.2188,
+    0.6279
    ],
    "odds": 1.48,
    "source": "仅赔率",
    "quality": "odds_only",
+   "predicted_at": "2026-09-08T13:57:16.682402+08:00",
+   "kickoff": "2026-09-09T03:00:00+08:00",
+   "model_version": "2.2",
+   "history_model": "shrunk_form",
+   "market_probs": [
+    0.18266315196026148,
+    0.21874476222401681,
+    0.5985920858157217
+   ],
+   "legacy_probs": [
+    0.1532,
+    0.2188,
+    0.6279
+   ],
+   "history_weight": 0.0,
+   "features": {
+    "num_str": "周二011",
+    "league_abb": "欧冠",
+    "league_code": "UCL",
+    "time": "03:00:00",
+    "home": "波尔图",
+    "away": "曼城",
+    "date": "2026-09-09",
+    "home_rank": "[欧冠24]",
+    "away_rank": "[欧冠19]",
+    "had_h": 4.85,
+    "had_d": 4.05,
+    "had_a": 1.48,
+    "hhad_gl": 1.0,
+    "home_games": 0,
+    "away_games": 0,
+    "h2h_games": 0,
+    "data_quality": "odds_only",
+    "home_summary": "波尔图: 联赛(欧冠)暂无历史源, 仅赔率预测",
+    "away_summary": "曼城: 同上",
+    "h2h_summary": "",
+    "intel_note": "",
+    "intel_adj": 0.0,
+    "in_sale": true,
+    "started": false
+   },
    "goals": {
     "pick": "2",
     "p": 0.245,
@@ -438,7 +889,7 @@
     "fav": "客胜",
     "fav_odds": 1.48,
     "risk": "中",
-    "no_win_p": 0.374,
+    "no_win_p": 0.3721,
     "hot": true
    }
   },
@@ -450,13 +901,54 @@
    "away": "普拉滕斯",
    "pick": "主胜",
    "probs": [
-    0.5445,
-    0.2773,
-    0.1782
+    0.5424,
+    0.277,
+    0.1806
    ],
    "odds": 1.55,
    "source": "仅赔率",
    "quality": "odds_only",
+   "predicted_at": "2026-09-08T13:57:16.682402+08:00",
+   "kickoff": "2026-09-09T06:00:00+08:00",
+   "model_version": "2.2",
+   "history_model": "shrunk_form",
+   "market_probs": [
+    0.5716466905870677,
+    0.27689136575311096,
+    0.15146194365982138
+   ],
+   "legacy_probs": [
+    0.5424,
+    0.277,
+    0.1806
+   ],
+   "history_weight": 0.0,
+   "features": {
+    "num_str": "周二012",
+    "league_abb": "解放者杯",
+    "league_code": "LBC",
+    "time": "06:00:00",
+    "home": "弗鲁米嫩",
+    "away": "普拉滕斯",
+    "date": "2026-09-09",
+    "home_rank": "[解放者杯2]",
+    "away_rank": "[解放者杯2]",
+    "had_h": 1.55,
+    "had_d": 3.2,
+    "had_a": 5.85,
+    "hhad_gl": -1.0,
+    "home_games": 0,
+    "away_games": 0,
+    "h2h_games": 0,
+    "data_quality": "odds_only",
+    "home_summary": "弗鲁米嫩: 联赛(解放者杯)暂无历史源, 仅赔率预测",
+    "away_summary": "普拉滕斯: 同上",
+    "h2h_summary": "",
+    "intel_note": "",
+    "intel_adj": 0.0,
+    "in_sale": true,
+    "started": false
+   },
    "goals": {
     "pick": "2",
     "p": 0.245,
@@ -478,7 +970,7 @@
     "fav": "主胜",
     "fav_odds": 1.55,
     "risk": "中",
-    "no_win_p": 0.4555,
+    "no_win_p": 0.4576,
     "hot": true
    }
   }
@@ -486,7 +978,7 @@
  "combos": [
   {
    "odds": 2.1,
-   "joint": 0.3733,
+   "joint": 0.3731,
    "risk": "中",
    "legs": [
     {
@@ -501,7 +993,7 @@
   },
   {
    "odds": 2.19,
-   "joint": 0.358,
+   "joint": 0.3577,
    "risk": "中",
    "legs": [
     {
@@ -516,7 +1008,7 @@
   },
   {
    "odds": 2.1,
-   "joint": 0.3411,
+   "joint": 0.3385,
    "risk": "中",
    "legs": [
     {
@@ -531,7 +1023,7 @@
   },
   {
    "odds": 2.37,
-   "joint": 0.3008,
+   "joint": 0.2985,
    "risk": "中",
    "legs": [
     {
@@ -546,7 +1038,7 @@
   },
   {
    "odds": 2.4,
-   "joint": 0.297,
+   "joint": 0.2947,
    "risk": "高",
    "legs": [
     {

@@ -14,6 +14,8 @@ model.predict() 在给出最终概率前读取该文件并应用(幅度被严格
 import json
 import os
 import re
+import hashlib
+import math
 
 from config import DATA_DIR
 
@@ -85,24 +87,23 @@ def _compute_calib(vdata):
     agg = {}
     for d in vdata:
         for r in d["rows"]:
-            if r.get("hit") is None:
-                continue
-            pick = r.get("pick")
-            if pick not in LABELS:
+            if r.get("actual") not in LABELS:
                 continue
             pp = r.get("probs") or []
-            idx = LABELS.index(pick)
-            a = pp[idx] if len(pp) == 3 else None
-            e = agg.setdefault(pick, [0, 0.0, 0])
-            e[0] += 1
-            if a is not None:
-                e[1] += a
-            if r["hit"]:
-                e[2] += 1
+            if (len(pp) != 3 or any(not isinstance(p, (int, float))
+                    or not math.isfinite(p) or not 0 <= p <= 1 for p in pp)
+                    or abs(sum(pp) - 1) > 0.001):
+                continue
+            # 每场都提供三分类观测，不能把首选命中偏差应用到所有场次。
+            for idx, lab in enumerate(LABELS):
+                e = agg.setdefault(lab, [0, 0.0, 0])
+                e[0] += 1
+                e[1] += pp[idx]
+                e[2] += int(r["actual"] == lab)
     out = {}
     total_n = 0
     for lab, (n, sa, h) in agg.items():
-        total_n += n
+        total_n = max(total_n, n)
         out[lab] = {"n": n, "avg_p": (sa / n) if n else None, "rate": h / n}
     return out, total_n
 
@@ -126,6 +127,13 @@ def update_from_verify(vdata, ai=None):
     days, verified, hits = _fingerprint(vdata)
     stats, total = _compute_calib(vdata)
     old = load()
+    records = sorted(json.dumps([d.get("date"), r.get("num"),
+                                 r.get("probs"), r.get("actual")],
+                                ensure_ascii=False, sort_keys=True)
+                     for d in vdata for r in d["rows"] if r.get("actual") in LABELS)
+    fingerprint = hashlib.sha256("\n".join(records).encode("utf-8")).hexdigest()
+    if old.get("calibration_version") == 2 and old.get("fingerprint") == fingerprint:
+        return old
 
     # 1) 数据驱动校准量
     cand = {}
@@ -188,12 +196,14 @@ def update_from_verify(vdata, ai=None):
             ai_used = False
 
     t = {
+        "calibration_version": 2,
+        "fingerprint": fingerprint,
         "enabled": True,
         "updated": max(days),
         "sample": total,
         "calib_add": cal,
         "based_on": {"days": sorted(days), "verified": verified, "hits": hits},
-        "last_ai_day": max(days) if (ai_used or old.get("last_ai_day")) else old.get("last_ai_day", ""),
+        "last_ai_day": max(days) if ai_used else old.get("last_ai_day", ""),
         "ai_used": ai_used,
         "ai_note": ai_note,
         "note": note,
@@ -205,7 +215,7 @@ def update_from_verify(vdata, ai=None):
 def _write(t):
     try:
         old = load()
-        if old.get("calib_add") == t.get("calib_add") and old.get("sample") == t.get("sample"):
+        if old == t:
             # 内容无实质变化则不落盘, 避免每次刷新产生 git 噪音
             _LOCK["t"] = t
             return

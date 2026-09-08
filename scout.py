@@ -77,6 +77,7 @@ def _team_stats(rows):
     gf_away = _sum_wavg(away, lambda r: r["gf"]) if away else None
     ga_away = _sum_wavg(away, lambda r: r["ga"]) if away else None
     return {"games": games, "win_w": win_w, "draw_w": draw_w, "pts_w": pts_w,
+            "home_games": len(home), "away_games": len(away),
             "gf": gf_all, "ga": ga_all,
             "gf_home": gf_home, "ga_home": ga_home,
             "gf_away": gf_away, "ga_away": ga_away}
@@ -108,7 +109,7 @@ def _summarize(team_cn, st, rest, rank):
     return "，".join(parts)
 
 
-def build_feature(match):
+def build_feature(match, offline=False):
     """把一场竞彩对阵合成特征 dict"""
     mdate = _to_date(match.get("date"))
     league_code = LEAGUE_ABB_TO_CODE.get(match.get("league_abb"), match.get("league_code"))
@@ -131,19 +132,20 @@ def build_feature(match):
         "data_quality": "odds_only",
         "home_summary": "", "away_summary": "", "h2h_summary": "", "intel_note": "",
         "intel_adj": 0.0,
+        "in_sale": match.get("in_sale", True), "started": match.get("started", False),
     }
 
     # ---------- 历史情报(该联赛有数据源 + 两队都能匹配到英文名) ----------
     if slug and home_en and away_en:
         try:
-            lh = get_league(slug)
+            lh = get_league(slug, offline=offline)
         except Exception:
             lh = None
         if lh is not None and lh.available:
             hrows = lh.recent(home_en, mdate, N_RECENT)
             arows = lh.recent(away_en, mdate, N_RECENT)
             hh = lh.h2h(home_en, away_en, mdate)
-            base_h, base_a = lh.league_base()
+            base_h, base_a = lh.league_base(before_d=mdate)
 
             hs = _team_stats(hrows)
             as_ = _team_stats(arows)
@@ -152,12 +154,14 @@ def build_feature(match):
             feat["base_away_goals"] = base_a
             if hs:
                 feat.update({"home_games": hs["games"],
+                             "home_home_games": hs["home_games"],
                              "home_gf": hs["gf"], "home_ga": hs["ga"],
                              "home_home_gf": hs["gf_home"], "home_home_ga": hs["ga_home"],
                              "home_win_w": hs["win_w"],
                              "home_draw_w": hs["draw_w"]})
             if as_:
                 feat.update({"away_games": as_["games"],
+                             "away_away_games": as_["away_games"],
                              "away_gf": as_["gf"], "away_ga": as_["ga"],
                              "away_away_gf": as_["gf_away"], "away_away_ga": as_["ga_away"],
                              "away_win_w": as_["win_w"],
@@ -225,6 +229,6 @@ def build_feature(match):
     return feat
 
 
-def build_features(matches):
+def build_features(matches, offline=False):
     """批量合成特征"""
-    return [build_feature(m) for m in matches]
+    return [build_feature(m, offline=offline) for m in matches]

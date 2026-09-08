@@ -1,0 +1,197 @@
+{
+  "scope": "历史攻防子模型，不含赔率、人工情报和在线复盘校准；缓存赛果未在本轮独立核实",
+  "features": "近10场、严格排除同日及未来赛果；参数只在验证期选择",
+  "samples": 2625,
+  "validation_start": "2026-03-07",
+  "test_start": "2026-05-08",
+  "validation": {
+    "legacy": {
+      "samples": 621,
+      "accuracy": 0.4605475040257649,
+      "brier": 0.631589766163462,
+      "log_loss": 1.0475173764678622
+    },
+    "candidates": {
+      "3": {
+        "samples": 621,
+        "accuracy": 0.45410628019323673,
+        "brier": 0.6429785369684219,
+        "log_loss": 1.0655811421714123
+      },
+      "6": {
+        "samples": 621,
+        "accuracy": 0.4557165861513688,
+        "brier": 0.6328853030544018,
+        "log_loss": 1.04842329929835
+      },
+      "12": {
+        "samples": 621,
+        "accuracy": 0.46537842190016104,
+        "brier": 0.6251746775216394,
+        "log_loss": 1.036975202975502
+      }
+    }
+  },
+  "selected_prior_games": 12,
+  "test": {
+    "legacy": {
+      "samples": 353,
+      "accuracy": 0.47592067988668557,
+      "brier": 0.6302373209375787,
+      "log_loss": 1.0519506670129932
+    },
+    "candidate": {
+      "samples": 353,
+      "accuracy": 0.49575070821529743,
+      "brier": 0.618594053950064,
+      "log_loss": 1.0351829915483535
+    }
+  },
+  "test_day_bootstrap_95pct": {
+    "accuracy_delta": [
+      -0.01791044776119403,
+      0.054404145077720206
+    ],
+    "brier_delta": [
+      -0.021603126848757415,
+      -0.0010758743601253958
+    ],
+    "log_loss_delta": [
+      -0.03172904346906535,
+      -0.0020572453308131
+    ]
+  },
+  "passes_point_estimate_gate": true,
+  "by_league_test": {
+    "bundesliga": {
+      "legacy": {
+        "samples": 28,
+        "accuracy": 0.6428571428571429,
+        "brier": 0.5249368369612003,
+        "log_loss": 0.8987502629377503
+      },
+      "candidate": {
+        "samples": 28,
+        "accuracy": 0.6785714285714286,
+        "brier": 0.5212706563705202,
+        "log_loss": 0.8941143392997472
+      }
+    },
+    "championship": {
+      "legacy": {
+        "samples": 27,
+        "accuracy": 0.37037037037037035,
+        "brier": 0.6973180907105662,
+        "log_loss": 1.153404435443361
+      },
+      "candidate": {
+        "samples": 27,
+        "accuracy": 0.4074074074074074,
+        "brier": 0.6915910013194652,
+        "log_loss": 1.1515181318596368
+      }
+    },
+    "epl": {
+      "legacy": {
+        "samples": 51,
+        "accuracy": 0.3137254901960784,
+        "brier": 0.7092024387240963,
+        "log_loss": 1.1516560696776132
+      },
+      "candidate": {
+        "samples": 51,
+        "accuracy": 0.3333333333333333,
+        "brier": 0.7031735783256103,
+        "log_loss": 1.1449410091104681
+      }
+    },
+    "eredivisie": {
+      "legacy": {
+        "samples": 43,
+        "accuracy": 0.4883720930232558,
+        "brier": 0.6608866840820887,
+        "log_loss": 1.1048754798231122
+      },
+      "candidate": {
+        "samples": 43,
+        "accuracy": 0.5581395348837209,
+        "brier": 0.6208308355255392,
+        "log_loss": 1.047853394439963
+      }
+    },
+    "la-liga": {
+      "legacy": {
+        "samples": 68,
+        "accuracy": 0.4264705882352941,
+        "brier": 0.6119839170528535,
+        "log_loss": 1.0276280030920415
+      },
+      "candidate": {
+        "samples": 68,
+        "accuracy": 0.45588235294117646,
+        "brier": 0.6241488489072998,
+        "log_loss": 1.0438866512505023
+      }
+    },
+    "ligue-1": {
+      "legacy": {
+        "samples": 38,
+        "accuracy": 0.47368421052631576,
+        "brier": 0.6689300467269699,
+        "log_loss": 1.1046445803803855
+      },
+      "candidate": {
+        "samples": 38,
+        "accuracy": 0.39473684210526316,
+        "brier": 0.6714357756726885,
+        "log_loss": 1.1093829729970481
+      }
+    },
+    "primeira-liga": {
+      "legacy": {
+        "samples": 50,
+        "accuracy": 0.58,
+        "brier": 0.5632969137605919,
+        "log_loss": 0.9570171476695052
+      },
+      "candidate": {
+        "samples": 50,
+        "accuracy": 0.6,
+        "brier": 0.5368345971743217,
+        "log_loss": 0.9145100082291567
+      }
+    },
+    "serie-a": {
+      "legacy": {
+        "samples": 48,
+        "accuracy": 0.5625,
+        "brier": 0.6075293498574802,
+        "log_loss": 1.0225311979628766
+      },
+      "candidate": {
+        "samples": 48,
+        "accuracy": 0.5833333333333334,
+        "brier": 0.5778995030873616,
+        "log_loss": 0.9786952470840352
+      }
+    }
+  },
+  "cache_sha256": {
+    "bundesliga-2025.json": "dabaa60d2f3d23664dd8925a967f15cae54f59d37cb9b66f07dd8e3ec232243c",
+    "bundesliga-2026.json": "6ca157868c2a34b28b641a7fafaa8fae9c1ea704e029200566a2dd5878f45314",
+    "championship-2025.json": "9e11112f744b0bc6081b7d8f32232aee617a3a49599fe9b856b76da63dcf142c",
+    "championship-2026.json": "9432a7ecef18b74741bf335f5ddbda1e1a8237424701d29587a61492c8f2bbd7",
+    "epl-2025.json": "e980c6c774abaf5dead1ecbddaf329c0b799c9f2832bd19abfe5a9ac6a97cafa",
+    "epl-2026.json": "405b6a0f6b53cb196ec50a1eff7112f660a01d0c0def0576aaa1707b9b1616a3",
+    "eredivisie-2025.json": "3566ee546904f2c9e09760532eaefd2d47244315f9c0a892817f4cf18161cb41",
+    "eredivisie-2026.json": "c58585dff3764e111ab7495a02446bab2d5c0e7881187ee62b7b99bb10823b8c",
+    "la-liga-2025.json": "53ca6fd367fb348f4723431025bd1c1580fe16a30cd183ea5a7529d4e12d26f8",
+    "la-liga-2026.json": "73afdac11b0af58cd85bc8e44e9171662b082092ec829b196b584998453e7732",
+    "ligue-1-2025.json": "4e4933e0753a8a0b0dd190513c382c9173db1ed0eddd19c2014599dc81073600",
+    "ligue-1-2026.json": "d584633f35a72bd3411c490e19ab7bacaf195fdab7522bec4bf40c354a3781b1",
+    "primeira-liga-2025.json": "2a46cc0af374b6870c0bf51e2d8af3a6743ec8a20a3ae0de26e575414481cb75",
+    "primeira-liga-2026.json": "dcb5a62844f85218828a2b006b0c16aacd6adbf50ff9ae3766c50a5d87a5624e",
+    "serie-a-2025.json": "160071e86c9905dc15d6dd1fdd7789225b0d6adcbadcd27c456378d90f7b2619",
+    "serie-a-2026.json": "63dc37eadce6cdc1b169fa235b4b86c4d5b57eb36624ef3849b934519b73c033"
+  }
+}

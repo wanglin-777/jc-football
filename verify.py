@@ -14,7 +14,7 @@ import glob
 import json
 import os
 import re
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 
 import okooo_results
 from config import DATA_DIR, LEAGUE_ABB_TO_CODE, LEAGUE_FEED
@@ -24,6 +24,15 @@ from team_map import CH_TO_EN
 HIST_DIR = os.path.join(DATA_DIR, "history")
 VERIFY_CACHE_DIR = os.path.join(DATA_DIR, "verified_cache")
 KEEP_DAYS = 30          # 验证页最多展示最近多少天
+BEIJING = timezone(timedelta(hours=8))
+
+
+def kickoff_time(match):
+    """竞彩日期/时间按北京时间解释；未知时间不视为可追溯赛前记录。"""
+    try:
+        return datetime.fromisoformat(f"{match['date']}T{match['time']}").replace(tzinfo=BEIJING)
+    except (KeyError, TypeError, ValueError):
+        return None
 
 
 # ---------------- 已验证结果本地缓存 ----------------
@@ -56,13 +65,22 @@ def _vcache_save(d, rows):
 
 
 # ---------------- 存档 ----------------
-def store(sales_date, ordered, preds, rec):
-    """把当天预测快照存到 data/history/<sales_date>.json(同一天多次生成则覆盖为最新)"""
+def store(sales_date, ordered, preds, rec, now=None):
+    """赛前更新预测；开赛/停售后保留旧记录，不补写赛后预测。"""
     if not sales_date or not ordered:
         return
     os.makedirs(HIST_DIR, exist_ok=True)
+    now = now or datetime.now(BEIJING)
+    if now.tzinfo is None:
+        now = now.replace(tzinfo=BEIJING)
+    frozen = set()
     items = []
     for f, pr in zip(ordered, preds):
+        kickoff = kickoff_time(f)
+        if (kickoff is None or kickoff <= now or f.get("started")
+                or not f.get("in_sale", True)):
+            frozen.add(f["num_str"])
+            continue
         g = pr.get("goals") if isinstance(pr, dict) else None
         u = (pr.get("upset") or {}) if isinstance(pr, dict) else None
         items.append({
@@ -72,6 +90,13 @@ def store(sales_date, ordered, preds, rec):
             "pick": pr["pick"], "probs": [pr["home"], pr["draw"], pr["away"]],
             "odds": pr.get("pick_odds"), "source": pr["source"],
             "quality": f.get("data_quality", ""),
+            "predicted_at": now.isoformat(), "kickoff": kickoff.isoformat(),
+            "model_version": "2.2",
+            "history_model": pr.get("history_model", "legacy"),
+            "market_probs": pr.get("market_probs"),
+            "legacy_probs": pr.get("legacy_probs"),
+            "history_weight": pr.get("history_weight"),
+            "features": dict(f),
             "goals": ({"pick": g["pick"], "p": g["p"], "pick2": g.get("pick2"),
                        "p2": g.get("p2"), "avg": g["avg"],
                        "probs": g["probs"]} if g else None),
@@ -81,6 +106,8 @@ def store(sales_date, ordered, preds, rec):
         })
     combos = []
     for cb in (rec or {}).get("combos", []):
+        if any(l["num"] in frozen for l in cb["legs"]):
+            continue
         combos.append({
             "odds": cb["odds"], "joint": cb["joint"], "risk": cb.get("risk", "低"),
             "legs": [{"num": l["num"], "pick": l["pick"]} for l in cb["legs"]],
@@ -92,7 +119,7 @@ def store(sales_date, ordered, preds, rec):
             old = json.load(f)
     except Exception:
         old = None
-    if old and old.get("items") and items:
+    if old and old.get("items"):
         cur = {it["num"] for it in items if it.get("num")}
         for oi in old["items"]:
             if oi.get("num") and oi["num"] not in cur:
@@ -103,6 +130,14 @@ def store(sales_date, ordered, preds, rec):
             mm = _re.search(r"(\d+)$", n or "")
             return int(mm.group(1)) if mm else 0
         items.sort(key=lambda x: _nk(x.get("num")))
+        # 已不在本次在售列表的旧场次同样冻结，串关保留其原始组合。
+        current = {f["num_str"] for f in ordered}
+        frozen.update(it["num"] for it in old["items"] if it.get("num") not in current)
+        old_combos = old.get("combos") or []
+        if any(leg.get("num") in frozen for cb in old_combos for leg in cb.get("legs", [])):
+            combos = old_combos
+    if not items:
+        return
     data = {"date": sales_date, "n": len(items), "items": items, "combos": combos}
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=1)
@@ -230,7 +265,7 @@ def _okooo_rows(d):
     return _OKOOO[key]
 
 
-def verify_all(now=None):
+def verify_all(now=None, offline=False):
     """遍历历史存档, 返回每日的验证数据 [{date, rows:[...], stats:{...}, combos:[...]}]"""
     if now is None:
         now = date.today()
@@ -268,7 +303,7 @@ def verify_all(now=None):
             row["u_upset"] = None
 
             # 1) 首选: 竞彩口径快源 okooo(覆盖所有竞彩联赛, 含日职/韩职/巴甲等)
-            okrows = _okooo_rows(d)
+            okrows = None if offline else _okooo_rows(d)
             if okrows:
                 m = next((r for r in okrows
                           if r["home"] == it.get("home") and r["away"] == it.get("away")), None)
@@ -284,7 +319,7 @@ def verify_all(now=None):
                         row["status"] = "未找到结果"
 
             # 2) 回退: fixturedownload 联赛结果源(未核验时兜底)
-            if row["status"] != "已核验" and slug and he and ae:
+            if not offline and row["status"] != "已核验" and slug and he and ae:
                 got = _find_result(slug, he, ae, d, d + timedelta(days=1))
                 if got:
                     gf, ga = got
@@ -310,7 +345,8 @@ def verify_all(now=None):
                     r["hit"] = (e["actual"] == r["pick"])
                     r["score"] = e.get("score")
                     r["status"] = "已核验"
-        _vcache_save(d, rows)
+        if not offline:
+            _vcache_save(d, rows)
 
         # ---- 总进球核验(与胜负分开): 两候选球数命中其一即算中 ----
         for r in rows:

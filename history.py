@@ -32,15 +32,17 @@ def _http(url, timeout=15):
         return r.read().decode("utf-8", "ignore")
 
 
-def _load_slug(slug, force=False):
+def _load_slug(slug, force=False, offline=False):
     """拉取一个联赛 feed 并缓存; 失败返回 []"""
     cache = os.path.join(CACHE_DIR, slug + ".json")
-    if (not force) and os.path.exists(cache):
+    if (offline or not force) and os.path.exists(cache):
         try:
             with open(cache, encoding="utf-8") as f:
                 return json.load(f)
         except Exception:
             pass
+    if offline:
+        return []
     try:
         arr = json.loads(_http(FEED_BASE + slug))
         with open(cache, "w", encoding="utf-8") as f:
@@ -67,14 +69,14 @@ def _to_d(s):
 class LeagueHistory:
     """某联赛当前赛季(+上一赛季)的历史赛果"""
 
-    def __init__(self, slug, force=False):
+    def __init__(self, slug, force=False, offline=False):
         self.slug = slug
         stem, year = _split_year(slug)
-        self.curr = _load_slug(slug, force=force)
+        self.curr = _load_slug(slug, force=force, offline=offline)
         self.prev = []
         if year:
             prev_slug = f"{stem}-{year - 1}"
-            self.prev = _load_slug(prev_slug)
+            self.prev = _load_slug(prev_slug, offline=offline)
         self.available = len(self.curr) > 0
         self.n_curr = len(self.curr)
         self.n_prev = len(self.prev)
@@ -98,11 +100,13 @@ class LeagueHistory:
         out.sort(key=lambda x: x["date"])
         return out
 
-    def league_base(self):
-        """联赛场均主/客进球基线(只算当前赛季已赛场次)"""
+    def league_base(self, before_d=None):
+        """两赛季基线；指定预测日期时严格排除当天与之后的赛果。"""
         gh = ga = nh = na = 0
         for x in self.all_matches():
             if x["date"] > date.today():
+                continue
+            if before_d is not None and x["date"] >= before_d:
                 continue
             gh += x["gh"]; nh += 1
             ga += x["ga"]; na += 1
@@ -143,8 +147,8 @@ class LeagueHistory:
                     "at_home_of_home": at_home,
                     "gf": x["gh"] if at_home else x["ga"],
                     "ga": x["ga"] if at_home else x["gh"],
-                    "result": "胜" if (x["gh"] > x["ga"]) == at_home
-                              else ("平" if x["gh"] == x["ga"] else "负"),
+                    "result": "平" if x["gh"] == x["ga"] else
+                              ("胜" if (x["gh"] > x["ga"]) == at_home else "负"),
                 })
         rows.sort(key=lambda r: r["date"], reverse=True)
         return rows[:limit]
@@ -154,9 +158,10 @@ class LeagueHistory:
 _HIST_CACHE = {}
 
 
-def get_league(slug, force=False):
-    if force and slug in _HIST_CACHE:
-        del _HIST_CACHE[slug]
-    if slug not in _HIST_CACHE:
-        _HIST_CACHE[slug] = LeagueHistory(slug, force=force)
-    return _HIST_CACHE[slug]
+def get_league(slug, force=False, offline=False):
+    key = (slug, offline)
+    if force:
+        _HIST_CACHE.pop(key, None)
+    if key not in _HIST_CACHE:
+        _HIST_CACHE[key] = LeagueHistory(slug, force=force, offline=offline)
+    return _HIST_CACHE[key]

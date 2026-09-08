@@ -16,6 +16,12 @@ from config import DATA_DIR
 
 
 def fetch_today(force=True):
+    if not force:
+        cached = read_cache()
+        if cached and "matches" in cached:
+            cached["source"] = "本地缓存"
+            return cached
+        raise RuntimeError("离线模式下没有可用的比赛缓存")
     # ---- 1) 官方体彩 ----
     try:
         from sporttery import fetch_today as _off

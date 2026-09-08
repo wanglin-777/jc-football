@@ -63,6 +63,10 @@ LEAGUE_ABB_TO_CODE = {
 # ---------- 推荐/模型参数 ----------
 N_RECENT = 10          # 每队取最近 N 场做状态分析(用户要求约10场)
 RECENT_DECAY = 0.88    # 越近权重越高: weight = decay ** 场次间隔
+# 仅替换历史攻防分支；验证期选参、测试期三项指标改善，见 backtest_report.json。
+# 不代表完整的赔率融合预测已获得同等提升；改为 legacy 可切回原攻防算法。
+HISTORY_MODEL_VARIANT = "shrunk_form"
+FORM_PRIOR_GAMES = 12.0
 N_RECOMMEND = 5        # 串关推荐组数(用户要5组)
 COMBO_MIN_ODDS = 2.0   # 串后最低赔率(用户要求 >= 2)
 COMBO_LEGS = 2         # 只串两关
