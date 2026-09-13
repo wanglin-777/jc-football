@@ -32,6 +32,13 @@ from evaluate import evaluate
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+# 控制台可能是 GBK(中文 Windows), 直接 print emoji 会崩; 统一改成 UTF-8
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
+
 import model   # noqa: E402
 import parlay  # noqa: E402
 import scout   # noqa: E402
