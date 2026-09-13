@@ -354,6 +354,28 @@ def build_html(today, ordered, preds, rec, msgs, gen_time, offline=False):
                       '<div class="tbl"><table><tr><th>场次</th><th>联赛</th><th>对阵</th>'
                       f'<th>推荐</th><th>赔率</th><th>剔除原因</th></tr>{ar}</table></div>')
 
+    # 🌐 自动联网情报(近期状态/伤停/动机): 由 web_intel 检索+AI 归纳, 供做胆核验
+    intel_html = ""
+    try:
+        auto = [f for f in ordered if f.get("intel_source") == "自动联网"]
+        if auto:
+            ir = ""
+            for f in auto:
+                lv = f.get("intel_level") or ""
+                color = {"充分": "#1a7f37", "一般": "#8a6d00"}.get(lv, "#8a6d00")
+                ir += (f'<tr><td>{esc(f["num_str"])}</td><td>{esc(f["league_abb"])}</td>'
+                       f'<td>{esc(f["home"])} vs {esc(f["away"])}</td>'
+                       f'<td style="color:{color}">{esc(lv or "-")}</td>'
+                       f'<td>{esc(f.get("intel_risk", "低"))}</td>'
+                       f'<td>{esc(f.get("intel_note", ""))}</td></tr>')
+            intel_html = ('<h2>📰 赛前情报(自动联网检索 + AI 归纳)</h2>'
+                          '<p class="mut">来源: 公开网页搜索摘要(头条搜索) → DeepSeek 归纳成一句话; '
+                          '仅供“状态/伤停/动机”核验与参考, 可能有误或过期, 不做唯一依据。</p>'
+                          '<div class="tbl"><table><tr><th>场次</th><th>联赛</th><th>对阵</th>'
+                          f'<th>情报等级</th><th>风险</th><th>情报要点</th></tr>{ir}</table></div>')
+    except Exception:
+        intel_html = ""
+
     # ⚽ 总进球预测(与胜负分开): 每场只给两种最可能进球数
     def _grow2(f, pr):
         g = pr.get("goals")
@@ -456,6 +478,7 @@ def build_html(today, ordered, preds, rec, msgs, gen_time, offline=False):
 {banker_html}
 {watch_html}
 {avoid_html}
+{intel_html}
 <h2>📈 模型候选(预测胜率 Top 12)</h2>
 <p class="mut">稳定优先: 两腿都需 胜率≥50% 且 胜率差≥5%; 串关按稳定度(低风险优先)排, 不足5组时按稳定度补齐。</p>
 <div class="tbl"><table><tr><th>场次</th><th>联赛</th><th>对阵</th><th>推荐</th>
@@ -506,6 +529,12 @@ def build_html(today, ordered, preds, rec, msgs, gen_time, offline=False):
 <b>近期状态 / 伤停 / 动机</b>核验; 未通过核验的一律降级为「🟡 观望」, 不建议做胆。<br>
 2) <b>串关规避</b>: 「强队主场 + 赔率偏低 + 对手有保级或反弹动机」的场次不纳入两串一, 见「🚫 串关已剔除」。<br>
 3) <b>平局盲区</b>: 单独统计平局预测数与漏判率(见「🧠 自我复盘」), <b>先补齐盲区, 暂不调整权重</b>。
+</div>
+<div class="note">
+<b>自动联网情报(新增):</b> 每场会自动到网上检索“状态 / 伤停 / 动机”相关信息
+(来源为公开网页搜索摘要, 由 DeepSeek 归纳成一句话, 见「🎯 串关方案 → 📰 赛前情报」),
+并用作<b>做胆核验</b>: 查不到有效情报或情报显示风险高的场次 → 降级为「🟡 观望」。
+搜索摘要可能有误、过期或不相干, 仅作参考; 有把握时可在 <code>data/extra_intel.json</code> 手写情报覆盖自动结果。
 </div>
 <div class="note">
 <b>数据与免责:</b> 场次与胜平负/让球赔率自动取自 <b>中国体彩·竞彩官方</b> 或 <b>500彩票网</b>

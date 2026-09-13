@@ -131,7 +131,7 @@ def build_feature(match, offline=False):
         "home_games": 0, "away_games": 0, "h2h_games": 0,
         "data_quality": "odds_only",
         "home_summary": "", "away_summary": "", "h2h_summary": "", "intel_note": "",
-        "intel_adj": 0.0,
+        "intel_adj": 0.0, "intel_source": "", "intel_level": "", "intel_risk": "低",
         "in_sale": match.get("in_sale", True), "started": match.get("started", False),
     }
 
@@ -226,9 +226,37 @@ def build_feature(match, offline=False):
             break
     feat["intel_note"] = note
     feat["intel_adj"] = max(-3.0, min(3.0, adj))
+    if note:
+        feat["intel_source"] = "手动"
+        feat["intel_level"] = "充分"
+
+    # ---------- 自动联网情报(近期状态/伤停/动机, 由 web_intel 检索+AI 归纳) ----------
+    if not note:
+        try:
+            import web_intel
+            it = web_intel.get_any(feat["num_str"])
+        except Exception:
+            it = None
+        if it:
+            lv = it.get("level") or ""
+            feat["intel_note"] = f"[{web_intel.SOURCE_NAME}] " + (it.get("note_full")
+                                                                  or it.get("note") or "")
+            feat["intel_source"] = "自动联网"
+            feat["intel_level"] = lv
+            feat["intel_risk"] = it.get("risk") or "低"
+            try:
+                feat["intel_adj"] = max(-1.0, min(1.0, float(it.get("adj", 0) or 0)))
+            except (TypeError, ValueError):
+                feat["intel_adj"] = 0.0
     return feat
 
 
-def build_features(matches, offline=False):
-    """批量合成特征"""
+def build_features(matches, offline=False, web=True):
+    """批量合成特征; web=True 时先补齐当天自动联网情报(带缓存)"""
+    if web and not offline and matches:
+        try:
+            import web_intel
+            web_intel.ensure(matches, day=(matches[0] or {}).get("date"))
+        except Exception as e:
+            print(f"⚠ 自动联网情报跳过: {e}")
     return [build_feature(m, offline=offline) for m in matches]

@@ -84,23 +84,33 @@ def recommend(feats, preds, min_prob=MIN_PROB_LEG):
         x["avoid"] = _avoid_reason(x)
 
     # 建议1: 做胆门槛——胜率>=BANKER_MIN_PROB 且 赔率<=BANKER_MAX_ODDS 且 非高风险
-    #        且通过"近期状态(完整情报)+伤停/动机(手动情报)"核验; 未通过 -> 观望
+    #        且通过"近期状态(完整情报)+伤停/动机核验(手动或自动联网情报)"; 未通过 -> 观望
     bankers, watch = [], []
     for x in full:
         if x["prob"] < BANKER_MIN_PROB or x["odds"] > BANKER_MAX_ODDS:
             continue
-        verified = (x["feat"].get("data_quality") == "full"
-                    and bool(x["feat"].get("intel_note")))
-        if x["risk"] == "低" and (verified or not BANKER_REQUIRE_VERIFY):
+        f = x["feat"]
+        lv = f.get("intel_level") or ""
+        verified = (f.get("data_quality") == "full"
+                    and bool(f.get("intel_note"))
+                    and lv != "不足")
+        risk_block = (x["risk"] != "低") or (f.get("intel_risk") == "高")
+        if (not risk_block) and (verified or not BANKER_REQUIRE_VERIFY):
             bankers.append(x)
         else:
             miss = []
-            if x["feat"].get("data_quality") != "full":
+            if f.get("data_quality") != "full":
                 miss.append("近期情报不足")
-            if not x["feat"].get("intel_note"):
+            if not f.get("intel_note"):
+                miss.append("缺伤停/动机核验")
+            elif lv == "不足":
+                miss.append("联网情报不足(未查到该场状态/伤停)")
+            elif not verified:
                 miss.append("缺伤停/动机核验")
             if x["risk"] != "低":
                 miss.append(f"爆冷风险{x['risk']}")
+            if f.get("intel_risk") == "高":
+                miss.append("情报显示风险高")
             x["watch_reason"] = "、".join(miss) or "未通过核验"
             watch.append(x)
 

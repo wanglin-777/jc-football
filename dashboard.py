@@ -41,7 +41,11 @@ def match_explorer(ordered, preds):
         odds_text = f'{odds:.2f}' if isinstance(odds, (int, float)) else '—'
         history_share = pr.get("history_weight", 0)
         detail = ''.join(f'<p>{esc(f.get(k))}</p>' for k in
-                         ("home_summary", "away_summary", "h2h_summary", "intel_note") if f.get(k))
+                         ("home_summary", "away_summary", "h2h_summary") if f.get(k))
+        if f.get("intel_note"):
+            lv = f.get("intel_level") or ""
+            tag = f'〔{esc(f.get("intel_source") or "情报")}{"/" + esc(lv) if lv else ""}〕'
+            detail += f'<p>{esc(f["intel_note"])} <span class="mut">{tag}</span></p>'
         market_text = (' / '.join(f'{x:.1%}' for x in market)) if market else '无有效赔率'
         cards.append(f'''<tr class="match-card" data-search="{esc(search)}"
  data-league="{esc(league)}" data-risk="{esc(risk)}" data-prob="{pr['pick_p']}" data-index="{index}">
