@@ -13,9 +13,36 @@
   再在所有两两组合中枚举满足 串后赔率>=2 的组合,
   按联合胜率排序, 贪心挑选同时兼顾"每支球队最多出现在两组串关中"的多样性。
 """
-from config import (BANKER_MAX_ODDS, BANKER_MIN_PROB, COMBO_MARGIN_TIERS,
-                    COMBO_MIN_ODDS, COMBO_LEGS, MIN_PROB_LEG, N_RECOMMEND)
+from config import (AVOID_AWAY_FORM_MAX, AVOID_AWAY_RANK_MIN, AVOID_SHORT_ODDS_MAX,
+                    BANKER_MAX_ODDS, BANKER_MIN_PROB, BANKER_REQUIRE_VERIFY,
+                    COMBO_MARGIN_TIERS, COMBO_MIN_ODDS, COMBO_LEGS,
+                    MIN_PROB_LEG, N_RECOMMEND)
 import itertools
+import re
+
+
+def _rank_num(s):
+    if not s:
+        return None
+    m = re.search(r"(\d+)", str(s))
+    return int(m.group(1)) if m else None
+
+
+def _avoid_reason(x):
+    """建议2: 强队主场 + 赔率偏低 + 对手有保级/反弹动机 -> 不建议纳入串关"""
+    f = x["feat"]
+    if x["pick"] != "主胜" or x["odds"] > AVOID_SHORT_ODDS_MAX:
+        return ""
+    ark = _rank_num(f.get("away_rank"))
+    aform = f.get("away_win_w")
+    why = []
+    if ark is not None and ark >= AVOID_AWAY_RANK_MIN:
+        why.append(f"客队排名{ark}(保级区/低位)")
+    if aform is not None and aform <= AVOID_AWAY_FORM_MAX:
+        why.append(f"客队状态差(胜率{aform:.0%}, 有反弹动机)")
+    if not why:
+        return ""
+    return "强队主场低赔(" + f"{x['odds']:.2f}" + ") × " + "、".join(why)
 
 
 def pick_best_leg(feat, pred):
@@ -53,14 +80,31 @@ def recommend(feats, preds, min_prob=MIN_PROB_LEG):
             full.append({"feat": f, "pred": pr, **leg,
                          "margin": leg["prob"] - second, "risk": risk})
     full.sort(key=lambda x: x["prob"], reverse=True)
+    for x in full:
+        x["avoid"] = _avoid_reason(x)
 
-    # 严格单关胆材: 非高风险(仅用于展示, 不参与串关)
-    bankers = [x for x in full
-               if x["prob"] >= BANKER_MIN_PROB
-               and x["odds"] <= BANKER_MAX_ODDS
-               and x["risk"] == "低"]
+    # 建议1: 做胆门槛——胜率>=BANKER_MIN_PROB 且 赔率<=BANKER_MAX_ODDS 且 非高风险
+    #        且通过"近期状态(完整情报)+伤停/动机(手动情报)"核验; 未通过 -> 观望
+    bankers, watch = [], []
+    for x in full:
+        if x["prob"] < BANKER_MIN_PROB or x["odds"] > BANKER_MAX_ODDS:
+            continue
+        verified = (x["feat"].get("data_quality") == "full"
+                    and bool(x["feat"].get("intel_note")))
+        if x["risk"] == "低" and (verified or not BANKER_REQUIRE_VERIFY):
+            bankers.append(x)
+        else:
+            miss = []
+            if x["feat"].get("data_quality") != "full":
+                miss.append("近期情报不足")
+            if not x["feat"].get("intel_note"):
+                miss.append("缺伤停/动机核验")
+            if x["risk"] != "低":
+                miss.append(f"爆冷风险{x['risk']}")
+            x["watch_reason"] = "、".join(miss) or "未通过核验"
+            watch.append(x)
 
-    # 枚举候选串: 两腿都达最低胜率、串后赔率≥2、且两腿胜率差≥5%(排除纯碰运气腿)
+    # 建议2: 枚举候选串(两腿都>=MIN_PROB_LEG, 串后赔率>=2, 胜率差>=5%; 剔除"避免"场)
     cand = []
     for a, b in itertools.combinations(full, COMBO_LEGS):
         odds = a["odds"] * b["odds"]
@@ -70,22 +114,32 @@ def recommend(feats, preds, min_prob=MIN_PROB_LEG):
             continue
         s = {"低": 3, "中": 2, "高": 1}
         stab = min(s.get(a["risk"], 1), s.get(b["risk"], 1))  # 较险一腿决定稳定度
-        cand.append((a, b, odds, a["prob"] * b["prob"], stab))
-    # 按稳定度排序(先两腿都低风险), 同档内按联合胜率; 贪心补齐 5 组
-    cand.sort(key=lambda t: (-t[4], -t[3]))
-    used = {}
-    combos = []
-    for a, b, odds, joint, stab in cand:
-        if len(combos) >= N_RECOMMEND:
-            break
-        keys = (a["feat"]["num_str"], b["feat"]["num_str"])
-        if any(used.get(k, 0) >= 2 for k in keys):
-            continue
-        for k in keys:
-            used[k] = used.get(k, 0) + 1
-        combos.append(_format_combo({"a": a, "b": b, "odds": odds,
-                                     "joint": joint}))
-    return {"candidates": full, "bankers": bankers, "combos": combos}
+        avoided = bool(a.get("avoid")) or bool(b.get("avoid"))
+        cand.append((a, b, odds, a["prob"] * b["prob"], stab, avoided))
+
+    def _take(items):
+        """按稳定度+联合胜率选组(多样性: 每场最多出现在2组)"""
+        items = sorted(items, key=lambda t: (-t[4], -t[3]))
+        used, out = {}, []
+        for a, b, odds, joint, stab, avoided in items:
+            if len(out) >= N_RECOMMEND:
+                break
+            keys = (a["feat"]["num_str"], b["feat"]["num_str"])
+            if any(used.get(k, 0) >= 2 for k in keys):
+                continue
+            for k in keys:
+                used[k] = used.get(k, 0) + 1
+            cb = _format_combo({"a": a, "b": b, "odds": odds, "joint": joint})
+            cb["avoided"] = avoided
+            out.append(cb)
+        return out
+
+    combos = _take([c for c in cand if not c[5]])      # 先完全剔除"避免"场
+    if not combos:                                     # 全被剔除时兜底(明确标注)
+        combos = _take(cand)
+
+    return {"candidates": full, "bankers": bankers, "watch": watch,
+            "avoid": [x for x in full if x.get("avoid")], "combos": combos}
 
 
 def _upset_digest(x):

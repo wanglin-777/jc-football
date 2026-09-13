@@ -316,6 +316,37 @@ def build_html(today, ordered, preds, rec, msgs, gen_time, offline=False):
         pool = sorted(rec["candidates"], key=lambda c: c["prob"], reverse=True)
         cand_html = "".join(_rowtr(c) for c in pool[:12])
 
+    # 建议1: 观望(胜率达标但未通过状态/情报核验, 降级不做胆)
+    watch_html = ""
+    if rec and rec.get("watch"):
+        wr = ""
+        for c in sorted(rec["watch"], key=lambda x: x["prob"], reverse=True):
+            f = c["feat"]
+            wr += (f'<tr><td>{esc(f["num_str"])}</td><td>{esc(f["league_abb"])}</td>'
+                   f'<td>{esc(f["home"])} vs {esc(f["away"])}</td>'
+                   f'<td><b>{esc(c["pick"])}</b></td><td>{fmt_p(c["prob"])}</td>'
+                   f'<td>{c["odds"]:.2f}</td>'
+                   f'<td style="color:#c0392b">{esc(c.get("watch_reason", ""))}</td></tr>')
+        watch_html = ('<h2>🟡 观望(未过胆材核验, 不建议做胆)</h2>'
+                      '<p class="mut">胜率已达标, 但缺"近期状态 / 伤停 / 动机"核验, 降级为观望</p>'
+                      '<div class="tbl"><table><tr><th>场次</th><th>联赛</th><th>对阵</th>'
+                      f'<th>推荐</th><th>胜率</th><th>赔率</th><th>降级原因</th></tr>{wr}</table></div>')
+
+    # 建议2: 串关已剔除的高风险场(强队低赔 × 对手保级/反弹动机)
+    avoid_html = ""
+    if rec and rec.get("avoid"):
+        ar = ""
+        for c in rec["avoid"]:
+            f = c["feat"]
+            ar += (f'<tr><td>{esc(f["num_str"])}</td><td>{esc(f["league_abb"])}</td>'
+                   f'<td>{esc(f["home"])} vs {esc(f["away"])}</td>'
+                   f'<td><b>{esc(c["pick"])}</b></td><td>{c["odds"]:.2f}</td>'
+                   f'<td style="color:#c0392b">{esc(c.get("avoid", ""))}</td></tr>')
+        avoid_html = ('<h2>🚫 串关已剔除(强队低赔 × 对手保级/反弹动机)</h2>'
+                      '<p class="mut">这些场次不纳入两串一(见「ℹ️ 说明」的规则)</p>'
+                      '<div class="tbl"><table><tr><th>场次</th><th>联赛</th><th>对阵</th>'
+                      f'<th>推荐</th><th>赔率</th><th>剔除原因</th></tr>{ar}</table></div>')
+
     # ⚽ 总进球预测(与胜负分开): 每场只给两种最可能进球数
     def _grow2(f, pr):
         g = pr.get("goals")
@@ -411,11 +442,13 @@ def build_html(today, ordered, preds, rec, msgs, gen_time, offline=False):
 
 <section class="panel show" id="tab-combo">
 <h2>🎯 两串一推荐(稳定优先·不足补齐)</h2>
-<p class="mut">规则: 只串两关 · 串后赔率 ≥ 2.0 · 每腿胜率≥50% · 按稳定度从高到低排, 不足5组按稳定度补齐</p>
+<p class="mut">规则: 只串两关 · 串后赔率 ≥ 2.0 · 每腿胜率≥50% · 按稳定度从高到低排, 不足5组按稳定度补齐 · 剔除“强队低赔×对手保级/反弹动机”的场</p>
 {daily_ai}
 {combo_html}
 
 {banker_html}
+{watch_html}
+{avoid_html}
 <h2>📈 模型候选(预测胜率 Top 12)</h2>
 <p class="mut">稳定优先: 两腿都需 胜率≥50% 且 胜率差≥5%; 串关按稳定度(低风险优先)排, 不足5组时按稳定度补齐。</p>
 <div class="tbl"><table><tr><th>场次</th><th>联赛</th><th>对阵</th><th>推荐</th>
@@ -459,6 +492,13 @@ def build_html(today, ordered, preds, rec, msgs, gen_time, offline=False):
 (结果缓存于本地, 源临时不可用也不影响)。系统依据<b>已核验命中率 vs 预测概率</b>自动做温和校准
 (如某方向长期被高估则下次小幅降权, 每方向最多 ±3%), 可由 DeepSeek 复核, 写入
 <code>data/model_tune.json</code>, 自下一期预测起生效(见「🧠 自我复盘」的 ⚙️ 卡片)。
+</div>
+<div class="note">
+<b>做胆与串关规则(2026-09 提升稳定性):</b><br>
+1) <b>做胆门槛</b>: 预测胜率 ≥ {BANKER_MIN_PROB:.0%} 且赔率 ≤ {BANKER_MAX_ODDS:.2f} 且风险为「低」, 还须附
+<b>近期状态 / 伤停 / 动机</b>核验; 未通过核验的一律降级为「🟡 观望」, 不建议做胆。<br>
+2) <b>串关规避</b>: 「强队主场 + 赔率偏低 + 对手有保级或反弹动机」的场次不纳入两串一, 见「🚫 串关已剔除」。<br>
+3) <b>平局盲区</b>: 单独统计平局预测数与漏判率(见「🧠 自我复盘」), <b>先补齐盲区, 暂不调整权重</b>。
 </div>
 <div class="note">
 <b>数据与免责:</b> 场次与胜平负/让球赔率自动取自 <b>中国体彩·竞彩官方</b> 或 <b>500彩票网</b>
@@ -842,6 +882,15 @@ def build_self_html(vdata, offline=False):
     coup_html = ""
     if agg.get("coups"):
         coup_html = ('<h2>💰 以小博大成功(≥2.0 赔率命中)</h2>' + _card_rows(agg["coups"]))
+    # 建议3: 平局预测与漏判(只统计, 暂不调权重)
+    draw_html = ""
+    if agg.get("actual_draw_n"):
+        draw_html = ('<h2>🤝 平局预测与漏判</h2><p class="mut">'
+                     f'实际平局 <b>{agg["actual_draw_n"]}</b> 场; 模型主动预测为平 '
+                     f'{agg.get("draw_pred_n", 0)} 场(命中 {agg.get("draw_pred_hits", 0)}), '
+                     f'漏判 <b>{agg.get("draw_missed_n", 0)}</b> 场 '
+                     f'(漏判率 {agg.get("draw_missed_rate", 0):.0%})。'
+                     '先看清盲区大小, 待样本足够后再考虑调整平局权重。</p>')
     ai_html = "" if offline else _ai_self_block(agg)
 
     # ⚙️ 模型自调优卡片: 显示复盘校准已应用到下次预测
@@ -860,7 +909,7 @@ def build_self_html(vdata, offline=False):
 
     return (f"<h2>🧠 模型自我复盘(多日汇总)</h2>"
             f'<p class="mut">基于最近 {days_n} 个销售日已开奖场次的自动复盘</p>'
-            f"{metrics}{by_txt}{tune_card}{bucket_html}{miss_html}{coup_html}{ai_html}")
+            f"{metrics}{by_txt}{tune_card}{bucket_html}{draw_html}{miss_html}{coup_html}{ai_html}")
 
 
 def _ai_daily_block(today, ordered, preds, rec):

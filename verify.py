@@ -482,8 +482,17 @@ def aggregate(vdata):
     ck = [c for c in all_combos if c.get("known")]
     cwin = sum(1 for c in ck if c.get("win"))
     cnet = sum((c.get("odds", 1) - 1) if c.get("win") else -1 for c in ck)
+
+    # 建议3: 单独统计"平局预测"与"漏判"(先补齐盲区, 暂不调整权重)
+    draw_pred = [r for r in all_rows if r.get("pick") == "平"]
+    draw_pred_hits = sum(1 for r in draw_pred if r["hit"])
+    actual_draw = [r for r in all_rows if r.get("actual") == "平"]
+    draw_missed = [r for r in actual_draw if r.get("pick") != "平"]
     return {"days": dates, "total": total, "hits": hits,
             "rate": (hits / total) if total else None,
             "by_pick": by_pick, "buckets": buckets,
             "miss_high": miss_high[:5], "coups": coups[:5],
-            "combo_known": len(ck), "combo_win": cwin, "combo_net": cnet}
+            "combo_known": len(ck), "combo_win": cwin, "combo_net": cnet,
+            "draw_pred_n": len(draw_pred), "draw_pred_hits": draw_pred_hits,
+            "actual_draw_n": len(actual_draw), "draw_missed_n": len(draw_missed),
+            "draw_missed_rate": (len(draw_missed) / len(actual_draw)) if actual_draw else None}
