@@ -1,0 +1,918 @@
+{
+ "date": "2026-09-14",
+ "n": 9,
+ "items": [
+  {
+   "num": "周一002",
+   "league_abb": "芬超",
+   "league_code": "FVL",
+   "home": "国际图尔",
+   "away": "瓦萨",
+   "pick": "主胜",
+   "probs": [
+    0.5624,
+    0.2465,
+    0.1911
+   ],
+   "odds": 1.55,
+   "source": "仅赔率",
+   "quality": "odds_only",
+   "predicted_at": "2026-09-14T09:42:08.101711+08:00",
+   "kickoff": "2026-09-14T23:00:00+08:00",
+   "model_version": "2.2",
+   "history_model": "shrunk_form",
+   "market_probs": [
+    0.5711109281067283,
+    0.24252655851107635,
+    0.18636251338219553
+   ],
+   "legacy_probs": [
+    0.5624,
+    0.2465,
+    0.1911
+   ],
+   "history_weight": 0.0,
+   "features": {
+    "num_str": "周一002",
+    "league_abb": "芬超",
+    "league_code": "FVL",
+    "time": "23:00:00",
+    "home": "国际图尔",
+    "away": "瓦萨",
+    "date": "2026-09-14",
+    "home_rank": "[芬超2]",
+    "away_rank": "[芬超5]",
+    "had_h": 1.55,
+    "had_d": 3.65,
+    "had_a": 4.75,
+    "hhad_gl": -1.0,
+    "home_games": 0,
+    "away_games": 0,
+    "h2h_games": 0,
+    "data_quality": "odds_only",
+    "home_summary": "国际图尔: 联赛(芬超)暂无历史源, 仅赔率预测",
+    "away_summary": "瓦萨: 同上",
+    "h2h_summary": "",
+    "intel_note": "[头条搜索(自动)] 国际图尔库23轮11胜9平3负积42分排第2，失球最少之一；瓦萨积36分排第5，近四次交锋瓦萨2负2平未胜/图尔库伤病潮来袭，具体球员未明确/争冠组关键战，图尔库急需抢分紧跟榜首 · 主队排名与交锋占优，但伤病潮拖累，谨慎看好",
+    "intel_adj": 0.5,
+    "intel_source": "自动联网",
+    "intel_level": "一般",
+    "intel_risk": "中",
+    "in_sale": true,
+    "started": false
+   },
+   "goals": {
+    "pick": "2",
+    "p": 0.245,
+    "pick2": "3",
+    "p2": 0.2205,
+    "avg": 2.7,
+    "probs": [
+     0.06721,
+     0.18145,
+     0.24496,
+     0.22047,
+     0.14882,
+     0.08036,
+     0.03616,
+     0.02057
+    ]
+   },
+   "upset": {
+    "fav": "主胜",
+    "fav_odds": 1.55,
+    "risk": "中",
+    "no_win_p": 0.4376,
+    "hot": true
+   }
+  },
+  {
+   "num": "周一003",
+   "league_abb": "意甲",
+   "league_code": "ISA",
+   "home": "科莫",
+   "away": "帕尔马",
+   "pick": "主胜",
+   "probs": [
+    0.7268,
+    0.1925,
+    0.0807
+   ],
+   "odds": 1.14,
+   "source": "模型+赔率",
+   "quality": "full",
+   "predicted_at": "2026-09-14T09:42:08.101711+08:00",
+   "kickoff": "2026-09-15T00:30:00+08:00",
+   "model_version": "2.2",
+   "history_model": "shrunk_form",
+   "market_probs": [
+    0.7765472033589683,
+    0.1526316916946938,
+    0.0708211049463379
+   ],
+   "legacy_probs": [
+    0.6779,
+    0.2142,
+    0.1078
+   ],
+   "history_weight": 0.42,
+   "features": {
+    "num_str": "周一003",
+    "league_abb": "意甲",
+    "league_code": "ISA",
+    "time": "00:30:00",
+    "home": "科莫",
+    "away": "帕尔马",
+    "date": "2026-09-15",
+    "home_rank": "[意甲6]",
+    "away_rank": "[意甲16]",
+    "had_h": 1.14,
+    "had_d": 5.8,
+    "had_a": 12.5,
+    "hhad_gl": -2.0,
+    "home_games": 10,
+    "away_games": 10,
+    "h2h_games": 2,
+    "data_quality": "full",
+    "home_summary": "科莫(近10场)，场均积分2.3 胜率68%，平率21%，场均进2.1/失0.9，休息11天，排名意甲6",
+    "away_summary": "帕尔马(近10场)，场均积分0.9 胜率24%，平率22%，场均进0.6/失1.2，休息9天，排名意甲16",
+    "h2h_summary": "近2次交锋(主队角度): 1胜1平0负(由近到远:胜、平…)",
+    "intel_note": "",
+    "intel_adj": 0.0,
+    "intel_source": "",
+    "intel_level": "",
+    "intel_risk": "低",
+    "in_sale": true,
+    "started": false,
+    "base_home_goals": 1.2801932367149758,
+    "base_away_goals": 1.181159420289855,
+    "home_home_games": 3,
+    "home_gf": 2.081356019685212,
+    "home_ga": 0.8849998794170284,
+    "home_home_gf": 1.2519590114526824,
+    "home_home_ga": 1.1669680530440025,
+    "home_win_w": 0.6815102563282166,
+    "home_draw_w": 0.20603838047051495,
+    "away_away_games": 4,
+    "away_gf": 0.6356306871435132,
+    "away_ga": 1.1580186419025729,
+    "away_away_gf": 0.20428601577038927,
+    "away_away_ga": 1.327628877846632,
+    "away_win_w": 0.24112832970834494,
+    "away_draw_w": 0.21895719961711632,
+    "home_rest": 11,
+    "away_rest": 9,
+    "h2h_home_adv": 0.16666666666666663
+   },
+   "goals": {
+    "pick": "2",
+    "p": 0.2691,
+    "pick2": "1",
+    "p2": 0.2495,
+    "avg": 2.16,
+    "probs": [
+     0.11564,
+     0.24947,
+     0.26908,
+     0.1935,
+     0.10435,
+     0.04502,
+     0.01619,
+     0.00674
+    ]
+   },
+   "upset": {
+    "fav": "主胜",
+    "fav_odds": 1.14,
+    "risk": "低",
+    "no_win_p": 0.2732,
+    "hot": true
+   }
+  },
+  {
+   "num": "周一004",
+   "league_abb": "意甲",
+   "league_code": "ISA",
+   "home": "都灵",
+   "away": "罗马",
+   "pick": "客胜",
+   "probs": [
+    0.1143,
+    0.2107,
+    0.675
+   ],
+   "odds": 1.47,
+   "source": "模型+赔率",
+   "quality": "full",
+   "predicted_at": "2026-09-14T09:42:08.101711+08:00",
+   "kickoff": "2026-09-15T00:30:00+08:00",
+   "model_version": "2.2",
+   "history_model": "shrunk_form",
+   "market_probs": [
+    0.17033603707995362,
+    0.22711471610660489,
+    0.6025492468134415
+   ],
+   "legacy_probs": [
+    0.1543,
+    0.237,
+    0.6087
+   ],
+   "history_weight": 0.42,
+   "features": {
+    "num_str": "周一004",
+    "league_abb": "意甲",
+    "league_code": "ISA",
+    "time": "00:30:00",
+    "home": "都灵",
+    "away": "罗马",
+    "date": "2026-09-15",
+    "home_rank": "[意甲14]",
+    "away_rank": "[意甲2]",
+    "had_h": 5.2,
+    "had_d": 3.9,
+    "had_a": 1.47,
+    "hhad_gl": 1.0,
+    "home_games": 10,
+    "away_games": 10,
+    "h2h_games": 2,
+    "data_quality": "full",
+    "home_summary": "都灵(近10场)，场均积分1.2 胜率31%，平率24%，场均进1.4/失1.6，休息10天，排名意甲14",
+    "away_summary": "罗马(近10场)，场均积分2.9 胜率94%，平率6%，场均进2.8/失0.4，休息10天，排名意甲2",
+    "h2h_summary": "近2次交锋(主队角度): 1胜0平1负(由近到远:负、胜…)",
+    "intel_note": "",
+    "intel_adj": 0.0,
+    "intel_source": "",
+    "intel_level": "",
+    "intel_risk": "低",
+    "in_sale": true,
+    "started": false,
+    "base_home_goals": 1.2801932367149758,
+    "base_away_goals": 1.181159420289855,
+    "home_home_games": 5,
+    "home_gf": 1.3509891290059608,
+    "home_ga": 1.573641111685274,
+    "home_home_gf": 1.7459070297808343,
+    "home_home_ga": 1.6508520286132264,
+    "home_win_w": 0.30672977852614236,
+    "home_draw_w": 0.24112832970834494,
+    "away_away_games": 4,
+    "away_gf": 2.7853954819685867,
+    "away_ga": 0.40168010402248333,
+    "away_away_gf": 2.831686587494964,
+    "away_away_ga": 0.4642863994781575,
+    "away_win_w": 0.9401854451057082,
+    "away_draw_w": 0.05981455489429177,
+    "home_rest": 10,
+    "away_rest": 10,
+    "h2h_home_adv": 0.0
+   },
+   "goals": {
+    "pick": "3",
+    "p": 0.2227,
+    "pick2": "2",
+    "p2": 0.2091,
+    "avg": 3.2,
+    "probs": [
+     0.04096,
+     0.13087,
+     0.20908,
+     0.22268,
+     0.17788,
+     0.11367,
+     0.06053,
+     0.04433
+    ]
+   },
+   "upset": {
+    "fav": "客胜",
+    "fav_odds": 1.47,
+    "risk": "低",
+    "no_win_p": 0.325,
+    "hot": true
+   }
+  },
+  {
+   "num": "周一005",
+   "league_abb": "瑞超",
+   "league_code": "SWI",
+   "home": "佐加顿斯",
+   "away": "盖斯",
+   "pick": "主胜",
+   "probs": [
+    0.5979,
+    0.2201,
+    0.182
+   ],
+   "odds": 1.46,
+   "source": "仅赔率",
+   "quality": "odds_only",
+   "predicted_at": "2026-09-14T09:42:08.101711+08:00",
+   "kickoff": "2026-09-15T01:00:00+08:00",
+   "model_version": "2.2",
+   "history_model": "shrunk_form",
+   "market_probs": [
+    0.6067601965311075,
+    0.21606582608180905,
+    0.1771739773870834
+   ],
+   "legacy_probs": [
+    0.5979,
+    0.2201,
+    0.182
+   ],
+   "history_weight": 0.0,
+   "features": {
+    "num_str": "周一005",
+    "league_abb": "瑞超",
+    "league_code": "SWI",
+    "time": "01:00:00",
+    "home": "佐加顿斯",
+    "away": "盖斯",
+    "date": "2026-09-15",
+    "home_rank": "[瑞超3]",
+    "away_rank": "[瑞超10]",
+    "had_h": 1.46,
+    "had_d": 4.1,
+    "had_a": 5.0,
+    "hhad_gl": -1.0,
+    "home_games": 0,
+    "away_games": 0,
+    "h2h_games": 0,
+    "data_quality": "odds_only",
+    "home_summary": "佐加顿斯: 联赛(瑞超)暂无历史源, 仅赔率预测",
+    "away_summary": "盖斯: 同上",
+    "h2h_summary": "",
+    "intel_note": "[头条搜索(自动)] 佐加顿斯高居联赛第2，近期状态火热，多轮连胜且连续零封，上轮客场3-0大胜马尔默；盖斯稳定性偏弱/佐加顿斯防线存在伤病困扰，轮换球员伤缺；双方暂无核心前锋、主力门将红牌停赛/佐加顿斯处在争冠关键窗口期，战意强 · 主队状态火热但防线有伤病，且周中欧战体能消耗",
+    "intel_adj": 0.5,
+    "intel_source": "自动联网",
+    "intel_level": "一般",
+    "intel_risk": "中",
+    "in_sale": true,
+    "started": false
+   },
+   "goals": {
+    "pick": "2",
+    "p": 0.245,
+    "pick2": "3",
+    "p2": 0.2205,
+    "avg": 2.7,
+    "probs": [
+     0.06721,
+     0.18145,
+     0.24496,
+     0.22047,
+     0.14882,
+     0.08036,
+     0.03616,
+     0.02057
+    ]
+   },
+   "upset": {
+    "fav": "主胜",
+    "fav_odds": 1.46,
+    "risk": "中",
+    "no_win_p": 0.4021,
+    "hot": true
+   }
+  },
+  {
+   "num": "周一008",
+   "league_abb": "意甲",
+   "league_code": "ISA",
+   "home": "国际米兰",
+   "away": "乌迪内斯",
+   "pick": "主胜",
+   "probs": [
+    0.7603,
+    0.1518,
+    0.0879
+   ],
+   "odds": 1.15,
+   "source": "仅赔率",
+   "quality": "partial",
+   "predicted_at": "2026-09-14T09:42:08.101711+08:00",
+   "kickoff": "2026-09-15T02:45:00+08:00",
+   "model_version": "2.2",
+   "history_model": "shrunk_form",
+   "market_probs": [
+    0.7697380252982434,
+    0.14753312151549663,
+    0.08272885318625982
+   ],
+   "legacy_probs": [
+    0.7603,
+    0.1518,
+    0.0879
+   ],
+   "history_weight": 0.0,
+   "features": {
+    "num_str": "周一008",
+    "league_abb": "意甲",
+    "league_code": "ISA",
+    "time": "02:45:00",
+    "home": "国际米兰",
+    "away": "乌迪内斯",
+    "date": "2026-09-15",
+    "home_rank": "[意甲3]",
+    "away_rank": "[意甲13]",
+    "had_h": 1.15,
+    "had_d": 6.0,
+    "had_a": 10.7,
+    "hhad_gl": -2.0,
+    "home_games": 3,
+    "away_games": 10,
+    "h2h_games": 0,
+    "data_quality": "partial",
+    "home_summary": "国际米兰(近3场)，场均积分3.0 胜率100%，平率0%，场均进2.6/失1.0，休息10天，排名意甲3",
+    "away_summary": "乌迪内斯(近10场)，场均积分1.3 胜率36%，平率20%，场均进1.4/失1.2，休息8天，排名意甲13",
+    "h2h_summary": "",
+    "intel_note": "[头条搜索(自动)] 国际米兰新赛季意甲开局三连胜，进8球丢3球，劳塔罗状态火热连场破门；乌迪内斯表现一言难尽/国米边路遭遇断翼危机，迪马尔科和斯彭斯双双缺阵；乌迪内斯防线多名球员伤停，后防线被迫重组/国米主场抢分战意空前高涨，希望回应欧冠失利 · 国米状态佳但边路双缺，乌迪内斯防线重组，主胜可期",
+    "intel_adj": 0.5,
+    "intel_source": "自动联网",
+    "intel_level": "充分",
+    "intel_risk": "低",
+    "in_sale": true,
+    "started": false,
+    "base_home_goals": 1.2801932367149758,
+    "base_away_goals": 1.181159420289855,
+    "home_home_games": 2,
+    "home_gf": 2.628691983122363,
+    "home_ga": 1.0452079566003618,
+    "home_home_gf": 3.4680851063829787,
+    "home_home_ga": 1.5319148936170213,
+    "home_win_w": 1.0,
+    "home_draw_w": 0.0,
+    "away_away_games": 5,
+    "away_gf": 1.4260533123397974,
+    "away_ga": 1.230975249221416,
+    "away_away_gf": 2.1324249624836815,
+    "away_away_ga": 1.2512594880347825,
+    "away_win_w": 0.3640112010088684,
+    "away_draw_w": 0.1967695961377218,
+    "home_rest": 10,
+    "away_rest": 8
+   },
+   "goals": {
+    "pick": "3",
+    "p": 0.2154,
+    "pick2": "4",
+    "p2": 0.1892,
+    "avg": 3.51,
+    "probs": [
+     0.02979,
+     0.10467,
+     0.18389,
+     0.21536,
+     0.18917,
+     0.13293,
+     0.07784,
+     0.06634
+    ]
+   },
+   "upset": {
+    "fav": "主胜",
+    "fav_odds": 1.15,
+    "risk": "低",
+    "no_win_p": 0.2397,
+    "hot": true
+   }
+  },
+  {
+   "num": "周一009",
+   "league_abb": "法乙",
+   "league_code": "FR2",
+   "home": "圣旺红星",
+   "away": "梅斯",
+   "pick": "客胜",
+   "probs": [
+    0.3452,
+    0.2941,
+    0.3607
+   ],
+   "odds": 2.6,
+   "source": "仅赔率",
+   "quality": "odds_only",
+   "predicted_at": "2026-09-14T09:42:08.101711+08:00",
+   "kickoff": "2026-09-15T02:45:00+08:00",
+   "model_version": "2.2",
+   "history_model": "shrunk_form",
+   "market_probs": [
+    0.36900884132154493,
+    0.2903676128431829,
+    0.3406235458352722
+   ],
+   "legacy_probs": [
+    0.3452,
+    0.2941,
+    0.3607
+   ],
+   "history_weight": 0.0,
+   "features": {
+    "num_str": "周一009",
+    "league_abb": "法乙",
+    "league_code": "FR2",
+    "time": "02:45:00",
+    "home": "圣旺红星",
+    "away": "梅斯",
+    "date": "2026-09-15",
+    "home_rank": "[法乙9]",
+    "away_rank": "[法乙5]",
+    "had_h": 2.4,
+    "had_d": 3.05,
+    "had_a": 2.6,
+    "hhad_gl": -1.0,
+    "home_games": 0,
+    "away_games": 0,
+    "h2h_games": 0,
+    "data_quality": "odds_only",
+    "home_summary": "圣旺红星: 暂无匹配历史数据(请在 team_map.py 补充队名)",
+    "away_summary": "梅斯: 同上",
+    "h2h_summary": "",
+    "intel_note": "[头条搜索(自动)] 圣旺红星本赛季主场发挥糟糕，2个主场表现不佳；梅斯联赛定位更高，拿分能力更强 · 主队主场糟糕，梅斯定位更高，客队不败方向",
+    "intel_adj": -0.5,
+    "intel_source": "自动联网",
+    "intel_level": "一般",
+    "intel_risk": "中",
+    "in_sale": true,
+    "started": false
+   },
+   "goals": {
+    "pick": "2",
+    "p": 0.245,
+    "pick2": "3",
+    "p2": 0.2205,
+    "avg": 2.7,
+    "probs": [
+     0.06721,
+     0.18145,
+     0.24496,
+     0.22047,
+     0.14882,
+     0.08036,
+     0.03616,
+     0.02057
+    ]
+   },
+   "upset": {
+    "fav": "主胜",
+    "fav_odds": 2.4,
+    "risk": "低",
+    "no_win_p": 0.6548,
+    "hot": false
+   }
+  },
+  {
+   "num": "周一010",
+   "league_abb": "英超",
+   "league_code": "EPL",
+   "home": "利兹联",
+   "away": "纽卡斯尔",
+   "pick": "主胜",
+   "probs": [
+    0.3939,
+    0.2762,
+    0.3299
+   ],
+   "odds": 2.15,
+   "source": "仅赔率",
+   "quality": "odds_only",
+   "predicted_at": "2026-09-14T09:42:08.101711+08:00",
+   "kickoff": "2026-09-15T03:00:00+08:00",
+   "model_version": "2.2",
+   "history_model": "shrunk_form",
+   "market_probs": [
+    0.41191447175720436,
+    0.26836851947817864,
+    0.3197170087646171
+   ],
+   "legacy_probs": [
+    0.3939,
+    0.2762,
+    0.3299
+   ],
+   "history_weight": 0.0,
+   "features": {
+    "num_str": "周一010",
+    "league_abb": "英超",
+    "league_code": "EPL",
+    "time": "03:00:00",
+    "home": "利兹联",
+    "away": "纽卡斯尔",
+    "date": "2026-09-15",
+    "home_rank": "[英超11]",
+    "away_rank": "[英超10]",
+    "had_h": 2.15,
+    "had_d": 3.3,
+    "had_a": 2.77,
+    "hhad_gl": -1.0,
+    "home_games": 0,
+    "away_games": 0,
+    "h2h_games": 0,
+    "data_quality": "odds_only",
+    "home_summary": "利兹联: 暂无匹配历史数据(请在 team_map.py 补充队名)",
+    "away_summary": "纽卡斯尔: 同上",
+    "h2h_summary": "",
+    "intel_note": "[头条搜索(自动)] 摘要多为过期或无关内容，无有效赛前情报",
+    "intel_adj": 0.0,
+    "intel_source": "自动联网",
+    "intel_level": "不足",
+    "intel_risk": "低",
+    "in_sale": true,
+    "started": false
+   },
+   "goals": {
+    "pick": "2",
+    "p": 0.245,
+    "pick2": "3",
+    "p2": 0.2205,
+    "avg": 2.7,
+    "probs": [
+     0.06721,
+     0.18145,
+     0.24496,
+     0.22047,
+     0.14882,
+     0.08036,
+     0.03616,
+     0.02057
+    ]
+   },
+   "upset": {
+    "fav": "主胜",
+    "fav_odds": 2.15,
+    "risk": "高",
+    "no_win_p": 0.6061,
+    "hot": true
+   }
+  },
+  {
+   "num": "周一011",
+   "league_abb": "西甲",
+   "league_code": "LLA",
+   "home": "比利亚雷",
+   "away": "贝蒂斯",
+   "pick": "主胜",
+   "probs": [
+    0.5066,
+    0.2325,
+    0.2609
+   ],
+   "odds": 1.77,
+   "source": "模型+赔率",
+   "quality": "full",
+   "predicted_at": "2026-09-14T09:42:08.101711+08:00",
+   "kickoff": "2026-09-15T03:00:00+08:00",
+   "model_version": "2.2",
+   "history_model": "shrunk_form",
+   "market_probs": [
+    0.5005067668276396,
+    0.24271150062600605,
+    0.2567817325463543
+   ],
+   "legacy_probs": [
+    0.4959,
+    0.2327,
+    0.2714
+   ],
+   "history_weight": 0.42,
+   "features": {
+    "num_str": "周一011",
+    "league_abb": "西甲",
+    "league_code": "LLA",
+    "time": "03:00:00",
+    "home": "比利亚雷",
+    "away": "贝蒂斯",
+    "date": "2026-09-15",
+    "home_rank": "[西甲18]",
+    "away_rank": "[西甲7]",
+    "had_h": 1.77,
+    "had_d": 3.65,
+    "had_a": 3.45,
+    "hhad_gl": -1.0,
+    "home_games": 10,
+    "away_games": 10,
+    "h2h_games": 2,
+    "data_quality": "full",
+    "home_summary": "比利亚雷(近10场)，场均积分0.9 胜率21%，平率31%，场均进1.9/失1.8，休息10天，排名西甲18",
+    "away_summary": "贝蒂斯(近10场)，场均积分2.1 胜率65%，平率12%，场均进1.5/失1.4，休息11天，排名西甲7",
+    "h2h_summary": "近2次交锋(主队角度): 0胜1平1负(由近到远:负、平…)",
+    "intel_note": "[头条搜索(自动)] 比利亚雷亚尔联赛4轮0胜2平2负仅积2分，急需首胜；贝蒂斯近10场7胜1平2负，状态正盛，曾击败皇马/比利亚雷亚尔受到伤病影响，部分球员无法出场，锋线选择受限/比利亚雷亚尔主场求首胜，贝蒂斯力争延续好状态 · 主队4轮不胜且锋线伤病，贝蒂斯状态正盛，冷门风险高",
+    "intel_adj": -0.5,
+    "intel_source": "自动联网",
+    "intel_level": "充分",
+    "intel_risk": "高",
+    "in_sale": true,
+    "started": false,
+    "base_home_goals": 1.5892018779342723,
+    "base_away_goals": 1.1338028169014085,
+    "home_home_games": 5,
+    "home_gf": 1.9424282338780527,
+    "home_ga": 1.817034301146666,
+    "home_home_gf": 3.1902771751821826,
+    "home_home_ga": 1.9017251327137747,
+    "home_win_w": 0.21219293014334356,
+    "home_draw_w": 0.3101122858446252,
+    "away_away_games": 4,
+    "away_gf": 1.510943575630674,
+    "away_ga": 1.3606878733949863,
+    "away_away_gf": 1.5040577096483319,
+    "away_away_ga": 2.603860100147728,
+    "away_win_w": 0.6452575833239247,
+    "away_draw_w": 0.12060789341412652,
+    "home_rest": 10,
+    "away_rest": 11,
+    "h2h_home_adv": -0.33333333333333337
+   },
+   "goals": {
+    "pick": "4",
+    "p": 0.1894,
+    "pick2": "7+",
+    "p2": 0.1716,
+    "avg": 4.52,
+    "probs": [
+     0.01088,
+     0.04919,
+     0.11119,
+     0.16755,
+     0.18936,
+     0.17121,
+     0.129,
+     0.17161
+    ]
+   },
+   "upset": {
+    "fav": "主胜",
+    "fav_odds": 1.77,
+    "risk": "高",
+    "no_win_p": 0.4934,
+    "hot": true
+   }
+  },
+  {
+   "num": "周一012",
+   "league_abb": "葡超",
+   "league_code": "POR",
+   "home": "布拉加",
+   "away": "埃斯托里",
+   "pick": "主胜",
+   "probs": [
+    0.5947,
+    0.2611,
+    0.1442
+   ],
+   "odds": 1.35,
+   "source": "模型+赔率",
+   "quality": "full",
+   "predicted_at": "2026-09-14T09:42:08.101711+08:00",
+   "kickoff": "2026-09-15T03:45:00+08:00",
+   "model_version": "2.2",
+   "history_model": "shrunk_form",
+   "market_probs": [
+    0.655784582390087,
+    0.20588585726200406,
+    0.13832956034790897
+   ],
+   "legacy_probs": [
+    0.5667,
+    0.2753,
+    0.158
+   ],
+   "history_weight": 0.42,
+   "features": {
+    "num_str": "周一012",
+    "league_abb": "葡超",
+    "league_code": "POR",
+    "time": "03:45:00",
+    "home": "布拉加",
+    "away": "埃斯托里",
+    "date": "2026-09-15",
+    "home_rank": "[葡超8]",
+    "away_rank": "[葡超17]",
+    "had_h": 1.35,
+    "had_d": 4.3,
+    "had_a": 6.4,
+    "hhad_gl": -1.0,
+    "home_games": 10,
+    "away_games": 10,
+    "h2h_games": 2,
+    "data_quality": "full",
+    "home_summary": "布拉加(近10场)，场均积分1.8 胜率43%，平率49%，场均进1.6/失1.2，休息10天，排名葡超8",
+    "away_summary": "埃斯托里(近10场)，场均积分0.3 胜率0%，平率28%，场均进0.6/失1.7，休息15天，排名葡超17",
+    "h2h_summary": "近2次交锋(主队角度): 0胜1平1负(由近到远:平、负…)",
+    "intel_note": "[头条搜索(自动)] 布拉加排名第4，主场作战；埃斯托里尔状态起伏不定，急需抢分稳固排名/布拉加伤病满营，具体球员未明确/埃斯托里尔保级压力未完全释放，有抢分动机 · 布拉加实力占优但伤病满营，需防冷",
+    "intel_adj": 0.0,
+    "intel_source": "自动联网",
+    "intel_level": "一般",
+    "intel_risk": "中",
+    "in_sale": true,
+    "started": false,
+    "base_home_goals": 1.478386167146974,
+    "base_away_goals": 1.201729106628242,
+    "home_home_games": 5,
+    "home_gf": 1.5680177138839815,
+    "home_ga": 1.2119673542467357,
+    "home_home_gf": 1.3967590583940608,
+    "home_home_ga": 0.9902877129258435,
+    "home_win_w": 0.43329022907718884,
+    "home_draw_w": 0.4894699014828683,
+    "away_away_games": 5,
+    "away_gf": 0.5970539046150636,
+    "away_ga": 1.746237597191738,
+    "away_away_gf": 0.6240198109580826,
+    "away_away_ga": 1.4776947840120314,
+    "away_win_w": 0.0,
+    "away_draw_w": 0.2783551380558723,
+    "home_rest": 10,
+    "away_rest": 15,
+    "h2h_home_adv": -0.33333333333333337
+   },
+   "goals": {
+    "pick": "2",
+    "p": 0.2685,
+    "pick2": "1",
+    "p2": 0.2456,
+    "avg": 2.19,
+    "probs": [
+     0.11237,
+     0.24563,
+     0.26847,
+     0.19563,
+     0.10691,
+     0.04674,
+     0.01703,
+     0.00722
+    ]
+   },
+   "upset": {
+    "fav": "主胜",
+    "fav_odds": 1.35,
+    "risk": "高",
+    "no_win_p": 0.4053,
+    "hot": true
+   }
+  }
+ ],
+ "combos": [
+  {
+   "odds": 2.15,
+   "joint": 0.4036,
+   "risk": "中",
+   "legs": [
+    {
+     "num": "周一004",
+     "pick": "客胜"
+    },
+    {
+     "num": "周一005",
+     "pick": "主胜"
+    }
+   ]
+  },
+  {
+   "odds": 2.28,
+   "joint": 0.3796,
+   "risk": "中",
+   "legs": [
+    {
+     "num": "周一004",
+     "pick": "客胜"
+    },
+    {
+     "num": "周一002",
+     "pick": "主胜"
+    }
+   ]
+  },
+  {
+   "odds": 2.26,
+   "joint": 0.3363,
+   "risk": "中",
+   "legs": [
+    {
+     "num": "周一005",
+     "pick": "主胜"
+    },
+    {
+     "num": "周一002",
+     "pick": "主胜"
+    }
+   ]
+  },
+  {
+   "odds": 2.04,
+   "joint": 0.3852,
+   "risk": "高",
+   "legs": [
+    {
+     "num": "周一008",
+     "pick": "主胜"
+    },
+    {
+     "num": "周一011",
+     "pick": "主胜"
+    }
+   ]
+  }
+ ]
+}
