@@ -790,7 +790,9 @@ def _card_rows(items):
 
 def _ai_self_block(agg):
     cache_path = os.path.join(DATA_DIR, "ai_cache.json")
-    key_data = f'{len(agg.get("days") or [])}:{agg["total"]}:{agg["hits"]}'
+    key_data = (f'{len(agg.get("days") or [])}:{agg["total"]}:{agg["hits"]}:'
+                f'{agg.get("banker_n", 0)}:{agg.get("watch_n", 0)}:'
+                f'{agg.get("avoid_n", 0)}:{agg.get("combo_leg_n", 0)}')
     cache = {}
     try:
         with open(cache_path, encoding="utf-8") as f:
@@ -814,6 +816,42 @@ def _ai_self_block(agg):
         bs.append(f"{b['lab']}: {b['hit']}/{b['n']} 实际{b['rate']:.0%}({flag})")
     if bs:
         parts.append("概率分桶: " + "; ".join(bs))
+
+    # 规则效果: 做胆门槛/观望降级/串关剔除 究竟有没有用
+    rule = []
+    for name, nk, hk in (("严格单关胆材", "banker_n", "banker_hits"),
+                         ("观望(降级未做胆)场次", "watch_n", "watch_hits"),
+                         ("串关所选腿", "combo_leg_n", "combo_leg_hits"),
+                         ("串关已剔除场次", "avoid_n", "avoid_hits")):
+        n = agg.get(nk, 0)
+        if n:
+            rule.append(f"{name}: {agg.get(hk,0)}/{n} 命中({agg.get(hk,0)/n:.0%})")
+    if agg.get("avoid_n"):
+        rule.append(f"被剔除场次中真发生爆冷 {agg.get('avoid_cold',0)} 场")
+    if rule:
+        parts.append("规则效果(本期规则上线后): " + "; ".join(rule))
+
+    if agg.get("intel_stats"):
+        parts.append("情报等级命中: " + "; ".join(
+            f"{s['level']} {s['hit']}/{s['n']}" for s in agg["intel_stats"]))
+    if agg.get("intel_auto_n"):
+        parts.append(f"其中自动联网情报覆盖 {agg['intel_auto_n']} 场")
+
+    if agg.get("market_n"):
+        parts.append("模型 vs 市场热门(去水赔率最大方向): 同选 "
+                     f"{agg.get('same_hits',0)}/{agg.get('same_n',0)}, 不同 "
+                     f"{agg.get('diff_hits',0)}/{agg.get('diff_n',0)}, 市场热门本身 "
+                     f"{agg.get('market_hits',0)}/{agg.get('market_n',0)}")
+
+    if agg.get("actual_draw_n"):
+        parts.append(f"平局: 实际平局 {agg['actual_draw_n']} 场, 模型主动预测平 "
+                     f"{agg.get('draw_pred_n',0)} 场(命中 {agg.get('draw_pred_hits',0)}), 漏判 "
+                     f"{agg.get('draw_missed_n',0)} 场({agg.get('draw_missed_rate',0):.0%})")
+
+    if agg.get("trend"):
+        parts.append("最近几日命中率: " + "; ".join(
+            f"{t['date'][5:]} {t['hit']}/{t['n']}({t['rate']:.0%})" for t in agg["trend"]))
+
     if agg.get("combo_known"):
         parts.append(f"串关: 可判定{agg['combo_known']}组, 命中{agg['combo_win']}组, 净回报{agg['combo_net']:.2f}")
     if agg.get("miss_high"):
@@ -826,10 +864,17 @@ def _ai_self_block(agg):
         for r in agg["coups"][:3]:
             c.append(f"{r['league']}{r['home']}vs{r['away']}预测{r['pick']}命中(赔率{r.get('odds')})")
         parts.append("以小博大命中样例: " + "; ".join(c))
-    prompt = ("请依据以下统计做中文自我复盘(不要编造数字, 不确定就直说):\n" + "\n".join(parts)
-              + "\n请给出: 1)总体评价 2)主要问题(是否对大热过度乐观/平局难抓/样本不足等) "
-              "3)2-3 条可执行改进建议(如提高做胆门槛、串关规避高爆冷风险场等)。300字内。")
-    txt = deepseek_client.chat(prompt)
+
+    prompt = ("请依据以下【统计事实】做中文自我复盘。严禁编造数字; 数据没给到的一概不说, "
+              "样本小时要明确提醒。\n" + "\n".join(parts) +
+              "\n\n请严格按四段输出(总计 350 字内, 每段以 ① ② ③ ④ 开头, 不要 Markdown 标题):\n"
+              "① 一句话结论: 当前强弱(是否跑赢市场热门), 处于什么水平。\n"
+              "② 主要问题: 必须引用上面具体数字或场次, 说清哪类场次/哪个环节在拖后腿。\n"
+              "③ 规则有效性判断: 做胆门槛、观望降级、串关剔除、情报核验、平局盲区, "
+              "逐项说该保留还是该调(有数据的说数据, 没数据的直说样本不足)。\n"
+              "④ 下一步具体动作: 2-3 条能落地的阈值/规则修改建议"
+              "(例: “60-70% 档实际 58%, 建议做胆门槛上调至 65%”)。")
+    txt = deepseek_client.chat(prompt, max_tokens=800)
     if not txt:
         return ('<h2>🤖 AI 复盘(可选)</h2><div class="note">已配置 Key 但本次调用失败'
                 '(网络/额度等)，已自动用规则版复盘代替。</div>')
@@ -929,6 +974,44 @@ def build_self_html(vdata, offline=False):
                      '先看清盲区大小, 待样本足够后再考虑调整平局权重。</p>')
     ai_html = "" if offline else _ai_self_block(agg)
 
+    # 📐 规则效果复盘: 做胆门槛/观望降级/串关剔除/情报核验 到底有没有用
+    rule_rows = []
+
+    def _arow(name, n, h, why):
+        if n:
+            rule_rows.append((name, n, h, h / n, why))
+
+    _arow("严格单关胆材", agg.get("banker_n", 0), agg.get("banker_hits", 0),
+          "胜率≥60% + 赔率≤1.55 + 情报核验")
+    _arow("观望(降级未做胆)", agg.get("watch_n", 0), agg.get("watch_hits", 0),
+          "当初若做胆的命中率(越低越说明降级对了)")
+    _arow("串关所选腿", agg.get("combo_leg_n", 0), agg.get("combo_leg_hits", 0),
+          "两串一两腿实际命中")
+    _arow("串关已剔除场次", agg.get("avoid_n", 0), agg.get("avoid_hits", 0),
+          f"其中真爆冷 {agg.get('avoid_cold', 0)} 场(剔除是否避开了冷门)")
+    for s in agg.get("intel_stats", []):
+        _arow(f"情报等级 {s['level']}", s["n"], s["hit"], "有情报覆盖场次的命中率")
+    _arow("模型与市场同选", agg.get("same_n", 0), agg.get("same_hits", 0), "跟随市场热门的部分")
+    _arow("模型与市场不同", agg.get("diff_n", 0), agg.get("diff_hits", 0), "模型独立判断的部分")
+    _arow("市场热门本身", agg.get("market_n", 0), agg.get("market_hits", 0),
+          "市场基准(去水赔率最大方向)")
+
+    rule_html = ""
+    if rule_rows:
+        rr = "".join(f'<tr><td>{esc(nm)}</td><td>{n}</td><td>{h}</td>'
+                     f'<td>{r:.0%}</td><td>{esc(why)}</td></tr>'
+                     for nm, n, h, r, why in rule_rows)
+        trend_txt = ""
+        if agg.get("trend"):
+            trend_txt = ('<p class="mut">最近几日命中率: ' + " · ".join(
+                f'{t["date"][5:]} {t["hit"]}/{t["n"]}({t["rate"]:.0%})'
+                for t in agg["trend"]) + '</p>')
+        rule_html = ('<h2>📐 规则效果复盘</h2>'
+                     '<p class="mut">从 2026-09-14 起每期记录"做胆/观望/剔除/情报等级", '
+                     '用于检验规则是否真的有效(越早的日期可能没有这些标签)。</p>'
+                     '<div class="tbl"><table><tr><th>项目</th><th>场次</th><th>命中</th>'
+                     f'<th>命中率</th><th>说明</th></tr>{rr}</table></div>' + trend_txt)
+
     # ⚙️ 模型自调优卡片: 显示复盘校准已应用到下次预测
     tune_card = ""
     try:
@@ -945,7 +1028,8 @@ def build_self_html(vdata, offline=False):
 
     return (f"<h2>🧠 模型自我复盘(多日汇总)</h2>"
             f'<p class="mut">基于最近 {days_n} 个销售日已开奖场次的自动复盘</p>'
-            f"{metrics}{by_txt}{tune_card}{bucket_html}{draw_html}{miss_html}{coup_html}{ai_html}")
+            f"{metrics}{by_txt}{tune_card}{bucket_html}{draw_html}{rule_html}"
+            f"{miss_html}{coup_html}{ai_html}")
 
 
 def _ai_daily_block(today, ordered, preds, rec):

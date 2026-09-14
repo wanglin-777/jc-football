@@ -73,6 +73,12 @@ def store(sales_date, ordered, preds, rec, now=None):
     now = now or datetime.now(BEIJING)
     if now.tzinfo is None:
         now = now.replace(tzinfo=BEIJING)
+    # 当期规则标签(供事后复盘“做胆门槛/串关剔除/情报核验”到底有没有用)
+    _rec = rec or {}
+    tag_banker = {x["feat"]["num_str"] for x in _rec.get("bankers", [])}
+    tag_watch = {x["feat"]["num_str"] for x in _rec.get("watch", [])}
+    tag_avoid = {x["feat"]["num_str"] for x in _rec.get("avoid", [])}
+    tag_combo = {l["num"] for cb in _rec.get("combos", []) for l in cb.get("legs", [])}
     frozen = set()
     items = []
     for f, pr in zip(ordered, preds):
@@ -97,6 +103,13 @@ def store(sales_date, ordered, preds, rec, now=None):
             "legacy_probs": pr.get("legacy_probs"),
             "history_weight": pr.get("history_weight"),
             "features": dict(f),
+            "tags": {"banker": f["num_str"] in tag_banker,
+                     "watch": f["num_str"] in tag_watch,
+                     "avoid": f["num_str"] in tag_avoid,
+                     "combo": f["num_str"] in tag_combo},
+            "intel": {"source": f.get("intel_source", ""),
+                      "level": f.get("intel_level", ""),
+                      "risk": f.get("intel_risk", "")},
             "goals": ({"pick": g["pick"], "p": g["p"], "pick2": g.get("pick2"),
                        "p2": g.get("p2"), "avg": g["avg"],
                        "probs": g["probs"]} if g else None),
@@ -301,6 +314,18 @@ def verify_all(now=None, offline=False):
             row["u_nowin"] = _u.get("no_win_p")
             row["u_hot"] = bool(_u.get("hot"))
             row["u_upset"] = None
+            # 规则标签与情报等级(旧快照没有则从 features 兵底)
+            _ft = it.get("features") or {}
+            _tg = it.get("tags") or {}
+            row["tag_banker"] = bool(_tg.get("banker"))
+            row["tag_watch"] = bool(_tg.get("watch"))
+            row["tag_avoid"] = bool(_tg.get("avoid"))
+            row["tag_combo"] = bool(_tg.get("combo"))
+            _it = it.get("intel") or {}
+            row["intel_level"] = _it.get("level") or _ft.get("intel_level") or ""
+            row["intel_source"] = _it.get("source") or _ft.get("intel_source") or ""
+            mf = _market_fav(_ft)
+            row["mkt_fav"], row["mkt_probs"] = (mf if mf else (None, None))
 
             # 1) 首选: 竞彩口径快源 okooo(覆盖所有竞彩联赛, 含日职/韩职/巴甲等)
             okrows = None if offline else _okooo_rows(d)
@@ -442,6 +467,21 @@ BUCKETS = [(0.30, 0.40, "30-40%"), (0.40, 0.50, "40-50%"), (0.50, 0.60, "50-60%"
            (0.60, 0.70, "60-70%"), (0.70, 0.80, "70-80%"), (0.80, 1.01, "80%以上")]
 
 
+def _market_fav(features):
+    """由官方赔率(去水归一)得到市场热门方向与概率; 供“模型 vs 市场”复盘对比。"""
+    try:
+        odds = [float(features[k]) for k in ("had_h", "had_d", "had_a")]
+        if min(odds) <= 1.0:
+            return None
+    except (KeyError, TypeError, ValueError):
+        return None
+    inv = [1.0 / o for o in odds]
+    s = sum(inv)
+    probs = [x / s for x in inv]
+    idx = max(range(3), key=lambda i: inv[i])
+    return ["主胜", "平", "客胜"][idx], [round(p, 4) for p in probs]
+
+
 def aggregate(vdata):
     """对多日验证结果做模型自我复盘汇总(校准/翻车/以小博大/串关)"""
     all_rows, all_combos, dates = [], [], []
@@ -488,6 +528,49 @@ def aggregate(vdata):
     draw_pred_hits = sum(1 for r in draw_pred if r["hit"])
     actual_draw = [r for r in all_rows if r.get("actual") == "平"]
     draw_missed = [r for r in actual_draw if r.get("pick") != "平"]
+
+    # ---- 规则效果复盘: 做胆门槛 / 观望降级 / 串关剔除 到底有没有用 ----
+    def _hit_of(flag):
+        rs = [r for r in all_rows if r.get(flag)]
+        return len(rs), sum(1 for r in rs if r["hit"])
+
+    bk_n, bk_h = _hit_of("tag_banker")
+    wt_n, wt_h = _hit_of("tag_watch")
+    av_n, av_h = _hit_of("tag_avoid")
+    cp_n, cp_h = _hit_of("tag_combo")
+    av_cold = sum(1 for r in all_rows if r.get("tag_avoid") and r.get("u_upset"))
+    combo_legs_win = sum(1 for r in all_rows if r.get("tag_combo") and r["hit"])
+
+    # ---- 情报覆盖面: 各等级(含自动联网/手动)的命中率 ----
+    intel_stats = []
+    for lv in ("充分", "一般", "不足"):
+        rs = [r for r in all_rows if (r.get("intel_level") or "") == lv]
+        if rs:
+            intel_stats.append({"level": lv, "n": len(rs),
+                                "hit": sum(1 for r in rs if r["hit"])})
+    intel_auto_n = sum(1 for r in all_rows if (r.get("intel_source") or "") == "自动联网")
+
+    # ---- 模型 vs 市场热门(去水赔率最大方向) ----
+    mk = [r for r in all_rows if r.get("mkt_fav")]
+    mk_n = len(mk)
+    mk_h = sum(1 for r in mk if r["mkt_fav"] == r.get("actual"))
+    same = [r for r in mk if r["mkt_fav"] == r.get("pick")]
+    same_n = len(same)
+    same_h = sum(1 for r in same if r["hit"])
+    diff = [r for r in mk if r["mkt_fav"] != r.get("pick")]
+    diff_n = len(diff)
+    diff_h = sum(1 for r in diff if r["hit"])
+
+    # ---- 近期趋势(按销售日, 最近 5 天) ----
+    trend = []
+    for d in vdata:
+        vr = [r for r in d["rows"] if r.get("hit") is not None]
+        if vr:
+            hh = sum(1 for r in vr if r["hit"])
+            trend.append({"date": d["date"], "n": len(vr), "hit": hh, "rate": hh / len(vr)})
+    trend.sort(key=lambda t: t["date"])       # 快照可能按新→旧排列, 这里按时间正序
+    trend = trend[-5:]                        # 只留最近 5 个销售日
+
     return {"days": dates, "total": total, "hits": hits,
             "rate": (hits / total) if total else None,
             "by_pick": by_pick, "buckets": buckets,
@@ -495,4 +578,14 @@ def aggregate(vdata):
             "combo_known": len(ck), "combo_win": cwin, "combo_net": cnet,
             "draw_pred_n": len(draw_pred), "draw_pred_hits": draw_pred_hits,
             "actual_draw_n": len(actual_draw), "draw_missed_n": len(draw_missed),
-            "draw_missed_rate": (len(draw_missed) / len(actual_draw)) if actual_draw else None}
+            "draw_missed_rate": (len(draw_missed) / len(actual_draw)) if actual_draw else None,
+            "banker_n": bk_n, "banker_hits": bk_h,
+            "watch_n": wt_n, "watch_hits": wt_h,
+            "avoid_n": av_n, "avoid_hits": av_h, "avoid_cold": av_cold,
+            "combo_leg_n": cp_n, "combo_leg_hits": cp_h,
+            "combo_legs_win": combo_legs_win,
+            "intel_stats": intel_stats, "intel_auto_n": intel_auto_n,
+            "market_n": mk_n, "market_hits": mk_h,
+            "same_n": same_n, "same_hits": same_h,
+            "diff_n": diff_n, "diff_hits": diff_h,
+            "trend": trend}
