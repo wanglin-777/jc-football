@@ -106,7 +106,9 @@ def store(sales_date, ordered, preds, rec, now=None):
             "tags": {"banker": f["num_str"] in tag_banker,
                      "watch": f["num_str"] in tag_watch,
                      "avoid": f["num_str"] in tag_avoid,
-                     "combo": f["num_str"] in tag_combo},
+                     "combo": f["num_str"] in tag_combo,
+                     "drawcand": bool((pr.get("draw_candidate") or {}).get("ok"))},
+            "draw_cand": pr.get("draw_candidate"),
             "intel": {"source": f.get("intel_source", ""),
                       "level": f.get("intel_level", ""),
                       "risk": f.get("intel_risk", "")},
@@ -321,6 +323,8 @@ def verify_all(now=None, offline=False):
             row["tag_watch"] = bool(_tg.get("watch"))
             row["tag_avoid"] = bool(_tg.get("avoid"))
             row["tag_combo"] = bool(_tg.get("combo"))
+            row["tag_drawcand"] = bool(_tg.get("drawcand"))
+            row["draw_cand"] = it.get("draw_cand")
             _it = it.get("intel") or {}
             row["intel_level"] = _it.get("level") or _ft.get("intel_level") or ""
             row["intel_source"] = _it.get("source") or _ft.get("intel_source") or ""
@@ -538,6 +542,8 @@ def aggregate(vdata):
     wt_n, wt_h = _hit_of("tag_watch")
     av_n, av_h = _hit_of("tag_avoid")
     cp_n, cp_h = _hit_of("tag_combo")
+    dc_n, dc_h = _hit_of("tag_drawcand")
+    dc_draws = sum(1 for r in all_rows if r.get("tag_drawcand") and r.get("actual") == "平")
     av_cold = sum(1 for r in all_rows if r.get("tag_avoid") and r.get("u_upset"))
     combo_legs_win = sum(1 for r in all_rows if r.get("tag_combo") and r["hit"])
 
@@ -584,6 +590,7 @@ def aggregate(vdata):
             "avoid_n": av_n, "avoid_hits": av_h, "avoid_cold": av_cold,
             "combo_leg_n": cp_n, "combo_leg_hits": cp_h,
             "combo_legs_win": combo_legs_win,
+            "drawcand_n": dc_n, "drawcand_hits": dc_h, "drawcand_draws": dc_draws,
             "intel_stats": intel_stats, "intel_auto_n": intel_auto_n,
             "market_n": mk_n, "market_hits": mk_h,
             "same_n": same_n, "same_hits": same_h,

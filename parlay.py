@@ -82,6 +82,7 @@ def recommend(feats, preds, min_prob=MIN_PROB_LEG):
     full.sort(key=lambda x: x["prob"], reverse=True)
     for x in full:
         x["avoid"] = _avoid_reason(x)
+        x["draw_cand"] = bool((x["pred"].get("draw_candidate") or {}).get("ok"))
 
     # 建议1: 做胆门槛——胜率>=BANKER_MIN_PROB 且 赔率<=BANKER_MAX_ODDS 且 非高风险
     #        且通过"近期状态(完整情报)+伤停/动机核验(手动或自动联网情报)"; 未通过 -> 观望
@@ -95,10 +96,12 @@ def recommend(feats, preds, min_prob=MIN_PROB_LEG):
                     and bool(f.get("intel_note"))
                     and lv != "不足")
         risk_block = (x["risk"] != "低") or (f.get("intel_risk") == "高")
-        if (not risk_block) and (verified or not BANKER_REQUIRE_VERIFY):
+        if (not risk_block) and (verified or not BANKER_REQUIRE_VERIFY) and not x["draw_cand"]:
             bankers.append(x)
         else:
             miss = []
+            if x["draw_cand"]:
+                miss.append("平局候选(势均力敌防平)")
             if f.get("data_quality") != "full":
                 miss.append("近期情报不足")
             if not f.get("intel_note"):
@@ -148,8 +151,25 @@ def recommend(feats, preds, min_prob=MIN_PROB_LEG):
     if not combos:                                     # 全被剔除时兜底(明确标注)
         combos = _take(cand)
 
+    # ⚖ 平局候选(防平): 覆盖全部可预测场次(含胜率不足50%的均势场), 不能只看 full 池
+    draw_cands = []
+    for f, pr in zip(feats, preds):
+        dc = pr.get("draw_candidate") or {}
+        if not dc.get("ok"):
+            continue
+        if not (f.get("had_h") and f.get("had_d") and f.get("had_a")):
+            continue
+        leg = pick_best_leg(f, pr) or {}
+        draw_cands.append({"feat": f, "pred": pr,
+                           "pick": pr.get("pick"), "prob": pr.get("pick_p", 0.0),
+                           "odds": pr.get("pick_odds"), "probs": leg.get("probs"),
+                           "risk": (pr.get("upset") or {}).get("risk", "低"),
+                           "draw_cand": True})
+    draw_cands.sort(key=lambda x: -(x["pred"].get("draw_candidate", {}).get("p_draw") or 0))
+
     return {"candidates": full, "bankers": bankers, "watch": watch,
-            "avoid": [x for x in full if x.get("avoid")], "combos": combos}
+            "avoid": [x for x in full if x.get("avoid")], "combos": combos,
+            "draw_cands": draw_cands}
 
 
 def _upset_digest(x):

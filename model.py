@@ -16,7 +16,8 @@
 """
 import math
 
-from config import (DRAW_PRONE_RATE, MAX_PROB_PICK, N_RECENT,
+from config import (DRAW_CAND_MIN_P, DRAW_CAND_ODDS_MAX, DRAW_CAND_SIDE_GAP,
+                    DRAW_PRONE_RATE, MAX_PROB_PICK, N_RECENT,
                     RECENT_DECAY, HISTORY_MODEL_VARIANT, FORM_PRIOR_GAMES)
 
 # 近期场次对"可信任度"的权重曲线: 场次越多, 历史模型占比越高
@@ -313,6 +314,27 @@ def upset_analysis(feat, probs):
 
 
 
+def draw_candidate(feat, probs):
+    """「平局候选(防平)」标注: AI复盘(09-16) 要求把平赔偏低的势均力敌场次纳入平局候选。
+
+    仅作标注/统计用, 不改变 pick(先补齐盲区, 看候选命中率后再决定是否改权重)。
+    返回 {"odds":平赔, "p_draw":平概率, "gap":平与首选差} 或 None。
+    """
+    try:
+        d_odds = float(feat.get("had_d"))
+    except (TypeError, ValueError):
+        return None
+    if d_odds > DRAW_CAND_ODDS_MAX:
+        return None
+    p_d = probs[1]
+    if p_d < DRAW_CAND_MIN_P:
+        return None
+    if abs(probs[0] - probs[2]) > DRAW_CAND_SIDE_GAP:
+        return None
+    return {"ok": True, "odds": round(d_odds, 2), "p_draw": round(p_d, 4),
+            "gap": round(max(probs[0], probs[2]) - p_d, 4)}
+
+
 def predict(feat, history_variant=None):
     """
     输入特征 dict(见 scout.build_feature), 输出:
@@ -388,6 +410,7 @@ def predict(feat, history_variant=None):
         "history_weight": round(hw, 4),
         "history_model": history_variant or HISTORY_MODEL_VARIANT,
         "upset": upset_analysis(feat, probs),
+        "draw_candidate": draw_candidate(feat, probs),
     }
     if history_variant is None:
         # 同时保存原攻防算法的完整融合预测，用后续实际赛果做配对比较。

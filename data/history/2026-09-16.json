@@ -10,14 +10,14 @@
    "away": "朝鲜亚",
    "pick": "主胜",
    "probs": [
-    0.3386,
-    0.3281,
-    0.3333
+    0.3409,
+    0.3266,
+    0.3325
    ],
    "odds": 2.45,
    "source": "仅赔率",
    "quality": "odds_only",
-   "predicted_at": "2026-09-16T11:53:31.482539+08:00",
+   "predicted_at": "2026-09-16T11:58:01.422673+08:00",
    "kickoff": "2026-09-16T18:00:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
@@ -27,9 +27,9 @@
     0.32210353327855384
    ],
    "legacy_probs": [
-    0.3386,
-    0.3281,
-    0.3333
+    0.3409,
+    0.3266,
+    0.3325
    ],
    "history_weight": 0.0,
    "features": {
@@ -65,7 +65,14 @@
     "banker": false,
     "watch": false,
     "avoid": false,
-    "combo": false
+    "combo": false,
+    "drawcand": true
+   },
+   "draw_cand": {
+    "ok": true,
+    "odds": 2.8,
+    "p_draw": 0.3266,
+    "gap": 0.0143
    },
    "intel": {
     "source": "自动联网",
@@ -93,7 +100,7 @@
     "fav": "主胜",
     "fav_odds": 2.45,
     "risk": "低",
-    "no_win_p": 0.6614,
+    "no_win_p": 0.6591,
     "hot": false
    }
   },
@@ -105,14 +112,14 @@
    "away": "柏太阳神",
    "pick": "客胜",
    "probs": [
-    0.2572,
-    0.2721,
-    0.4707
+    0.2593,
+    0.2706,
+    0.4701
    ],
    "odds": 1.9,
    "source": "仅赔率",
    "quality": "odds_only",
-   "predicted_at": "2026-09-16T11:53:31.482539+08:00",
+   "predicted_at": "2026-09-16T11:58:01.422673+08:00",
    "kickoff": "2026-09-16T18:00:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
@@ -122,9 +129,9 @@
     0.46588933644265423
    ],
    "legacy_probs": [
-    0.2572,
-    0.2721,
-    0.4707
+    0.2593,
+    0.2706,
+    0.4701
    ],
    "history_weight": 0.0,
    "features": {
@@ -160,8 +167,10 @@
     "banker": false,
     "watch": false,
     "avoid": false,
-    "combo": false
+    "combo": false,
+    "drawcand": false
    },
+   "draw_cand": null,
    "intel": {
     "source": "自动联网",
     "level": "充分",
@@ -188,7 +197,7 @@
     "fav": "客胜",
     "fav_odds": 1.9,
     "risk": "高",
-    "no_win_p": 0.5293,
+    "no_win_p": 0.5299,
     "hot": true
    }
   },
@@ -200,14 +209,14 @@
    "away": "塞尔塔",
    "pick": "客胜",
    "probs": [
-    0.1883,
-    0.2648,
-    0.547
+    0.1902,
+    0.2632,
+    0.5466
    ],
    "odds": 1.65,
    "source": "仅赔率",
    "quality": "odds_only",
-   "predicted_at": "2026-09-16T11:53:31.482539+08:00",
+   "predicted_at": "2026-09-16T11:58:01.422673+08:00",
    "kickoff": "2026-09-17T00:45:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
@@ -217,9 +226,9 @@
     0.5363984674329502
    ],
    "legacy_probs": [
-    0.1883,
-    0.2648,
-    0.547
+    0.1902,
+    0.2632,
+    0.5466
    ],
    "history_weight": 0.0,
    "features": {
@@ -255,8 +264,10 @@
     "banker": false,
     "watch": false,
     "avoid": false,
-    "combo": true
+    "combo": true,
+    "drawcand": false
    },
+   "draw_cand": null,
    "intel": {
     "source": "自动联网",
     "level": "不足",
@@ -283,7 +294,7 @@
     "fav": "客胜",
     "fav_odds": 1.65,
     "risk": "中",
-    "no_win_p": 0.453,
+    "no_win_p": 0.4534,
     "hot": true
    }
   },
@@ -295,14 +306,14 @@
    "away": "塞维利亚",
    "pick": "客胜",
    "probs": [
-    0.3297,
-    0.3015,
-    0.3689
+    0.3316,
+    0.2998,
+    0.3686
    ],
    "odds": 2.45,
    "source": "模型+赔率",
    "quality": "partial",
-   "predicted_at": "2026-09-16T11:53:31.482539+08:00",
+   "predicted_at": "2026-09-16T11:58:01.422673+08:00",
    "kickoff": "2026-09-17T01:00:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
@@ -312,11 +323,11 @@
     0.3617862542156064
    ],
    "legacy_probs": [
-    0.3278,
-    0.3013,
-    0.3709
+    0.3292,
+    0.2988,
+    0.3719
    ],
-   "history_weight": 0.07,
+   "history_weight": 0.14,
    "features": {
     "num_str": "周三005",
     "league_abb": "西甲",
@@ -331,11 +342,11 @@
     "had_d": 3.05,
     "had_a": 2.45,
     "hhad_gl": 1.0,
-    "home_games": 4,
+    "home_games": 5,
     "away_games": 10,
     "h2h_games": 0,
     "data_quality": "partial",
-    "home_summary": "拉科(近4场)，场均积分2.1 胜率56%，平率44%，场均进2.1/失1.3，休息12天，排名西甲7",
+    "home_summary": "拉科(近5场)，场均积分1.8 胜率42%，平率58%，场均进1.8/失1.2，休息4天，排名西甲7",
     "away_summary": "塞维利亚(近10场)，场均积分1.8 胜率56%，平率15%，场均进1.4/失1.1，休息6天，排名西甲6",
     "h2h_summary": "",
     "intel_note": "[头条搜索(自动)] 拉科本赛季开局表现亮眼/塞维利亚桑甘特、鲁文-巴尔加斯缺阵 · 塞维利亚两将缺阵，拉科开局亮眼，留意冷门",
@@ -345,15 +356,15 @@
     "intel_risk": "低",
     "in_sale": true,
     "started": false,
-    "base_home_goals": 1.5892018779342723,
-    "base_away_goals": 1.1338028169014085,
+    "base_home_goals": 1.5823665893271461,
+    "base_away_goals": 1.1461716937354989,
     "home_home_games": 2,
-    "home_gf": 2.1271415689810644,
-    "home_ga": 1.2997716938779427,
+    "home_gf": 1.8407428198611753,
+    "home_ga": 1.2236018137928657,
     "home_home_gf": 2.0638297872340425,
     "home_home_ga": 1.0,
-    "home_win_w": 0.563570784490532,
-    "home_draw_w": 0.43642921550946795,
+    "home_win_w": 0.42037140993058747,
+    "home_draw_w": 0.5796285900694125,
     "away_away_games": 4,
     "away_gf": 1.3571712231155042,
     "away_ga": 1.1066109075511776,
@@ -361,15 +372,17 @@
     "away_away_ga": 1.2042860157703892,
     "away_win_w": 0.5598270962675361,
     "away_draw_w": 0.1463619443529228,
-    "home_rest": 12,
+    "home_rest": 4,
     "away_rest": 6
    },
    "tags": {
     "banker": false,
     "watch": false,
     "avoid": false,
-    "combo": false
+    "combo": false,
+    "drawcand": false
    },
+   "draw_cand": null,
    "intel": {
     "source": "自动联网",
     "level": "一般",
@@ -377,26 +390,26 @@
    },
    "goals": {
     "pick": "2",
-    "p": 0.2288,
+    "p": 0.2283,
     "pick2": "3",
     "p2": 0.2239,
     "avg": 2.94,
     "probs": [
-     0.05311,
-     0.15591,
-     0.22882,
-     0.22388,
-     0.16429,
-     0.09645,
-     0.04718,
-     0.03035
+     0.05272,
+     0.15515,
+     0.22828,
+     0.22392,
+     0.16473,
+     0.09695,
+     0.04755,
+     0.0307
     ]
    },
    "upset": {
     "fav": "客胜",
     "fav_odds": 2.45,
     "risk": "低",
-    "no_win_p": 0.6311,
+    "no_win_p": 0.6314,
     "hot": false
    }
   },
@@ -408,14 +421,14 @@
    "away": "奥萨苏纳",
    "pick": "主胜",
    "probs": [
-    0.6597,
-    0.2107,
-    0.1296
+    0.6638,
+    0.2098,
+    0.1264
    ],
    "odds": 1.27,
    "source": "模型+赔率",
    "quality": "full",
-   "predicted_at": "2026-09-16T11:53:31.482539+08:00",
+   "predicted_at": "2026-09-16T11:58:01.422673+08:00",
    "kickoff": "2026-09-17T01:00:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
@@ -425,9 +438,9 @@
     0.11063974849437522
    ],
    "legacy_probs": [
-    0.6437,
-    0.2148,
-    0.1415
+    0.6333,
+    0.2227,
+    0.144
    ],
    "history_weight": 0.42,
    "features": {
@@ -448,7 +461,7 @@
     "away_games": 10,
     "h2h_games": 2,
     "data_quality": "full",
-    "home_summary": "马竞(近10场)，场均积分1.7 胜率54%，平率13%，场均进1.5/失1.7，休息12天，排名西甲5",
+    "home_summary": "马竞(近10场)，场均积分1.9 胜率59%，平率11%，场均进1.7/失1.4，休息4天，排名西甲5",
     "away_summary": "奥萨苏纳(近10场)，场均积分0.8 胜率24%，平率10%，场均进1.0/失1.8，休息5天，排名西甲11",
     "h2h_summary": "近2次交锋(主队角度): 2胜0平0负(由近到远:胜、胜…)",
     "intel_note": "[头条搜索(自动)] 马竞主场对奥萨苏纳13次11胜，仅交锋数据可参考",
@@ -458,15 +471,15 @@
     "intel_risk": "低",
     "in_sale": true,
     "started": false,
-    "base_home_goals": 1.5892018779342723,
-    "base_away_goals": 1.1338028169014085,
-    "home_home_games": 5,
-    "home_gf": 1.5429016539742202,
-    "home_ga": 1.6521125462159068,
-    "home_home_gf": 1.6092942899089397,
-    "home_home_ga": 0.9860999355376298,
-    "home_win_w": 0.5371684456100636,
-    "home_draw_w": 0.12879851103057205,
+    "base_home_goals": 1.5823665893271461,
+    "base_away_goals": 1.1461716937354989,
+    "home_home_games": 4,
+    "home_gf": 1.7177534554973137,
+    "home_ga": 1.361218258049719,
+    "home_home_gf": 1.3592847687201428,
+    "home_home_ga": 0.8038294035262744,
+    "home_win_w": 0.592708232136856,
+    "home_draw_w": 0.11334268970690341,
     "away_away_games": 4,
     "away_gf": 0.9656846517928773,
     "away_ga": 1.8407049633918369,
@@ -474,43 +487,45 @@
     "away_away_ga": 2.607658807052549,
     "away_win_w": 0.24214120073747547,
     "away_draw_w": 0.099741566942075,
-    "home_rest": 12,
+    "home_rest": 4,
     "away_rest": 5,
     "h2h_home_adv": 0.5
    },
    "tags": {
-    "banker": false,
-    "watch": true,
+    "banker": true,
+    "watch": false,
     "avoid": false,
-    "combo": true
+    "combo": true,
+    "drawcand": false
    },
+   "draw_cand": null,
    "intel": {
     "source": "自动联网",
     "level": "一般",
     "risk": "低"
    },
    "goals": {
-    "pick": "3",
-    "p": 0.2191,
-    "pick2": "2",
-    "p2": 0.1944,
-    "avg": 3.38,
+    "pick": "2",
+    "p": 0.2273,
+    "pick2": "3",
+    "p2": 0.224,
+    "avg": 2.96,
     "probs": [
-     0.03403,
-     0.11504,
-     0.19444,
-     0.21911,
-     0.18518,
-     0.1252,
-     0.07054,
-     0.05647
+     0.05204,
+     0.15382,
+     0.22732,
+     0.22397,
+     0.1655,
+     0.09783,
+     0.04819,
+     0.03132
     ]
    },
    "upset": {
     "fav": "主胜",
     "fav_odds": 1.27,
-    "risk": "中",
-    "no_win_p": 0.3403,
+    "risk": "低",
+    "no_win_p": 0.3362,
     "hot": true
    }
   },
@@ -522,14 +537,14 @@
    "away": "本菲卡",
    "pick": "主胜",
    "probs": [
-    0.4241,
-    0.2723,
-    0.3036
+    0.4265,
+    0.2708,
+    0.3027
    ],
    "odds": 1.98,
    "source": "仅赔率",
    "quality": "odds_only",
-   "predicted_at": "2026-09-16T11:53:31.482539+08:00",
+   "predicted_at": "2026-09-16T11:58:01.422673+08:00",
    "kickoff": "2026-09-17T03:00:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
@@ -539,9 +554,9 @@
     0.292271223527573
    ],
    "legacy_probs": [
-    0.4241,
-    0.2723,
-    0.3036
+    0.4265,
+    0.2708,
+    0.3027
    ],
    "history_weight": 0.0,
    "features": {
@@ -577,8 +592,10 @@
     "banker": false,
     "watch": false,
     "avoid": false,
-    "combo": false
+    "combo": false,
+    "drawcand": false
    },
+   "draw_cand": null,
    "intel": {
     "source": "自动联网",
     "level": "不足",
@@ -605,7 +622,7 @@
     "fav": "主胜",
     "fav_odds": 1.98,
     "risk": "高",
-    "no_win_p": 0.5759,
+    "no_win_p": 0.5735,
     "hot": true
    }
   },
@@ -617,14 +634,14 @@
    "away": "阿尔克马",
    "pick": "主胜",
    "probs": [
-    0.6044,
-    0.2229,
-    0.1727
+    0.6072,
+    0.2212,
+    0.1716
    ],
    "odds": 1.41,
    "source": "仅赔率",
    "quality": "odds_only",
-   "predicted_at": "2026-09-16T11:53:31.482539+08:00",
+   "predicted_at": "2026-09-16T11:58:01.422673+08:00",
    "kickoff": "2026-09-17T03:00:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
@@ -634,9 +651,9 @@
     0.1610245533893466
    ],
    "legacy_probs": [
-    0.6044,
-    0.2229,
-    0.1727
+    0.6072,
+    0.2212,
+    0.1716
    ],
    "history_weight": 0.0,
    "features": {
@@ -670,10 +687,12 @@
    },
    "tags": {
     "banker": false,
-    "watch": true,
+    "watch": false,
     "avoid": false,
-    "combo": true
+    "combo": true,
+    "drawcand": false
    },
+   "draw_cand": null,
    "intel": {
     "source": "自动联网",
     "level": "不足",
@@ -700,7 +719,7 @@
     "fav": "主胜",
     "fav_odds": 1.41,
     "risk": "中",
-    "no_win_p": 0.3956,
+    "no_win_p": 0.3928,
     "hot": true
    }
   },
@@ -712,14 +731,14 @@
    "away": "雷恩",
    "pick": "客胜",
    "probs": [
-    0.2169,
-    0.2451,
-    0.538
+    0.2189,
+    0.2435,
+    0.5375
    ],
    "odds": 1.68,
    "source": "仅赔率",
    "quality": "odds_only",
-   "predicted_at": "2026-09-16T11:53:31.482539+08:00",
+   "predicted_at": "2026-09-16T11:58:01.422673+08:00",
    "kickoff": "2026-09-17T03:00:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
@@ -729,9 +748,9 @@
     0.5273818454613654
    ],
    "legacy_probs": [
-    0.2169,
-    0.2451,
-    0.538
+    0.2189,
+    0.2435,
+    0.5375
    ],
    "history_weight": 0.0,
    "features": {
@@ -767,8 +786,10 @@
     "banker": false,
     "watch": false,
     "avoid": false,
-    "combo": true
+    "combo": true,
+    "drawcand": false
    },
+   "draw_cand": null,
    "intel": {
     "source": "自动联网",
     "level": "一般",
@@ -795,7 +816,7 @@
     "fav": "客胜",
     "fav_odds": 1.68,
     "risk": "高",
-    "no_win_p": 0.462,
+    "no_win_p": 0.4625,
     "hot": true
    }
   },
@@ -807,14 +828,14 @@
    "away": "里昂",
    "pick": "客胜",
    "probs": [
-    0.2457,
-    0.2649,
-    0.4894
+    0.2478,
+    0.2633,
+    0.4889
    ],
    "odds": 1.85,
    "source": "仅赔率",
    "quality": "odds_only",
-   "predicted_at": "2026-09-16T11:53:31.482539+08:00",
+   "predicted_at": "2026-09-16T11:58:01.422673+08:00",
    "kickoff": "2026-09-17T03:00:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
@@ -824,9 +845,9 @@
     0.4786572731040199
    ],
    "legacy_probs": [
-    0.2457,
-    0.2649,
-    0.4894
+    0.2478,
+    0.2633,
+    0.4889
    ],
    "history_weight": 0.0,
    "features": {
@@ -862,8 +883,10 @@
     "banker": false,
     "watch": false,
     "avoid": false,
-    "combo": false
+    "combo": false,
+    "drawcand": false
    },
+   "draw_cand": null,
    "intel": {
     "source": "自动联网",
     "level": "不足",
@@ -890,7 +913,7 @@
     "fav": "客胜",
     "fav_odds": 1.85,
     "risk": "高",
-    "no_win_p": 0.5106,
+    "no_win_p": 0.5111,
     "hot": true
    }
   },
@@ -902,14 +925,14 @@
    "away": "维拉",
    "pick": "客胜",
    "probs": [
-    0.3006,
-    0.2764,
-    0.4231
+    0.3028,
+    0.2748,
+    0.4224
    ],
    "odds": 2.15,
    "source": "仅赔率",
    "quality": "odds_only",
-   "predicted_at": "2026-09-16T11:53:31.482539+08:00",
+   "predicted_at": "2026-09-16T11:58:01.422673+08:00",
    "kickoff": "2026-09-17T03:00:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
@@ -919,9 +942,9 @@
     0.41212257267931307
    ],
    "legacy_probs": [
-    0.3006,
-    0.2764,
-    0.4231
+    0.3028,
+    0.2748,
+    0.4224
    ],
    "history_weight": 0.0,
    "features": {
@@ -957,8 +980,10 @@
     "banker": false,
     "watch": false,
     "avoid": false,
-    "combo": false
+    "combo": false,
+    "drawcand": false
    },
+   "draw_cand": null,
    "intel": {
     "source": "自动联网",
     "level": "不足",
@@ -985,7 +1010,7 @@
     "fav": "客胜",
     "fav_odds": 2.15,
     "risk": "高",
-    "no_win_p": 0.5769,
+    "no_win_p": 0.5776,
     "hot": true
    }
   },
@@ -997,14 +1022,14 @@
    "away": "毕尔巴鄂",
    "pick": "客胜",
    "probs": [
-    0.3327,
-    0.2659,
-    0.4014
+    0.2976,
+    0.2621,
+    0.4403
    ],
    "odds": 1.84,
    "source": "模型+赔率",
    "quality": "full",
-   "predicted_at": "2026-09-16T11:53:31.482539+08:00",
+   "predicted_at": "2026-09-16T11:58:01.422673+08:00",
    "kickoff": "2026-09-17T03:30:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
@@ -1014,9 +1039,9 @@
     0.4820415879017013
    ],
    "legacy_probs": [
-    0.3265,
-    0.2608,
-    0.4126
+    0.3014,
+    0.2587,
+    0.4398
    ],
    "history_weight": 0.42,
    "features": {
@@ -1037,7 +1062,7 @@
     "away_games": 10,
     "h2h_games": 2,
     "data_quality": "full",
-    "home_summary": "莱万特(近10场)，场均积分1.5 胜率38%，平率35%，场均进1.5/失1.4，休息11天，排名西甲14",
+    "home_summary": "莱万特(近10场)，场均积分1.3 胜率33%，平率26%，场均进1.7/失1.9，休息4天，排名西甲14",
     "away_summary": "毕尔巴鄂(近10场)，场均积分1.2 胜率33%，平率24%，场均进1.4/失1.4，休息5天，排名西甲9",
     "h2h_summary": "近2次交锋(主队角度): 0胜0平2负(由近到远:负、负…)",
     "intel_note": "[头条搜索(自动)] 摘要仅标题，无状态与伤停有效信息",
@@ -1047,15 +1072,15 @@
     "intel_risk": "低",
     "in_sale": true,
     "started": false,
-    "base_home_goals": 1.5892018779342723,
-    "base_away_goals": 1.1338028169014085,
-    "home_home_games": 3,
-    "home_gf": 1.502543865060311,
-    "home_ga": 1.42172977527635,
-    "home_home_gf": 3.4219409282700424,
-    "home_home_ga": 1.3369499698613623,
-    "home_win_w": 0.3793454778090415,
-    "home_draw_w": 0.34775571064768834,
+    "base_home_goals": 1.5823665893271461,
+    "base_away_goals": 1.1461716937354989,
+    "home_home_games": 4,
+    "home_gf": 1.6548793838733524,
+    "home_ga": 1.9164037674837462,
+    "home_home_gf": 2.995683287608158,
+    "home_home_ga": 2.1352569882777277,
+    "home_win_w": 0.3338240204719565,
+    "home_draw_w": 0.25970463405982624,
     "away_away_games": 5,
     "away_gf": 1.426077073858029,
     "away_ga": 1.4215909983487631,
@@ -1063,7 +1088,7 @@
     "away_away_ga": 1.8853532518371126,
     "away_win_w": 0.32779726369047163,
     "away_draw_w": 0.24356026075008244,
-    "home_rest": 11,
+    "home_rest": 4,
     "away_rest": 5,
     "h2h_home_adv": -0.5
    },
@@ -1071,35 +1096,37 @@
     "banker": false,
     "watch": false,
     "avoid": false,
-    "combo": false
+    "combo": false,
+    "drawcand": false
    },
+   "draw_cand": null,
    "intel": {
     "source": "自动联网",
     "level": "不足",
     "risk": "低"
    },
    "goals": {
-    "pick": "3",
-    "p": 0.1972,
-    "pick2": "4",
-    "p2": 0.1953,
-    "avg": 3.96,
+    "pick": "4",
+    "p": 0.1944,
+    "pick2": "3",
+    "p2": 0.1852,
+    "avg": 4.2,
     "probs": [
-     0.01903,
-     0.07538,
-     0.14932,
-     0.19721,
-     0.19533,
-     0.15478,
-     0.10221,
-     0.10675
+     0.01502,
+     0.06306,
+     0.13237,
+     0.18525,
+     0.19444,
+     0.16327,
+     0.11425,
+     0.13236
     ]
    },
    "upset": {
     "fav": "客胜",
     "fav_odds": 1.84,
     "risk": "高",
-    "no_win_p": 0.5986,
+    "no_win_p": 0.5597,
     "hot": true
    }
   },
@@ -1111,14 +1138,14 @@
    "away": "帕梅拉斯",
    "pick": "主胜",
    "probs": [
-    0.3739,
-    0.3118,
-    0.3144
+    0.3762,
+    0.3103,
+    0.3135
    ],
    "odds": 2.23,
    "source": "仅赔率",
    "quality": "odds_only",
-   "predicted_at": "2026-09-16T11:53:31.482539+08:00",
+   "predicted_at": "2026-09-16T11:58:01.422673+08:00",
    "kickoff": "2026-09-17T06:00:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
@@ -1128,9 +1155,9 @@
     0.3030994143963583
    ],
    "legacy_probs": [
-    0.3739,
-    0.3118,
-    0.3144
+    0.3762,
+    0.3103,
+    0.3135
    ],
    "history_weight": 0.0,
    "features": {
@@ -1166,7 +1193,14 @@
     "banker": false,
     "watch": false,
     "avoid": false,
-    "combo": false
+    "combo": false,
+    "drawcand": true
+   },
+   "draw_cand": {
+    "ok": true,
+    "odds": 2.95,
+    "p_draw": 0.3103,
+    "gap": 0.0659
    },
    "intel": {
     "source": "自动联网",
@@ -1194,7 +1228,7 @@
     "fav": "主胜",
     "fav_odds": 2.23,
     "risk": "低",
-    "no_win_p": 0.6261,
+    "no_win_p": 0.6238,
     "hot": false
    }
   },
@@ -1206,14 +1240,14 @@
    "away": "格雷米奥",
    "pick": "主胜",
    "probs": [
-    0.5335,
-    0.2513,
-    0.2152
+    0.5362,
+    0.2497,
+    0.2141
    ],
    "odds": 1.59,
    "source": "仅赔率",
    "quality": "odds_only",
-   "predicted_at": "2026-09-16T11:53:31.482539+08:00",
+   "predicted_at": "2026-09-16T11:58:01.422673+08:00",
    "kickoff": "2026-09-17T06:30:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
@@ -1223,9 +1257,9 @@
     0.20360276177127137
    ],
    "legacy_probs": [
-    0.5335,
-    0.2513,
-    0.2152
+    0.5362,
+    0.2497,
+    0.2141
    ],
    "history_weight": 0.0,
    "features": {
@@ -1261,8 +1295,10 @@
     "banker": false,
     "watch": false,
     "avoid": true,
-    "combo": false
+    "combo": false,
+    "drawcand": false
    },
+   "draw_cand": null,
    "intel": {
     "source": "自动联网",
     "level": "不足",
@@ -1289,7 +1325,7 @@
     "fav": "主胜",
     "fav_odds": 1.59,
     "risk": "高",
-    "no_win_p": 0.4665,
+    "no_win_p": 0.4638,
     "hot": true
    }
   },
@@ -1301,14 +1337,14 @@
    "away": "拉普大学",
    "pick": "主胜",
    "probs": [
-    0.448,
-    0.3435,
-    0.2085
+    0.4505,
+    0.3421,
+    0.2074
    ],
    "odds": 1.88,
    "source": "仅赔率",
    "quality": "odds_only",
-   "predicted_at": "2026-09-16T11:53:31.482539+08:00",
+   "predicted_at": "2026-09-16T11:58:01.422673+08:00",
    "kickoff": "2026-09-17T08:30:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
@@ -1318,9 +1354,9 @@
     0.19688875291238142
    ],
    "legacy_probs": [
-    0.448,
-    0.3435,
-    0.2085
+    0.4505,
+    0.3421,
+    0.2074
    ],
    "history_weight": 0.0,
    "features": {
@@ -1356,8 +1392,10 @@
     "banker": false,
     "watch": false,
     "avoid": false,
-    "combo": false
+    "combo": false,
+    "drawcand": false
    },
+   "draw_cand": null,
    "intel": {
     "source": "自动联网",
     "level": "一般",
@@ -1384,7 +1422,7 @@
     "fav": "主胜",
     "fav_odds": 1.88,
     "risk": "高",
-    "no_win_p": 0.552,
+    "no_win_p": 0.5495,
     "hot": true
    }
   }
@@ -1392,7 +1430,7 @@
  "combos": [
   {
    "odds": 2.1,
-   "joint": 0.3609,
+   "joint": 0.3628,
    "risk": "中",
    "legs": [
     {
@@ -1407,7 +1445,7 @@
   },
   {
    "odds": 2.33,
-   "joint": 0.3306,
+   "joint": 0.3319,
    "risk": "中",
    "legs": [
     {
@@ -1422,7 +1460,7 @@
   },
   {
    "odds": 2.13,
-   "joint": 0.3549,
+   "joint": 0.3568,
    "risk": "高",
    "legs": [
     {
@@ -1437,7 +1475,7 @@
   },
   {
    "odds": 2.37,
-   "joint": 0.3252,
+   "joint": 0.3264,
    "risk": "高",
    "legs": [
     {

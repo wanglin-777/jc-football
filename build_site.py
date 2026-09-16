@@ -376,6 +376,30 @@ def build_html(today, ordered, preds, rec, msgs, gen_time, offline=False):
     except Exception:
         intel_html = ""
 
+    # ⚖ 平局候选(AI复盘建议“平赔偏低且势均力敌”的场次纳入平局候选, 先观察命中率)
+    draw_html2 = ""
+    try:
+        dcs = (rec or {}).get("draw_cands") or []
+        if dcs:
+            dr = ""
+            for x in dcs:
+                f = x["feat"]
+                dc = x["pred"].get("draw_candidate") or {}
+                dr += (f'<tr><td>{esc(f["num_str"])}</td><td>{esc(f["league_abb"])}</td>'
+                       f'<td>{esc(f["home"])} vs {esc(f["away"])}</td>'
+                       f'<td>{esc(x["pick"])} {fmt_p(x["prob"])}</td>'
+                       f'<td>{dc.get("odds", "")}</td><td>{fmt_p(dc.get("p_draw"))}</td>'
+                       f'<td>{(dc.get("gap") or 0) * 100:.1f}%</td>'
+                       f'<td>{esc(f.get("intel_note", "") or "—")}</td></tr>')
+            draw_html2 = ('<h2>⚖ 平局候选(防平 · 观察中)</h2>'
+                          '<p class="mut">筛选条件: 平赔 ≤ 3.00 且 平概率 ≥ 28% 且 主/客胜概率相近; '
+                          '这类场次历史上漏判严重, 现只作"防平"提示并单独统计命中率, 暂不改首选。</p>'
+                          '<div class="tbl"><table><tr><th>场次</th><th>联赛</th><th>对阵</th>'
+                          '<th>模型首选</th><th>平赔</th><th>平概率</th><th>与首选差</th>'
+                          f'<th>情报</th></tr>{dr}</table></div>')
+    except Exception:
+        draw_html2 = ""
+
     # ⚽ 总进球预测(与胜负分开): 每场只给两种最可能进球数
     def _grow2(f, pr):
         g = pr.get("goals")
@@ -471,14 +495,14 @@ def build_html(today, ordered, preds, rec, msgs, gen_time, offline=False):
 
 <section class="panel show" id="tab-combo">
 <h2>🎯 两串一推荐(稳定优先·不足补齐)</h2>
-<p class="mut">规则: 只串两关 · 串后赔率 ≥ 2.0 · 每腿胜率≥50% · 按稳定度从高到低排, 不足5组按稳定度补齐 · 剔除“强队低赔×对手保级/反弹动机”的场</p>
-{daily_ai}
+<p class="mut">规则: 只串两关 · 串后赔率 ≥ 2.0 · 每腿胜率≥50% · 按稳定度从高到低排, 不足5组按稳定度补齐 · 剔除“强队低赔×对手保级/反弹动机”的场</p>{daily_ai}
 {combo_html}
 
 {banker_html}
 {watch_html}
 {avoid_html}
 {intel_html}
+{draw_html2}
 <h2>📈 模型候选(预测胜率 Top 12)</h2>
 <p class="mut">稳定优先: 两腿都需 胜率≥50% 且 胜率差≥5%; 串关按稳定度(低风险优先)排, 不足5组时按稳定度补齐。</p>
 <div class="tbl"><table><tr><th>场次</th><th>联赛</th><th>对阵</th><th>推荐</th>
@@ -526,9 +550,12 @@ def build_html(today, ordered, preds, rec, msgs, gen_time, offline=False):
 <div class="note">
 <b>做胆与串关规则(2026-09 提升稳定性):</b><br>
 1) <b>做胆门槛</b>: 预测胜率 ≥ {BANKER_MIN_PROB:.0%} 且赔率 ≤ {BANKER_MAX_ODDS:.2f} 且风险为「低」, 还须附
-<b>近期状态 / 伤停 / 动机</b>核验; 未通过核验的一律降级为「🟡 观望」, 不建议做胆。<br>
+<b>近期状态 / 伤停 / 动机</b>核验; 未通过核验(或属于平局候选)的一律降级为「🟡 观望」。<br>
+<small>2026-09-16 按 AI 复盘调整: 60-70% 档实际只中 54%(虚高), 门槛由 60% 上调至 65%;
+40-50% 档实际仅 36%, 不再参与任何推荐。</small><br>
 2) <b>串关规避</b>: 「强队主场 + 赔率偏低 + 对手有保级或反弹动机」的场次不纳入两串一, 见「🚫 串关已剔除」。<br>
-3) <b>平局盲区</b>: 单独统计平局预测数与漏判率(见「🧠 自我复盘」), <b>先补齐盲区, 暂不调整权重</b>。
+3) <b>平局盲区</b>: 单独统计平局预测数与漏判率; 另把「平赔 ≤ 3.00 且 主客胜相近」的场次列为
+「⚖ 平局候选(防平)」并单独记录命中率——先补齐盲区、攒够样本再决定是否改为首选(暂不调权重)。
 </div>
 <div class="note">
 <b>自动联网情报(新增):</b> 每场会自动到网上检索“状态 / 伤停 / 动机”相关信息
@@ -989,6 +1016,9 @@ def build_self_html(vdata, offline=False):
           "两串一两腿实际命中")
     _arow("串关已剔除场次", agg.get("avoid_n", 0), agg.get("avoid_hits", 0),
           f"其中真爆冷 {agg.get('avoid_cold', 0)} 场(剔除是否避开了冷门)")
+    _arow("平局候选(观察)", agg.get("drawcand_n", 0), agg.get("drawcand_draws", 0),
+          f"{agg.get('drawcand_n', 0)} 场中实际打出平局 {agg.get('drawcand_draws', 0)} 场"
+          "(命中率口径=实际为平; 样本足够后再决定是否改为首选)")
     for s in agg.get("intel_stats", []):
         _arow(f"情报等级 {s['level']}", s["n"], s["hit"], "有情报覆盖场次的命中率")
     _arow("模型与市场同选", agg.get("same_n", 0), agg.get("same_hits", 0), "跟随市场热门的部分")
