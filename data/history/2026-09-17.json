@@ -1,63 +1,63 @@
 {
  "date": "2026-09-17",
- "n": 9,
+ "n": 10,
  "items": [
   {
-   "num": "周四003",
-   "league_abb": "欧罗巴",
+   "num": "周四002",
+   "league_abb": "亚洲冠军乙级联赛",
    "league_code": "",
-   "home": "克里特",
-   "away": "霍芬海姆",
-   "pick": "客胜",
+   "home": "上海申花",
+   "away": "淡宾尼士",
+   "pick": "主胜",
    "probs": [
-    0.1371,
-    0.1981,
-    0.6648
+    0.7303,
+    0.1652,
+    0.1045
    ],
-   "odds": 1.34,
+   "odds": 1.22,
    "source": "仅赔率",
    "quality": "odds_only",
-   "predicted_at": "2026-09-17T10:32:33.798384+08:00",
-   "kickoff": "2026-09-18T00:45:00+08:00",
+   "predicted_at": "2026-09-17T13:04:49.981058+08:00",
+   "kickoff": "2026-09-17T20:15:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
    "market_probs": [
-    0.14757287107754796,
-    0.1916530793214909,
-    0.6607740496009611
+    0.7261232709385627,
+    0.16714535670661254,
+    0.10673137235482485
    ],
    "legacy_probs": [
-    0.1371,
-    0.1981,
-    0.6648
+    0.7303,
+    0.1652,
+    0.1045
    ],
    "history_weight": 0.0,
    "features": {
-    "num_str": "周四003",
-    "league_abb": "欧罗巴",
+    "num_str": "周四002",
+    "league_abb": "亚洲冠军乙级联赛",
     "league_code": "",
-    "time": "00:45",
-    "home": "克里特",
-    "away": "霍芬海姆",
-    "date": "2026-09-18",
+    "time": "20:15",
+    "home": "上海申花",
+    "away": "淡宾尼士",
+    "date": "2026-09-17",
     "home_rank": "",
-    "away_rank": "[19]",
-    "had_h": 6.0,
-    "had_d": 4.62,
-    "had_a": 1.34,
-    "hhad_gl": 1.0,
+    "away_rank": "",
+    "had_h": 1.22,
+    "had_d": 5.3,
+    "had_a": 8.3,
+    "hhad_gl": -2.0,
     "home_games": 0,
     "away_games": 0,
     "h2h_games": 0,
     "data_quality": "odds_only",
-    "home_summary": "克里特: 联赛(欧罗巴)暂无历史源, 仅赔率预测",
-    "away_summary": "霍芬海姆: 同上",
+    "home_summary": "上海申花: 联赛(亚洲冠军乙级联赛)暂无历史源, 仅赔率预测",
+    "away_summary": "淡宾尼士: 同上",
     "h2h_summary": "",
-    "intel_note": "[头条搜索(自动)] 克里特近期状态极佳，主场连战连捷；霍芬海姆为德甲劲旅/两队都为小组赛出线抢分，抢分欲望拉满 · 克里特主场火热，霍芬海姆客战希腊需防冷",
+    "intel_note": "[头条搜索(自动)] 申花主场整体实力对淡宾尼士形成碾压，取胜悬念不大/亚冠二级小组赛主场力争首胜 · 主队实力碾压且主场作战，但摘要未提伤停，谨慎看好",
     "intel_adj": 0.5,
     "intel_source": "自动联网",
     "intel_level": "一般",
-    "intel_risk": "中",
+    "intel_risk": "低",
     "in_sale": true,
     "started": false
    },
@@ -72,7 +72,7 @@
    "intel": {
     "source": "自动联网",
     "level": "一般",
-    "risk": "中"
+    "risk": "低"
    },
    "goals": {
     "pick": "2",
@@ -92,181 +92,65 @@
     ]
    },
    "upset": {
-    "fav": "客胜",
-    "fav_odds": 1.34,
-    "risk": "低",
-    "no_win_p": 0.3352,
-    "hot": true
-   }
-  },
-  {
-   "num": "周四004",
-   "league_abb": "西甲",
-   "league_code": "LLA",
-   "home": "贝蒂斯",
-   "away": "赫塔费",
-   "pick": "主胜",
-   "probs": [
-    0.5809,
-    0.2761,
-    0.143
-   ],
-   "odds": 1.52,
-   "source": "模型+赔率",
-   "quality": "full",
-   "predicted_at": "2026-09-17T10:32:33.798384+08:00",
-   "kickoff": "2026-09-18T01:00:00+08:00",
-   "model_version": "2.2",
-   "history_model": "shrunk_form",
-   "market_probs": [
-    0.582351362560687,
-    0.2595818390299836,
-    0.15806679840932933
-   ],
-   "legacy_probs": [
-    0.5677,
-    0.2794,
-    0.153
-   ],
-   "history_weight": 0.42,
-   "features": {
-    "num_str": "周四004",
-    "league_abb": "西甲",
-    "league_code": "LLA",
-    "time": "01:00",
-    "home": "贝蒂斯",
-    "away": "赫塔费",
-    "date": "2026-09-18",
-    "home_rank": "",
-    "away_rank": "[15]",
-    "had_h": 1.52,
-    "had_d": 3.41,
-    "had_a": 5.6,
-    "hhad_gl": -1.0,
-    "home_games": 10,
-    "away_games": 10,
-    "h2h_games": 2,
-    "data_quality": "full",
-    "home_summary": "贝蒂斯(近10场)，场均积分2.3 胜率73%，平率6%，场均进1.6/失1.3，休息4天",
-    "away_summary": "赫塔费(近10场)，场均积分1.2 胜率27%，平率37%，场均进0.7/失1.0，休息5天，排名15",
-    "h2h_summary": "近2次交锋(主队角度): 1胜0平1负(由近到远:负、胜…)",
-    "intel_note": "[头条搜索(自动)] 摘要多为无关旧闻，无有效赛前情报",
-    "intel_adj": 0.0,
-    "intel_source": "自动联网",
-    "intel_level": "不足",
-    "intel_risk": "低",
-    "in_sale": true,
-    "started": false,
-    "base_home_goals": 1.5823665893271461,
-    "base_away_goals": 1.1461716937354989,
-    "home_home_games": 5,
-    "home_gf": 1.6159507378651328,
-    "home_ga": 1.3174053285875877,
-    "home_home_gf": 1.6746835912370206,
-    "home_home_ga": 0.36992684073891696,
-    "home_win_w": 0.7341470646351934,
-    "home_draw_w": 0.05981455489429177,
-    "away_away_games": 4,
-    "away_gf": 0.7177108596004409,
-    "away_ga": 0.9911901186809056,
-    "away_away_gf": 0.0,
-    "away_away_ga": 1.32331216545479,
-    "away_win_w": 0.26908635372307915,
-    "away_draw_w": 0.3724968905573541,
-    "home_rest": 4,
-    "away_rest": 5,
-    "h2h_home_adv": 0.0
-   },
-   "tags": {
-    "banker": false,
-    "watch": false,
-    "avoid": true,
-    "combo": true,
-    "drawcand": false
-   },
-   "draw_cand": null,
-   "intel": {
-    "source": "自动联网",
-    "level": "不足",
-    "risk": "低"
-   },
-   "goals": {
-    "pick": "2",
-    "p": 0.2703,
-    "pick2": "1",
-    "p2": 0.2609,
-    "avg": 2.07,
-    "probs": [
-     0.12591,
-     0.2609,
-     0.27033,
-     0.18673,
-     0.09673,
-     0.04009,
-     0.01385,
-     0.00547
-    ]
-   },
-   "upset": {
     "fav": "主胜",
-    "fav_odds": 1.52,
-    "risk": "中",
-    "no_win_p": 0.4191,
+    "fav_odds": 1.22,
+    "risk": "低",
+    "no_win_p": 0.2697,
     "hot": true
    }
   },
   {
-   "num": "周四005",
+   "num": "周四003",
    "league_abb": "欧罗巴",
    "league_code": "",
-   "home": "水晶宫",
-   "away": "波兹南",
-   "pick": "主胜",
+   "home": "克里特",
+   "away": "霍芬海姆",
+   "pick": "客胜",
    "probs": [
-    0.6925,
-    0.1855,
-    0.122
+    0.1309,
+    0.179,
+    0.6901
    ],
-   "odds": 1.26,
+   "odds": 1.28,
    "source": "仅赔率",
    "quality": "odds_only",
-   "predicted_at": "2026-09-17T10:32:33.798384+08:00",
-   "kickoff": "2026-09-18T03:00:00+08:00",
+   "predicted_at": "2026-09-17T13:04:49.981058+08:00",
+   "kickoff": "2026-09-18T00:45:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
    "market_probs": [
-    0.7035154595510377,
-    0.17907666243117323,
-    0.11740787801778908
+    0.12662521198417184,
+    0.18089315997738833,
+    0.6924816280384398
    ],
    "legacy_probs": [
-    0.6925,
-    0.1855,
-    0.122
+    0.1309,
+    0.179,
+    0.6901
    ],
    "history_weight": 0.0,
    "features": {
-    "num_str": "周四005",
+    "num_str": "周四003",
     "league_abb": "欧罗巴",
     "league_code": "",
-    "time": "03:00",
-    "home": "水晶宫",
-    "away": "波兹南",
+    "time": "00:45",
+    "home": "克里特",
+    "away": "霍芬海姆",
     "date": "2026-09-18",
     "home_rank": "",
-    "away_rank": "[13]",
-    "had_h": 1.26,
-    "had_d": 4.95,
-    "had_a": 7.55,
-    "hhad_gl": -1.0,
+    "away_rank": "[19]",
+    "had_h": 7.0,
+    "had_d": 4.9,
+    "had_a": 1.28,
+    "hhad_gl": 1.0,
     "home_games": 0,
     "away_games": 0,
     "h2h_games": 0,
     "data_quality": "odds_only",
-    "home_summary": "水晶宫: 联赛(欧罗巴)暂无历史源, 仅赔率预测",
-    "away_summary": "波兹南: 同上",
+    "home_summary": "克里特: 联赛(欧罗巴)暂无历史源, 仅赔率预测",
+    "away_summary": "霍芬海姆: 同上",
     "h2h_summary": "",
-    "intel_note": "[头条搜索(自动)] 水晶宫为英超队伍，主场作战；波兹南主场氛围火爆，近期主场多场不败 · 水晶宫英超主场对波兹南，留意轮换风险",
+    "intel_note": "[头条搜索(自动)] 克里特近期状态极佳，主场连战连捷；霍芬海姆为德甲劲旅/两队都为小组赛出线抢分，抢分欲望拉满 · 克里特主场火热，霍芬海姆客战希腊需防冷",
     "intel_adj": 0.5,
     "intel_source": "自动联网",
     "intel_level": "一般",
@@ -305,10 +189,223 @@
     ]
    },
    "upset": {
-    "fav": "主胜",
-    "fav_odds": 1.26,
+    "fav": "客胜",
+    "fav_odds": 1.28,
     "risk": "低",
-    "no_win_p": 0.3075,
+    "no_win_p": 0.3099,
+    "hot": true
+   }
+  },
+  {
+   "num": "周四004",
+   "league_abb": "西甲",
+   "league_code": "LLA",
+   "home": "贝蒂斯",
+   "away": "赫塔费",
+   "pick": "主胜",
+   "probs": [
+    0.6048,
+    0.2628,
+    0.1324
+   ],
+   "odds": 1.48,
+   "source": "模型+赔率",
+   "quality": "full",
+   "predicted_at": "2026-09-17T13:04:49.981058+08:00",
+   "kickoff": "2026-09-18T01:00:00+08:00",
+   "model_version": "2.2",
+   "history_model": "shrunk_form",
+   "market_probs": [
+    0.5979949555351564,
+    0.25071743178244515,
+    0.15128761268239854
+   ],
+   "legacy_probs": [
+    0.5916,
+    0.2659,
+    0.1424
+   ],
+   "history_weight": 0.42,
+   "features": {
+    "num_str": "周四004",
+    "league_abb": "西甲",
+    "league_code": "LLA",
+    "time": "01:00",
+    "home": "贝蒂斯",
+    "away": "赫塔费",
+    "date": "2026-09-18",
+    "home_rank": "",
+    "away_rank": "[15]",
+    "had_h": 1.48,
+    "had_d": 3.53,
+    "had_a": 5.85,
+    "hhad_gl": -1.0,
+    "home_games": 10,
+    "away_games": 10,
+    "h2h_games": 2,
+    "data_quality": "full",
+    "home_summary": "贝蒂斯(近10场)，场均积分2.3 胜率73%，平率6%，场均进1.6/失1.3，休息4天",
+    "away_summary": "赫塔费(近10场)，场均积分1.2 胜率27%，平率37%，场均进0.7/失1.0，休息5天，排名15",
+    "h2h_summary": "近2次交锋(主队角度): 1胜0平1负(由近到远:负、胜…)",
+    "intel_note": "[头条搜索(自动)] 摘要多为无关旧闻，无有效赛前情报",
+    "intel_adj": 0.0,
+    "intel_source": "自动联网",
+    "intel_level": "不足",
+    "intel_risk": "低",
+    "in_sale": true,
+    "started": false,
+    "base_home_goals": 1.5806451612903225,
+    "base_away_goals": 1.1497695852534562,
+    "home_home_games": 5,
+    "home_gf": 1.6159507378651328,
+    "home_ga": 1.3174053285875877,
+    "home_home_gf": 1.6746835912370206,
+    "home_home_ga": 0.36992684073891696,
+    "home_win_w": 0.7341470646351934,
+    "home_draw_w": 0.05981455489429177,
+    "away_away_games": 4,
+    "away_gf": 0.7177108596004409,
+    "away_ga": 0.9911901186809056,
+    "away_away_gf": 0.0,
+    "away_away_ga": 1.32331216545479,
+    "away_win_w": 0.26908635372307915,
+    "away_draw_w": 0.3724968905573541,
+    "home_rest": 4,
+    "away_rest": 5,
+    "h2h_home_adv": 0.0
+   },
+   "tags": {
+    "banker": false,
+    "watch": false,
+    "avoid": true,
+    "combo": false,
+    "drawcand": false
+   },
+   "draw_cand": null,
+   "intel": {
+    "source": "自动联网",
+    "level": "不足",
+    "risk": "低"
+   },
+   "goals": {
+    "pick": "2",
+    "p": 0.2703,
+    "pick2": "1",
+    "p2": 0.2605,
+    "avg": 2.07,
+    "probs": [
+     0.12557,
+     0.26054,
+     0.2703,
+     0.18695,
+     0.09698,
+     0.04024,
+     0.01392,
+     0.0055
+    ]
+   },
+   "upset": {
+    "fav": "主胜",
+    "fav_odds": 1.48,
+    "risk": "中",
+    "no_win_p": 0.3952,
+    "hot": true
+   }
+  },
+  {
+   "num": "周四005",
+   "league_abb": "欧罗巴",
+   "league_code": "",
+   "home": "水晶宫",
+   "away": "波兹南",
+   "pick": "主胜",
+   "probs": [
+    0.7122,
+    0.1751,
+    0.1127
+   ],
+   "odds": 1.25,
+   "source": "仅赔率",
+   "quality": "odds_only",
+   "predicted_at": "2026-09-17T13:04:49.981058+08:00",
+   "kickoff": "2026-09-18T03:00:00+08:00",
+   "model_version": "2.2",
+   "history_model": "shrunk_form",
+   "market_probs": [
+    0.7080459770114943,
+    0.17701149425287357,
+    0.11494252873563217
+   ],
+   "legacy_probs": [
+    0.7122,
+    0.1751,
+    0.1127
+   ],
+   "history_weight": 0.0,
+   "features": {
+    "num_str": "周四005",
+    "league_abb": "欧罗巴",
+    "league_code": "",
+    "time": "03:00",
+    "home": "水晶宫",
+    "away": "波兹南",
+    "date": "2026-09-18",
+    "home_rank": "",
+    "away_rank": "[13]",
+    "had_h": 1.25,
+    "had_d": 5.0,
+    "had_a": 7.7,
+    "hhad_gl": -1.0,
+    "home_games": 0,
+    "away_games": 0,
+    "h2h_games": 0,
+    "data_quality": "odds_only",
+    "home_summary": "水晶宫: 联赛(欧罗巴)暂无历史源, 仅赔率预测",
+    "away_summary": "波兹南: 同上",
+    "h2h_summary": "",
+    "intel_note": "[头条搜索(自动)] 水晶宫为英超队伍，主场作战；波兹南主场氛围火爆，近期主场多场不败 · 水晶宫英超主场对波兹南，留意轮换风险",
+    "intel_adj": 0.5,
+    "intel_source": "自动联网",
+    "intel_level": "一般",
+    "intel_risk": "中",
+    "in_sale": true,
+    "started": false
+   },
+   "tags": {
+    "banker": false,
+    "watch": true,
+    "avoid": false,
+    "combo": true,
+    "drawcand": false
+   },
+   "draw_cand": null,
+   "intel": {
+    "source": "自动联网",
+    "level": "一般",
+    "risk": "中"
+   },
+   "goals": {
+    "pick": "2",
+    "p": 0.245,
+    "pick2": "3",
+    "p2": 0.2205,
+    "avg": 2.7,
+    "probs": [
+     0.06721,
+     0.18145,
+     0.24496,
+     0.22047,
+     0.14882,
+     0.08036,
+     0.03616,
+     0.02057
+    ]
+   },
+   "upset": {
+    "fav": "主胜",
+    "fav_odds": 1.25,
+    "risk": "低",
+    "no_win_p": 0.2878,
     "hot": true
    }
   },
@@ -320,26 +417,26 @@
    "away": "伯恩茅斯",
    "pick": "客胜",
    "probs": [
-    0.3223,
-    0.2653,
-    0.4124
+    0.3275,
+    0.257,
+    0.4155
    ],
-   "odds": 2.17,
+   "odds": 2.12,
    "source": "仅赔率",
    "quality": "odds_only",
-   "predicted_at": "2026-09-17T10:32:33.798384+08:00",
+   "predicted_at": "2026-09-17T13:04:49.981058+08:00",
    "kickoff": "2026-09-18T03:00:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
    "market_probs": [
-    0.3329355608591885,
-    0.25894988066825775,
-    0.40811455847255373
+    0.32324565314311193,
+    0.258974587605885,
+    0.4177797592510031
    ],
    "legacy_probs": [
-    0.3223,
-    0.2653,
-    0.4124
+    0.3275,
+    0.257,
+    0.4155
    ],
    "history_weight": 0.0,
    "features": {
@@ -352,9 +449,9 @@
     "date": "2026-09-18",
     "home_rank": "",
     "away_rank": "[24]",
-    "had_h": 2.66,
+    "had_h": 2.74,
     "had_d": 3.42,
-    "had_a": 2.17,
+    "had_a": 2.12,
     "hhad_gl": 1.0,
     "home_games": 0,
     "away_games": 0,
@@ -403,9 +500,9 @@
    },
    "upset": {
     "fav": "客胜",
-    "fav_odds": 2.17,
+    "fav_odds": 2.12,
     "risk": "高",
-    "no_win_p": 0.5876,
+    "no_win_p": 0.5845,
     "hot": true
    }
   },
@@ -417,26 +514,26 @@
    "away": "奈梅亨",
    "pick": "主胜",
    "probs": [
-    0.7731,
-    0.1541,
-    0.0728
+    0.7955,
+    0.141,
+    0.0634
    ],
-   "odds": 1.13,
+   "odds": 1.12,
    "source": "仅赔率",
    "quality": "odds_only",
-   "predicted_at": "2026-09-17T10:32:33.798384+08:00",
+   "predicted_at": "2026-09-17T13:04:49.981058+08:00",
    "kickoff": "2026-09-18T03:00:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
    "market_probs": [
-    0.7841560269427968,
-    0.14768271840756006,
-    0.06816125464964311
+    0.7913845921107371,
+    0.14295979728452027,
+    0.06565561060474263
    ],
    "legacy_probs": [
-    0.7731,
-    0.1541,
-    0.0728
+    0.7955,
+    0.141,
+    0.0634
    ],
    "history_weight": 0.0,
    "features": {
@@ -449,9 +546,9 @@
     "date": "2026-09-18",
     "home_rank": "",
     "away_rank": "[28]",
-    "had_h": 1.13,
-    "had_d": 6.0,
-    "had_a": 13.0,
+    "had_h": 1.12,
+    "had_d": 6.2,
+    "had_a": 13.5,
     "hhad_gl": -2.0,
     "home_games": 0,
     "away_games": 0,
@@ -500,9 +597,9 @@
    },
    "upset": {
     "fav": "主胜",
-    "fav_odds": 1.13,
+    "fav_odds": 1.12,
     "risk": "低",
-    "no_win_p": 0.2269,
+    "no_win_p": 0.2045,
     "hot": true
    }
   },
@@ -514,26 +611,26 @@
    "away": "马赛",
    "pick": "主胜",
    "probs": [
-    0.4982,
-    0.2457,
-    0.2561
+    0.5253,
+    0.2362,
+    0.2385
    ],
-   "odds": 1.74,
+   "odds": 1.7,
    "source": "仅赔率",
    "quality": "odds_only",
-   "predicted_at": "2026-09-17T10:32:33.798384+08:00",
+   "predicted_at": "2026-09-17T13:04:49.981058+08:00",
    "kickoff": "2026-09-18T03:00:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
    "market_probs": [
-    0.5090124595494552,
-    0.23937342692325728,
-    0.2516141135272875
+    0.5211194688917989,
+    0.2381459938484027,
+    0.24073453725979838
    ],
    "legacy_probs": [
-    0.4982,
-    0.2457,
-    0.2561
+    0.5253,
+    0.2362,
+    0.2385
    ],
    "history_weight": 0.0,
    "features": {
@@ -546,9 +643,9 @@
     "date": "2026-09-18",
     "home_rank": "",
     "away_rank": "[12]",
-    "had_h": 1.74,
-    "had_d": 3.7,
-    "had_a": 3.52,
+    "had_h": 1.7,
+    "had_d": 3.72,
+    "had_a": 3.68,
     "hhad_gl": -1.0,
     "home_games": 0,
     "away_games": 0,
@@ -569,103 +666,6 @@
     "banker": false,
     "watch": false,
     "avoid": false,
-    "combo": false,
-    "drawcand": false
-   },
-   "draw_cand": null,
-   "intel": {
-    "source": "自动联网",
-    "level": "一般",
-    "risk": "中"
-   },
-   "goals": {
-    "pick": "2",
-    "p": 0.245,
-    "pick2": "3",
-    "p2": 0.2205,
-    "avg": 2.7,
-    "probs": [
-     0.06721,
-     0.18145,
-     0.24496,
-     0.22047,
-     0.14882,
-     0.08036,
-     0.03616,
-     0.02057
-    ]
-   },
-   "upset": {
-    "fav": "主胜",
-    "fav_odds": 1.74,
-    "risk": "高",
-    "no_win_p": 0.5018,
-    "hot": true
-   }
-  },
-  {
-   "num": "周四009",
-   "league_abb": "欧罗巴",
-   "league_code": "",
-   "home": "利勒斯特",
-   "away": "托林斯",
-   "pick": "主胜",
-   "probs": [
-    0.6448,
-    0.2113,
-    0.144
-   ],
-   "odds": 1.35,
-   "source": "仅赔率",
-   "quality": "odds_only",
-   "predicted_at": "2026-09-17T10:32:33.798384+08:00",
-   "kickoff": "2026-09-18T03:00:00+08:00",
-   "model_version": "2.2",
-   "history_model": "shrunk_form",
-   "market_probs": [
-    0.6556953856082608,
-    0.20490480800258148,
-    0.1393998063891578
-   ],
-   "legacy_probs": [
-    0.6448,
-    0.2113,
-    0.144
-   ],
-   "history_weight": 0.0,
-   "features": {
-    "num_str": "周四009",
-    "league_abb": "欧罗巴",
-    "league_code": "",
-    "time": "03:00",
-    "home": "利勒斯特",
-    "away": "托林斯",
-    "date": "2026-09-18",
-    "home_rank": "",
-    "away_rank": "[29]",
-    "had_h": 1.35,
-    "had_d": 4.32,
-    "had_a": 6.35,
-    "hhad_gl": -1.0,
-    "home_games": 0,
-    "away_games": 0,
-    "h2h_games": 0,
-    "data_quality": "odds_only",
-    "home_summary": "利勒斯特: 联赛(欧罗巴)暂无历史源, 仅赔率预测",
-    "away_summary": "托林斯: 同上",
-    "h2h_summary": "",
-    "intel_note": "[头条搜索(自动)] 利勒斯特罗姆凭挪威杯冠军拿到欧联正赛席位，主场作战士气高涨；托伦斯一路爆冷闯进欧联正赛/两队队史首次交手，利勒斯特主场士气高，托伦斯长途奔赴北欧想拿分 · 利勒斯特主场士气高，托伦斯长途客战，主队略优",
-    "intel_adj": 0.5,
-    "intel_source": "自动联网",
-    "intel_level": "一般",
-    "intel_risk": "中",
-    "in_sale": true,
-    "started": false
-   },
-   "tags": {
-    "banker": false,
-    "watch": false,
-    "avoid": true,
     "combo": true,
     "drawcand": false
    },
@@ -694,9 +694,106 @@
    },
    "upset": {
     "fav": "主胜",
-    "fav_odds": 1.35,
+    "fav_odds": 1.7,
+    "risk": "高",
+    "no_win_p": 0.4747,
+    "hot": true
+   }
+  },
+  {
+   "num": "周四009",
+   "league_abb": "欧罗巴",
+   "league_code": "",
+   "home": "利勒斯特",
+   "away": "托林斯",
+   "pick": "主胜",
+   "probs": [
+    0.6414,
+    0.204,
+    0.1545
+   ],
+   "odds": 1.39,
+   "source": "仅赔率",
+   "quality": "odds_only",
+   "predicted_at": "2026-09-17T13:04:49.981058+08:00",
+   "kickoff": "2026-09-18T03:00:00+08:00",
+   "model_version": "2.2",
+   "history_model": "shrunk_form",
+   "market_probs": [
+    0.637237544425647,
+    0.20599074110503468,
+    0.15677171446931842
+   ],
+   "legacy_probs": [
+    0.6414,
+    0.204,
+    0.1545
+   ],
+   "history_weight": 0.0,
+   "features": {
+    "num_str": "周四009",
+    "league_abb": "欧罗巴",
+    "league_code": "",
+    "time": "03:00",
+    "home": "利勒斯特",
+    "away": "托林斯",
+    "date": "2026-09-18",
+    "home_rank": "",
+    "away_rank": "[29]",
+    "had_h": 1.39,
+    "had_d": 4.3,
+    "had_a": 5.65,
+    "hhad_gl": -1.0,
+    "home_games": 0,
+    "away_games": 0,
+    "h2h_games": 0,
+    "data_quality": "odds_only",
+    "home_summary": "利勒斯特: 联赛(欧罗巴)暂无历史源, 仅赔率预测",
+    "away_summary": "托林斯: 同上",
+    "h2h_summary": "",
+    "intel_note": "[头条搜索(自动)] 利勒斯特罗姆凭挪威杯冠军拿到欧联正赛席位，主场作战士气高涨；托伦斯一路爆冷闯进欧联正赛/两队队史首次交手，利勒斯特主场士气高，托伦斯长途奔赴北欧想拿分 · 利勒斯特主场士气高，托伦斯长途客战，主队略优",
+    "intel_adj": 0.5,
+    "intel_source": "自动联网",
+    "intel_level": "一般",
+    "intel_risk": "中",
+    "in_sale": true,
+    "started": false
+   },
+   "tags": {
+    "banker": false,
+    "watch": false,
+    "avoid": true,
+    "combo": false,
+    "drawcand": false
+   },
+   "draw_cand": null,
+   "intel": {
+    "source": "自动联网",
+    "level": "一般",
+    "risk": "中"
+   },
+   "goals": {
+    "pick": "2",
+    "p": 0.245,
+    "pick2": "3",
+    "p2": 0.2205,
+    "avg": 2.7,
+    "probs": [
+     0.06721,
+     0.18145,
+     0.24496,
+     0.22047,
+     0.14882,
+     0.08036,
+     0.03616,
+     0.02057
+    ]
+   },
+   "upset": {
+    "fav": "主胜",
+    "fav_odds": 1.39,
     "risk": "中",
-    "no_win_p": 0.3552,
+    "no_win_p": 0.3586,
     "hot": true
    }
   },
@@ -708,14 +805,14 @@
    "away": "比利亚雷",
    "pick": "客胜",
    "probs": [
-    0.2392,
-    0.288,
-    0.4728
+    0.2539,
+    0.2798,
+    0.4664
    ],
    "odds": 1.78,
    "source": "模型+赔率",
    "quality": "partial",
-   "predicted_at": "2026-09-17T10:32:33.798384+08:00",
+   "predicted_at": "2026-09-17T13:04:49.981058+08:00",
    "kickoff": "2026-09-18T03:30:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
@@ -725,9 +822,9 @@
     0.4974167968280668
    ],
    "legacy_probs": [
-    0.2456,
-    0.2932,
-    0.4612
+    0.2604,
+    0.2849,
+    0.4547
    ],
    "history_weight": 0.14,
    "features": {
@@ -758,8 +855,8 @@
     "intel_risk": "低",
     "in_sale": true,
     "started": false,
-    "base_home_goals": 1.5823665893271461,
-    "base_away_goals": 1.1461716937354989,
+    "base_home_goals": 1.5806451612903225,
+    "base_away_goals": 1.1497695852534562,
     "home_home_games": 2,
     "home_gf": 0.42725021482036074,
     "home_ga": 1.5190853498693517,
@@ -797,13 +894,13 @@
     "p2": 0.2704,
     "avg": 1.93,
     "probs": [
-     0.1446,
-     0.27962,
+     0.14455,
+     0.27957,
      0.27037,
-     0.17428,
-     0.08426,
-     0.03259,
-     0.0105,
+     0.17431,
+     0.08429,
+     0.03261,
+     0.01051,
      0.00379
     ]
    },
@@ -811,7 +908,7 @@
     "fav": "客胜",
     "fav_odds": 1.78,
     "risk": "高",
-    "no_win_p": 0.5272,
+    "no_win_p": 0.5336,
     "hot": true
    }
   },
@@ -823,14 +920,14 @@
    "away": "德尔瓦耶",
    "pick": "主胜",
    "probs": [
-    0.6929,
-    0.1929,
-    0.1141
+    0.7081,
+    0.1846,
+    0.1073
    ],
    "odds": 1.24,
    "source": "仅赔率",
    "quality": "odds_only",
-   "predicted_at": "2026-09-17T10:32:33.798384+08:00",
+   "predicted_at": "2026-09-17T13:04:49.981058+08:00",
    "kickoff": "2026-09-18T08:30:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
@@ -840,9 +937,9 @@
     0.10354059242297725
    ],
    "legacy_probs": [
-    0.6929,
-    0.1929,
-    0.1141
+    0.7081,
+    0.1846,
+    0.1073
    ],
    "history_weight": 0.0,
    "features": {
@@ -908,38 +1005,38 @@
     "fav": "主胜",
     "fav_odds": 1.24,
     "risk": "低",
-    "no_win_p": 0.3071,
+    "no_win_p": 0.2919,
     "hot": true
    }
   }
  ],
  "combos": [
   {
-   "odds": 2.04,
-   "joint": 0.3862,
-   "risk": "中",
+   "odds": 2.07,
+   "joint": 0.3836,
+   "risk": "高",
    "legs": [
     {
-     "num": "周四003",
-     "pick": "客胜"
+     "num": "周四002",
+     "pick": "主胜"
     },
     {
-     "num": "周四004",
+     "num": "周四008",
      "pick": "主胜"
     }
    ]
   },
   {
-   "odds": 2.05,
-   "joint": 0.3746,
-   "risk": "中",
+   "odds": 2.12,
+   "joint": 0.3741,
+   "risk": "高",
    "legs": [
     {
-     "num": "周四009",
+     "num": "周四005",
      "pick": "主胜"
     },
     {
-     "num": "周四004",
+     "num": "周四008",
      "pick": "主胜"
     }
    ]
