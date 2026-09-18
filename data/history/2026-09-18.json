@@ -5,19 +5,19 @@
   {
    "num": "周五001",
    "league_abb": "亚运男足",
-   "league_code": "",
-   "home": "沙特阿拉伯亚足",
+   "league_code": "AMF",
+   "home": "沙特亚",
    "away": "卡塔尔亚",
    "pick": "主胜",
    "probs": [
-    0.6026,
-    0.2305,
-    0.167
+    0.6126,
+    0.2264,
+    0.161
    ],
    "odds": 1.45,
    "source": "仅赔率",
    "quality": "odds_only",
-   "predicted_at": "2026-09-17T17:04:58.674112+08:00",
+   "predicted_at": "2026-09-18T09:42:18.862833+08:00",
    "kickoff": "2026-09-18T18:30:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
@@ -27,21 +27,21 @@
     0.1595113936709765
    ],
    "legacy_probs": [
-    0.6026,
-    0.2305,
-    0.167
+    0.6126,
+    0.2264,
+    0.161
    ],
    "history_weight": 0.0,
    "features": {
     "num_str": "周五001",
     "league_abb": "亚运男足",
-    "league_code": "",
-    "time": "18:30",
-    "home": "沙特阿拉伯亚足",
+    "league_code": "AMF",
+    "time": "18:30:00",
+    "home": "沙特亚",
     "away": "卡塔尔亚",
     "date": "2026-09-18",
-    "home_rank": "",
-    "away_rank": "",
+    "home_rank": "[Group D2]",
+    "away_rank": "[Group D3]",
     "had_h": 1.45,
     "had_d": 3.85,
     "had_a": 5.55,
@@ -50,14 +50,14 @@
     "away_games": 0,
     "h2h_games": 0,
     "data_quality": "odds_only",
-    "home_summary": "沙特阿拉伯亚足: 联赛(亚运男足)暂无历史源, 仅赔率预测",
+    "home_summary": "沙特亚: 联赛(亚运男足)暂无历史源, 仅赔率预测",
     "away_summary": "卡塔尔亚: 同上",
     "h2h_summary": "",
-    "intel_note": "",
-    "intel_adj": 0.0,
-    "intel_source": "",
-    "intel_level": "",
-    "intel_risk": "低",
+    "intel_note": "[头条搜索(自动)] 沙特U23累积6场比赛不败，状态非常稳定；卡塔尔惨败后心态崩盘/两队拿分诉求都十分迫切，卡塔尔必须争取胜利才能保留出线希望，压力更为集中 · 沙特状态稳定且体能占优，卡塔尔心态存疑，主队可看高",
+    "intel_adj": 0.5,
+    "intel_source": "自动联网",
+    "intel_level": "一般",
+    "intel_risk": "中",
     "in_sale": true,
     "started": false
    },
@@ -70,9 +70,9 @@
    },
    "draw_cand": null,
    "intel": {
-    "source": "",
-    "level": "",
-    "risk": "低"
+    "source": "自动联网",
+    "level": "一般",
+    "risk": "中"
    },
    "goals": {
     "pick": "2",
@@ -95,15 +95,15 @@
     "fav": "主胜",
     "fav_odds": 1.45,
     "risk": "中",
-    "no_win_p": 0.3974,
+    "no_win_p": 0.3874,
     "hot": true
    }
   },
   {
    "num": "周五002",
-   "league_abb": "芬兰超级联赛",
-   "league_code": "",
-   "home": "赫尔辛基火花",
+   "league_abb": "芬超",
+   "league_code": "FVL",
+   "home": "赫尔火花",
    "away": "赫尔辛基",
    "pick": "客胜",
    "probs": [
@@ -114,7 +114,7 @@
    "odds": 1.67,
    "source": "仅赔率",
    "quality": "odds_only",
-   "predicted_at": "2026-09-17T17:04:58.674112+08:00",
+   "predicted_at": "2026-09-18T09:42:18.862833+08:00",
    "kickoff": "2026-09-19T00:00:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
@@ -131,14 +131,14 @@
    "history_weight": 0.0,
    "features": {
     "num_str": "周五002",
-    "league_abb": "芬兰超级联赛",
-    "league_code": "",
-    "time": "00:00",
-    "home": "赫尔辛基火花",
+    "league_abb": "芬超",
+    "league_code": "FVL",
+    "time": "00:00:00",
+    "home": "赫尔火花",
     "away": "赫尔辛基",
     "date": "2026-09-19",
-    "home_rank": "",
-    "away_rank": "[2]",
+    "home_rank": "[芬超4]",
+    "away_rank": "[芬超3]",
     "had_h": 3.8,
     "had_d": 3.8,
     "had_a": 1.67,
@@ -147,13 +147,13 @@
     "away_games": 0,
     "h2h_games": 0,
     "data_quality": "odds_only",
-    "home_summary": "赫尔辛基火花: 联赛(芬兰超级联赛)暂无历史源, 仅赔率预测",
+    "home_summary": "赫尔火花: 联赛(芬超)暂无历史源, 仅赔率预测",
     "away_summary": "赫尔辛基: 同上",
     "h2h_summary": "",
-    "intel_note": "",
+    "intel_note": "[头条搜索(自动)] 摘要多为无关或过期内容，无有效赛前情报，建议观望",
     "intel_adj": 0.0,
-    "intel_source": "",
-    "intel_level": "",
+    "intel_source": "自动联网",
+    "intel_level": "不足",
     "intel_risk": "低",
     "in_sale": true,
     "started": false
@@ -167,8 +167,8 @@
    },
    "draw_cand": null,
    "intel": {
-    "source": "",
-    "level": "",
+    "source": "自动联网",
+    "level": "不足",
     "risk": "低"
    },
    "goals": {
@@ -211,7 +211,7 @@
    "odds": 1.5,
    "source": "仅赔率",
    "quality": "odds_only",
-   "predicted_at": "2026-09-17T17:04:58.674112+08:00",
+   "predicted_at": "2026-09-18T09:42:18.862833+08:00",
    "kickoff": "2026-09-19T00:30:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
@@ -230,12 +230,12 @@
     "num_str": "周五003",
     "league_abb": "德乙",
     "league_code": "BU2",
-    "time": "00:30",
+    "time": "00:30:00",
     "home": "沃夫斯堡",
     "away": "达姆施塔",
     "date": "2026-09-19",
-    "home_rank": "",
-    "away_rank": "[16]",
+    "home_rank": "[德乙5]",
+    "away_rank": "[德乙16]",
     "had_h": 1.5,
     "had_d": 4.13,
     "had_a": 4.53,
@@ -247,11 +247,11 @@
     "home_summary": "沃夫斯堡: 联赛(德乙)暂无历史源, 仅赔率预测",
     "away_summary": "达姆施塔: 同上",
     "h2h_summary": "",
-    "intel_note": "",
+    "intel_note": "[头条搜索(自动)] 沃夫斯堡德乙第5位，5轮2胜2平1负，进攻火力充足，联赛打进10球/沃夫斯堡伤停：埃里克森、门将维伦洛伊特、霍恩比、罗热里奥、库（摘要提及多名球员缺阵） · 主队进攻强但多名主力伤停，需防冷门",
     "intel_adj": 0.0,
-    "intel_source": "",
-    "intel_level": "",
-    "intel_risk": "低",
+    "intel_source": "自动联网",
+    "intel_level": "一般",
+    "intel_risk": "中",
     "in_sale": true,
     "started": false
    },
@@ -264,9 +264,9 @@
    },
    "draw_cand": null,
    "intel": {
-    "source": "",
-    "level": "",
-    "risk": "低"
+    "source": "自动联网",
+    "level": "一般",
+    "risk": "中"
    },
    "goals": {
     "pick": "2",
@@ -308,7 +308,7 @@
    "odds": 1.43,
    "source": "仅赔率",
    "quality": "odds_only",
-   "predicted_at": "2026-09-17T17:04:58.674112+08:00",
+   "predicted_at": "2026-09-18T09:42:18.862833+08:00",
    "kickoff": "2026-09-19T01:00:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
@@ -327,12 +327,12 @@
     "num_str": "周五004",
     "league_abb": "挪超",
     "league_code": "NOR",
-    "time": "01:00",
+    "time": "01:00:00",
     "home": "萨普斯堡",
     "away": "奥斯KFUM",
     "date": "2026-09-19",
-    "home_rank": "",
-    "away_rank": "[12]",
+    "home_rank": "[挪超9]",
+    "away_rank": "[挪超12]",
     "had_h": 1.43,
     "had_d": 4.35,
     "had_a": 5.0,
@@ -344,10 +344,10 @@
     "home_summary": "萨普斯堡: 联赛(挪超)暂无历史源, 仅赔率预测",
     "away_summary": "奥斯KFUM: 同上",
     "h2h_summary": "",
-    "intel_note": "",
+    "intel_note": "[头条搜索(自动)] 摘要多为直播链接或无关内容，无有效赛前情报",
     "intel_adj": 0.0,
-    "intel_source": "",
-    "intel_level": "",
+    "intel_source": "自动联网",
+    "intel_level": "不足",
     "intel_risk": "低",
     "in_sale": true,
     "started": false
@@ -361,8 +361,8 @@
    },
    "draw_cand": null,
    "intel": {
-    "source": "",
-    "level": "",
+    "source": "自动联网",
+    "level": "不足",
     "risk": "低"
    },
    "goals": {
@@ -398,14 +398,14 @@
    "away": "蒙彼利埃",
    "pick": "主胜",
    "probs": [
-    0.5108,
-    0.2541,
-    0.2351
+    0.5208,
+    0.2501,
+    0.2291
    ],
    "odds": 1.71,
    "source": "仅赔率",
    "quality": "odds_only",
-   "predicted_at": "2026-09-17T17:04:58.674112+08:00",
+   "predicted_at": "2026-09-18T09:42:18.862833+08:00",
    "kickoff": "2026-09-19T02:00:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
@@ -415,21 +415,21 @@
     0.22753193430656937
    ],
    "legacy_probs": [
-    0.5108,
-    0.2541,
-    0.2351
+    0.5208,
+    0.2501,
+    0.2291
    ],
    "history_weight": 0.0,
    "features": {
     "num_str": "周五005",
     "league_abb": "法乙",
     "league_code": "FR2",
-    "time": "02:00",
+    "time": "02:00:00",
     "home": "兰斯",
     "away": "蒙彼利埃",
     "date": "2026-09-19",
-    "home_rank": "",
-    "away_rank": "[3]",
+    "home_rank": "[法乙2]",
+    "away_rank": "[法乙3]",
     "had_h": 1.71,
     "had_d": 3.5,
     "had_a": 3.9,
@@ -441,11 +441,11 @@
     "home_summary": "兰斯: 暂无匹配历史数据(请在 team_map.py 补充队名)",
     "away_summary": "蒙彼利埃: 同上",
     "h2h_summary": "",
-    "intel_note": "",
-    "intel_adj": 0.0,
-    "intel_source": "",
-    "intel_level": "",
-    "intel_risk": "低",
+    "intel_note": "[头条搜索(自动)] 兰斯排名法乙第2，主场战斗力尚可，擅长边路冲击与反击，进攻火力稳定但防守有波动；蒙彼利埃排名第3，状态低迷，客场防守形同虚设/兰斯后防线有核心伤缺，战力略有受损/升级区直接对话，兰斯冲甲战意拉满 · 兰斯主场强但后防有伤，蒙彼利埃客场差，主队稍优",
+    "intel_adj": 0.5,
+    "intel_source": "自动联网",
+    "intel_level": "一般",
+    "intel_risk": "中",
     "in_sale": true,
     "started": false
    },
@@ -458,9 +458,9 @@
    },
    "draw_cand": null,
    "intel": {
-    "source": "",
-    "level": "",
-    "risk": "低"
+    "source": "自动联网",
+    "level": "一般",
+    "risk": "中"
    },
    "goals": {
     "pick": "2",
@@ -483,7 +483,7 @@
     "fav": "主胜",
     "fav_odds": 1.71,
     "risk": "高",
-    "no_win_p": 0.4892,
+    "no_win_p": 0.4792,
     "hot": true
    }
   },
@@ -495,14 +495,14 @@
    "away": "兹沃勒",
    "pick": "主胜",
    "probs": [
-    0.6071,
-    0.2064,
-    0.1864
+    0.6171,
+    0.2024,
+    0.1804
    ],
    "odds": 1.44,
    "source": "仅赔率",
    "quality": "odds_only",
-   "predicted_at": "2026-09-17T17:04:58.674112+08:00",
+   "predicted_at": "2026-09-18T09:42:18.862833+08:00",
    "kickoff": "2026-09-19T02:00:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
@@ -512,21 +512,21 @@
     0.1789336801040312
    ],
    "legacy_probs": [
-    0.6071,
-    0.2064,
-    0.1864
+    0.6171,
+    0.2024,
+    0.1804
    ],
    "history_weight": 0.0,
    "features": {
     "num_str": "周五006",
     "league_abb": "荷甲",
     "league_code": "ERE",
-    "time": "02:00",
+    "time": "02:00:00",
     "home": "格罗宁根",
     "away": "兹沃勒",
     "date": "2026-09-19",
-    "home_rank": "",
-    "away_rank": "[16]",
+    "home_rank": "[荷甲9]",
+    "away_rank": "[荷甲16]",
     "had_h": 1.44,
     "had_d": 4.3,
     "had_a": 4.95,
@@ -538,11 +538,11 @@
     "home_summary": "格罗宁根: 暂无匹配历史数据(请在 team_map.py 补充队名)",
     "away_summary": "兹沃勒: 同上",
     "h2h_summary": "",
-    "intel_note": "",
-    "intel_adj": 0.0,
-    "intel_source": "",
-    "intel_level": "",
-    "intel_risk": "低",
+    "intel_note": "[头条搜索(自动)] 格罗宁根排名第6，距离欧协联资格区仅差几分；兹沃勒深陷降级区边缘，仅领先降级线2分，保级压力巨大 · 格罗宁根战意足且主场，兹沃勒保级压力大，主队可看高",
+    "intel_adj": 0.5,
+    "intel_source": "自动联网",
+    "intel_level": "一般",
+    "intel_risk": "中",
     "in_sale": true,
     "started": false
    },
@@ -555,9 +555,9 @@
    },
    "draw_cand": null,
    "intel": {
-    "source": "",
-    "level": "",
-    "risk": "低"
+    "source": "自动联网",
+    "level": "一般",
+    "risk": "中"
    },
    "goals": {
     "pick": "2",
@@ -580,14 +580,14 @@
     "fav": "主胜",
     "fav_odds": 1.44,
     "risk": "中",
-    "no_win_p": 0.3929,
+    "no_win_p": 0.3829,
     "hot": true
    }
   },
   {
    "num": "周五007",
    "league_abb": "荷乙",
-   "league_code": "",
+   "league_code": "DF2",
    "home": "登博思",
    "away": "海尔蒙特",
    "pick": "主胜",
@@ -599,7 +599,7 @@
    "odds": 1.62,
    "source": "仅赔率",
    "quality": "odds_only",
-   "predicted_at": "2026-09-17T17:04:58.674112+08:00",
+   "predicted_at": "2026-09-18T09:42:18.862833+08:00",
    "kickoff": "2026-09-19T02:00:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
@@ -617,13 +617,13 @@
    "features": {
     "num_str": "周五007",
     "league_abb": "荷乙",
-    "league_code": "",
-    "time": "02:00",
+    "league_code": "DF2",
+    "time": "02:00:00",
     "home": "登博思",
     "away": "海尔蒙特",
     "date": "2026-09-19",
-    "home_rank": "",
-    "away_rank": "[12]",
+    "home_rank": "[荷乙17]",
+    "away_rank": "[荷乙12]",
     "had_h": 1.62,
     "had_d": 4.25,
     "had_a": 3.62,
@@ -635,11 +635,11 @@
     "home_summary": "登博思: 联赛(荷乙)暂无历史源, 仅赔率预测",
     "away_summary": "海尔蒙特: 同上",
     "h2h_summary": "",
-    "intel_note": "",
+    "intel_note": "[头条搜索(自动)] 登博思联赛排名中下游，近期表现起伏，具备一定得分能力；海尔蒙特排名第9/登博思中后场存在伤病，防线稳定性不足 · 登博思中后场伤病，防线不稳，谨慎看待",
     "intel_adj": 0.0,
-    "intel_source": "",
-    "intel_level": "",
-    "intel_risk": "低",
+    "intel_source": "自动联网",
+    "intel_level": "一般",
+    "intel_risk": "中",
     "in_sale": true,
     "started": false
    },
@@ -652,9 +652,9 @@
    },
    "draw_cand": null,
    "intel": {
-    "source": "",
-    "level": "",
-    "risk": "低"
+    "source": "自动联网",
+    "level": "一般",
+    "risk": "中"
    },
    "goals": {
     "pick": "2",
@@ -689,14 +689,14 @@
    "away": "萨索洛",
    "pick": "客胜",
    "probs": [
-    0.3214,
-    0.2743,
-    0.4042
+    0.3205,
+    0.2742,
+    0.4053
    ],
    "odds": 2.25,
    "source": "模型+赔率",
    "quality": "partial",
-   "predicted_at": "2026-09-17T17:04:58.674112+08:00",
+   "predicted_at": "2026-09-18T09:42:18.862833+08:00",
    "kickoff": "2026-09-19T02:45:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
@@ -706,21 +706,21 @@
     0.3934754850136614
    ],
    "legacy_probs": [
-    0.3316,
-    0.2746,
-    0.3938
+    0.3305,
+    0.2747,
+    0.3948
    ],
    "history_weight": 0.07,
    "features": {
     "num_str": "周五009",
     "league_abb": "意甲",
     "league_code": "ISA",
-    "time": "02:45",
+    "time": "02:45:00",
     "home": "蒙扎",
     "away": "萨索洛",
     "date": "2026-09-19",
-    "home_rank": "",
-    "away_rank": "[9]",
+    "home_rank": "[意甲18]",
+    "away_rank": "[意甲9]",
     "had_h": 2.67,
     "had_d": 3.22,
     "had_a": 2.25,
@@ -729,13 +729,13 @@
     "away_games": 10,
     "h2h_games": 0,
     "data_quality": "partial",
-    "home_summary": "蒙扎(近4场)，场均积分0.3 胜率0%，平率26%，场均进1.5/失2.7，休息6天",
-    "away_summary": "萨索洛(近10场)，场均积分1.5 胜率42%，平率21%，场均进1.7/失1.6，休息6天，排名9",
+    "home_summary": "蒙扎(近4场)，场均积分0.3 胜率0%，平率26%，场均进1.5/失2.7，休息6天，排名意甲18",
+    "away_summary": "萨索洛(近10场)，场均积分1.5 胜率42%，平率21%，场均进1.7/失1.6，休息6天，排名意甲9",
     "h2h_summary": "",
-    "intel_note": "",
+    "intel_note": "[头条搜索(自动)] 摘要仅提萨索洛已提前降级，无本场状态伤停，信息不足",
     "intel_adj": 0.0,
-    "intel_source": "",
-    "intel_level": "",
+    "intel_source": "自动联网",
+    "intel_level": "不足",
     "intel_risk": "低",
     "in_sale": true,
     "started": false,
@@ -767,8 +767,8 @@
    },
    "draw_cand": null,
    "intel": {
-    "source": "",
-    "level": "",
+    "source": "自动联网",
+    "level": "不足",
     "risk": "低"
    },
    "goals": {
@@ -792,7 +792,7 @@
     "fav": "客胜",
     "fav_odds": 2.25,
     "risk": "低",
-    "no_win_p": 0.5958,
+    "no_win_p": 0.5947,
     "hot": false
    }
   },
@@ -804,53 +804,53 @@
    "away": "朗斯",
    "pick": "主胜",
    "probs": [
-    0.4171,
-    0.2816,
-    0.3012
+    0.4376,
+    0.2773,
+    0.285
    ],
-   "odds": 1.98,
+   "odds": 1.94,
    "source": "模型+赔率",
    "quality": "full",
-   "predicted_at": "2026-09-17T17:04:58.674112+08:00",
+   "predicted_at": "2026-09-18T09:42:18.862833+08:00",
    "kickoff": "2026-09-19T02:45:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
    "market_probs": [
-    0.4470471077242813,
-    0.2529009352268791,
-    0.30005195704883963
+    0.456547771790266,
+    0.25305790779231885,
+    0.2903943204174151
    ],
    "legacy_probs": [
-    0.4162,
-    0.2916,
-    0.2923
+    0.4372,
+    0.2871,
+    0.2757
    ],
    "history_weight": 0.42,
    "features": {
     "num_str": "周五010",
     "league_abb": "法甲",
     "league_code": "FR1",
-    "time": "02:45",
+    "time": "02:45:00",
     "home": "摩纳哥",
     "away": "朗斯",
     "date": "2026-09-19",
-    "home_rank": "",
-    "away_rank": "[10]",
-    "had_h": 1.98,
+    "home_rank": "[法甲2]",
+    "away_rank": "[法甲10]",
+    "had_h": 1.94,
     "had_d": 3.5,
-    "had_a": 2.95,
+    "had_a": 3.05,
     "hhad_gl": -1.0,
     "home_games": 10,
     "away_games": 10,
     "h2h_games": 2,
     "data_quality": "full",
-    "home_summary": "摩纳哥(近10场)，场均积分1.7 胜率47%，平率29%，场均进1.7/失1.4，休息7天",
-    "away_summary": "朗斯(近10场)，场均积分1.3 胜率34%，平率29%，场均进1.9/失1.5，休息6天，排名10",
+    "home_summary": "摩纳哥(近10场)，场均积分1.7 胜率47%，平率29%，场均进1.7/失1.4，休息7天，排名法甲2",
+    "away_summary": "朗斯(近10场)，场均积分1.3 胜率34%，平率29%，场均进1.9/失1.5，休息6天，排名法甲10",
     "h2h_summary": "近2次交锋(主队角度): 1胜0平1负(由近到远:胜、负…)",
-    "intel_note": "",
-    "intel_adj": 0.0,
-    "intel_source": "",
-    "intel_level": "",
+    "intel_note": "[头条搜索(自动)] 摩纳哥4轮3胜1平居法甲第二，上场客场胜大巴黎士气正盛；朗斯开局中规中矩主打稳守反击 · 摩纳哥状态火热且刚胜大巴黎，主队占优",
+    "intel_adj": 0.5,
+    "intel_source": "自动联网",
+    "intel_level": "一般",
     "intel_risk": "低",
     "in_sale": true,
     "started": false,
@@ -883,8 +883,8 @@
    },
    "draw_cand": null,
    "intel": {
-    "source": "",
-    "level": "",
+    "source": "自动联网",
+    "level": "一般",
     "risk": "低"
    },
    "goals": {
@@ -906,9 +906,9 @@
    },
    "upset": {
     "fav": "主胜",
-    "fav_odds": 1.98,
+    "fav_odds": 1.94,
     "risk": "高",
-    "no_win_p": 0.5829,
+    "no_win_p": 0.5624,
     "hot": true
    }
   },
@@ -920,14 +920,14 @@
    "away": "切尔西",
    "pick": "主胜",
    "probs": [
-    0.3993,
-    0.2499,
-    0.3508
+    0.3986,
+    0.2501,
+    0.3514
    ],
    "odds": 2.65,
    "source": "模型+赔率",
    "quality": "full",
-   "predicted_at": "2026-09-17T17:04:58.674112+08:00",
+   "predicted_at": "2026-09-18T09:42:18.862833+08:00",
    "kickoff": "2026-09-19T03:00:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
@@ -937,21 +937,21 @@
     0.4180289584306399
    ],
    "legacy_probs": [
-    0.4248,
-    0.2456,
-    0.3295
+    0.4241,
+    0.2458,
+    0.3301
    ],
    "history_weight": 0.42,
    "features": {
     "num_str": "周五011",
     "league_abb": "英超",
     "league_code": "EPL",
-    "time": "03:00",
+    "time": "03:00:00",
     "home": "布伦特",
     "away": "切尔西",
     "date": "2026-09-19",
-    "home_rank": "",
-    "away_rank": "[6]",
+    "home_rank": "[英超7]",
+    "away_rank": "[英超6]",
     "had_h": 2.65,
     "had_d": 3.58,
     "had_a": 2.12,
@@ -960,13 +960,13 @@
     "away_games": 10,
     "h2h_games": 2,
     "data_quality": "full",
-    "home_summary": "布伦特(近10场)，场均积分1.2 胜率18%，平率68%，场均进1.5/失1.2，休息7天",
-    "away_summary": "切尔西(近10场)，场均积分1.2 胜率33%，平率24%，场均进1.8/失2.0，休息7天，排名6",
+    "home_summary": "布伦特(近10场)，场均积分1.2 胜率18%，平率68%，场均进1.5/失1.2，休息7天，排名英超7",
+    "away_summary": "切尔西(近10场)，场均积分1.2 胜率33%，平率24%，场均进1.8/失2.0，休息7天，排名英超6",
     "h2h_summary": "近2次交锋(主队角度): 0胜1平1负(由近到远:负、平…)",
-    "intel_note": "",
+    "intel_note": "[头条搜索(自动)] 摘要仅含欧赔亚盘数据，无状态伤停，信息有限",
     "intel_adj": 0.0,
-    "intel_source": "",
-    "intel_level": "",
+    "intel_source": "自动联网",
+    "intel_level": "一般",
     "intel_risk": "低",
     "in_sale": true,
     "started": false,
@@ -999,8 +999,8 @@
    },
    "draw_cand": null,
    "intel": {
-    "source": "",
-    "level": "",
+    "source": "自动联网",
+    "level": "一般",
     "risk": "低"
    },
    "goals": {
@@ -1024,7 +1024,7 @@
     "fav": "客胜",
     "fav_odds": 2.12,
     "risk": "高",
-    "no_win_p": 0.6492,
+    "no_win_p": 0.6486,
     "hot": true
    }
   },
@@ -1036,14 +1036,14 @@
    "away": "沃特福德",
    "pick": "主胜",
    "probs": [
-    0.5005,
-    0.2564,
-    0.2431
+    0.5106,
+    0.2524,
+    0.237
    ],
    "odds": 1.74,
    "source": "仅赔率",
    "quality": "odds_only",
-   "predicted_at": "2026-09-17T17:04:58.674112+08:00",
+   "predicted_at": "2026-09-18T09:42:18.862833+08:00",
    "kickoff": "2026-09-19T03:00:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
@@ -1053,21 +1053,21 @@
     0.2354256933256167
    ],
    "legacy_probs": [
-    0.5005,
-    0.2564,
-    0.2431
+    0.5106,
+    0.2524,
+    0.237
    ],
    "history_weight": 0.0,
    "features": {
     "num_str": "周五012",
     "league_abb": "英冠",
     "league_code": "CHA",
-    "time": "03:00",
+    "time": "03:00:00",
     "home": "布城",
     "away": "沃特福德",
     "date": "2026-09-19",
-    "home_rank": "",
-    "away_rank": "[17]",
+    "home_rank": "[英冠13]",
+    "away_rank": "[英冠17]",
     "had_h": 1.74,
     "had_d": 3.46,
     "had_a": 3.76,
@@ -1079,10 +1079,10 @@
     "home_summary": "布城: 暂无匹配历史数据(请在 team_map.py 补充队名)",
     "away_summary": "沃特福德: 同上",
     "h2h_summary": "",
-    "intel_note": "",
-    "intel_adj": 0.0,
-    "intel_source": "",
-    "intel_level": "",
+    "intel_note": "[头条搜索(自动)] 布城上轮客场取胜止住起伏；沃特福德连续9轮仅1胜状态持续走低 · 沃特福德长期低迷，布城主场可看高一线",
+    "intel_adj": 0.5,
+    "intel_source": "自动联网",
+    "intel_level": "一般",
     "intel_risk": "低",
     "in_sale": true,
     "started": false
@@ -1096,8 +1096,8 @@
    },
    "draw_cand": null,
    "intel": {
-    "source": "",
-    "level": "",
+    "source": "自动联网",
+    "level": "一般",
     "risk": "低"
    },
    "goals": {
@@ -1121,7 +1121,7 @@
     "fav": "主胜",
     "fav_odds": 1.74,
     "risk": "高",
-    "no_win_p": 0.4995,
+    "no_win_p": 0.4894,
     "hot": true
    }
   },
@@ -1133,14 +1133,14 @@
    "away": "埃尔切",
    "pick": "主胜",
    "probs": [
-    0.5614,
-    0.2457,
-    0.1929
+    0.5687,
+    0.2433,
+    0.188
    ],
    "odds": 1.65,
    "source": "模型+赔率",
    "quality": "full",
-   "predicted_at": "2026-09-17T17:04:58.674112+08:00",
+   "predicted_at": "2026-09-18T09:42:18.862833+08:00",
    "kickoff": "2026-09-19T03:00:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
@@ -1150,21 +1150,21 @@
     0.21072796934865898
    ],
    "legacy_probs": [
-    0.5314,
-    0.261,
-    0.2077
+    0.5394,
+    0.2588,
+    0.2018
    ],
    "history_weight": 0.42,
    "features": {
     "num_str": "周五013",
     "league_abb": "西甲",
     "league_code": "LLA",
-    "time": "03:00",
+    "time": "03:00:00",
     "home": "西班牙人",
     "away": "埃尔切",
     "date": "2026-09-19",
-    "home_rank": "",
-    "away_rank": "[20]",
+    "home_rank": "[西甲8]",
+    "away_rank": "[西甲20]",
     "had_h": 1.65,
     "had_d": 3.5,
     "had_a": 4.2,
@@ -1173,13 +1173,13 @@
     "away_games": 10,
     "h2h_games": 2,
     "data_quality": "full",
-    "home_summary": "西班牙人(近10场)，场均积分1.3 胜率36%，平率21%，场均进1.4/失1.1，休息4天",
-    "away_summary": "埃尔切(近10场)，场均积分0.6 胜率7%，平率36%，场均进1.3/失2.2，休息4天，排名20",
+    "home_summary": "西班牙人(近10场)，场均积分1.3 胜率36%，平率21%，场均进1.4/失1.1，休息4天，排名西甲8",
+    "away_summary": "埃尔切(近10场)，场均积分0.6 胜率7%，平率36%，场均进1.3/失2.2，休息4天，排名西甲20",
     "h2h_summary": "近2次交锋(主队角度): 1胜1平0负(由近到远:平、胜…)",
-    "intel_note": "",
+    "intel_note": "[头条搜索(自动)] 摘要多为埃尔切对皇马巴萨等无关内容，本场信息不足",
     "intel_adj": 0.0,
-    "intel_source": "",
-    "intel_level": "",
+    "intel_source": "自动联网",
+    "intel_level": "不足",
     "intel_risk": "低",
     "in_sale": true,
     "started": false,
@@ -1212,8 +1212,8 @@
    },
    "draw_cand": null,
    "intel": {
-    "source": "",
-    "level": "",
+    "source": "自动联网",
+    "level": "不足",
     "risk": "低"
    },
    "goals": {
@@ -1237,26 +1237,26 @@
     "fav": "主胜",
     "fav_odds": 1.65,
     "risk": "中",
-    "no_win_p": 0.4386,
+    "no_win_p": 0.4313,
     "hot": true
    }
   },
   {
    "num": "周五014",
-   "league_abb": "美职足",
-   "league_code": "",
+   "league_abb": "美职",
+   "league_code": "USA",
    "home": "纽约城",
    "away": "纽约红牛",
    "pick": "主胜",
    "probs": [
-    0.5067,
-    0.2348,
-    0.2585
+    0.5007,
+    0.2308,
+    0.2686
    ],
    "odds": 1.72,
    "source": "仅赔率",
    "quality": "odds_only",
-   "predicted_at": "2026-09-17T17:04:58.674112+08:00",
+   "predicted_at": "2026-09-18T09:42:18.862833+08:00",
    "kickoff": "2026-09-19T07:30:00+08:00",
    "model_version": "2.2",
    "history_model": "shrunk_form",
@@ -1266,21 +1266,21 @@
     0.2508662401703927
    ],
    "legacy_probs": [
-    0.5067,
-    0.2348,
-    0.2585
+    0.5007,
+    0.2308,
+    0.2686
    ],
    "history_weight": 0.0,
    "features": {
     "num_str": "周五014",
-    "league_abb": "美职足",
-    "league_code": "",
-    "time": "07:30",
+    "league_abb": "美职",
+    "league_code": "USA",
+    "time": "07:30:00",
     "home": "纽约城",
     "away": "纽约红牛",
     "date": "2026-09-19",
-    "home_rank": "",
-    "away_rank": "[20]",
+    "home_rank": "[美职8]",
+    "away_rank": "[美职10]",
     "had_h": 1.72,
     "had_d": 3.78,
     "had_a": 3.53,
@@ -1289,14 +1289,14 @@
     "away_games": 0,
     "h2h_games": 0,
     "data_quality": "odds_only",
-    "home_summary": "纽约城: 联赛(美职足)暂无历史源, 仅赔率预测",
+    "home_summary": "纽约城: 暂无匹配历史数据(请在 team_map.py 补充队名)",
     "away_summary": "纽约红牛: 同上",
     "h2h_summary": "",
-    "intel_note": "",
-    "intel_adj": 0.0,
-    "intel_source": "",
-    "intel_level": "",
-    "intel_risk": "低",
+    "intel_note": "[头条搜索(自动)] 纽约红牛近期状态起伏不定，急需抢分稳住季后赛席位/纽约红牛主力后腰存在轻伤，首发状态存疑，中场拦截强度或下降/纽约红牛急需抢分稳住季后赛席位 · 红牛中场核心存疑，德比战谨慎对待",
+    "intel_adj": -0.5,
+    "intel_source": "自动联网",
+    "intel_level": "一般",
+    "intel_risk": "中",
     "in_sale": true,
     "started": false
    },
@@ -1309,9 +1309,9 @@
    },
    "draw_cand": null,
    "intel": {
-    "source": "",
-    "level": "",
-    "risk": "低"
+    "source": "自动联网",
+    "level": "一般",
+    "risk": "中"
    },
    "goals": {
     "pick": "2",
@@ -1334,7 +1334,7 @@
     "fav": "主胜",
     "fav_odds": 1.72,
     "risk": "高",
-    "no_win_p": 0.4933,
+    "no_win_p": 0.4993,
     "hot": true
    }
   }
@@ -1342,26 +1342,26 @@
  "combos": [
   {
    "odds": 2.07,
-   "joint": 0.3684,
+   "joint": 0.3745,
    "risk": "中",
    "legs": [
     {
-     "num": "周五004",
+     "num": "周五001",
      "pick": "主胜"
     },
     {
-     "num": "周五001",
+     "num": "周五004",
      "pick": "主胜"
     }
    ]
   },
   {
-   "odds": 2.36,
-   "joint": 0.3432,
+   "odds": 2.39,
+   "joint": 0.3484,
    "risk": "中",
    "legs": [
     {
-     "num": "周五004",
+     "num": "周五001",
      "pick": "主胜"
     },
     {
@@ -1371,12 +1371,12 @@
    ]
   },
   {
-   "odds": 2.39,
-   "joint": 0.3383,
+   "odds": 2.36,
+   "joint": 0.3476,
    "risk": "中",
    "legs": [
     {
-     "num": "周五001",
+     "num": "周五004",
      "pick": "主胜"
     },
     {
@@ -1402,7 +1402,7 @@
   },
   {
    "odds": 2.86,
-   "joint": 0.2761,
+   "joint": 0.2815,
    "risk": "高",
    "legs": [
     {
